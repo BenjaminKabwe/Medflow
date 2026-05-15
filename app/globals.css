@@ -1,26 +1,234 @@
-@import "tailwindcss";
+/* Fonts are loaded via next/font in app/layout.tsx — no @import needed */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Medical Premium — Light Theme */
+    --background: 210 40% 97%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 199 89% 48%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 158 64% 52%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 199 89% 48%;
+    --radius: 0.75rem;
+
+    /* Sidebar premium dark vars */
+    --sidebar-bg: 222 47% 8%;
+    --sidebar-hover: 222 47% 13%;
+    --sidebar-border: 222 47% 14%;
+    --sidebar-text: 215 20% 60%;
+    --sidebar-text-muted: 215 14% 40%;
+
+    /* Charts */
+    --chart-1: 199 89% 48%;
+    --chart-2: 158 64% 52%;
+    --chart-3: 38 92% 50%;
+    --chart-4: 262 83% 58%;
+    --chart-5: 0 72% 51%;
+  }
+
+  .dark {
+    --background: 222 47% 8%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 199 89% 48%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 158 64% 52%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 199 89% 48%;
+    --chart-1: 199 89% 48%;
+    --chart-2: 158 64% 52%;
+    --chart-3: 38 92% 50%;
+    --chart-4: 262 83% 58%;
+    --chart-5: 0 72% 51%;
   }
 }
 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    font-family: var(--font-inter), system-ui, sans-serif;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+}
+
+/* Scrollbar premium */
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  overflow: auto;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: hsl(214 32% 82%);
+  border-radius: 99px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: hsl(214 32% 65%);
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(214 32% 82%) transparent;
+}
+.dark *::-webkit-scrollbar-thumb {
+  background: hsl(217 33% 25%);
+}
+.dark *::-webkit-scrollbar-thumb:hover {
+  background: hsl(217 33% 35%);
+}
+.dark * {
+  scrollbar-color: hsl(217 33% 25%) transparent;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Sidebar styles */
+  .sidebar-bg {
+    background-color: hsl(var(--sidebar-bg));
+  }
+
+  /* Premium gradient text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent;
+  }
+
+  /* Glass card */
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-sm border border-white/50;
+  }
+
+  /* Premium shadows */
+  .card-shadow {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+  }
+  .card-shadow-md {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  }
+  .card-lg {
+    box-shadow: 0 20px 40px -12px rgb(0 0 0 / 0.3);
+  }
+}
+
+/* Premium Doctor Card */
+.doctorCard {
+  @apply bg-white dark:bg-[hsl(222,47%,11%)] p-4 rounded-xl flex gap-4 w-full md:w-[48%] xl:w-full border border-slate-100 dark:border-[hsl(222,47%,16%)] card-shadow hover:card-shadow-md transition-shadow duration-200 text-slate-800 dark:text-slate-100;
+}
+
+/* ─── Keyframe animations ─── */
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.35s ease both;
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+@keyframes orb-float-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+  33%       { transform: translate(40px, -30px) scale(1.08); opacity: 0.8; }
+  66%       { transform: translate(-20px, 20px) scale(0.95); opacity: 0.5; }
+}
+.animate-orb-1 {
+  animation: orb-float-1 16s ease-in-out infinite;
+}
+
+@keyframes orb-float-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+  33%       { transform: translate(-35px, 25px) scale(0.93); opacity: 0.7; }
+  66%       { transform: translate(25px, -20px) scale(1.06); opacity: 0.4; }
+}
+.animate-orb-2 {
+  animation: orb-float-2 20s ease-in-out infinite;
+}
+
+@keyframes orb-float-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(15px, -25px) scale(1.1); }
+}
+.animate-orb-3 {
+  animation: orb-float-3 13s ease-in-out infinite;
+}
+
+/* Landing page gradient background */
+.landing-gradient {
+  background: radial-gradient(ellipse 80% 60% at 50% -10%, hsl(199 89% 48% / 0.12) 0%, transparent 70%),
+              radial-gradient(ellipse 60% 40% at 80% 80%, hsl(158 64% 52% / 0.08) 0%, transparent 60%),
+              hsl(210 40% 97%);
+}
+
+/* Pulse ring animation for status indicators */
+@keyframes pulse-ring {
+  0%   { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+.pulse-ring::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  opacity: 0.3;
+}
+
+/* Shimmer line decoration */
+@keyframes shimmer {
+  from { background-position: -200% center; }
+  to   { background-position: 200% center; }
+}
+.shimmer-line {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease infinite;
 }
