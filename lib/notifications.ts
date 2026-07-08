@@ -1,5 +1,6 @@
 import "server-only";
 import db from "@/lib/db";
+import { envoyerEmailNotification } from "@/lib/email-notifications";
 import { pusher } from "@/lib/pusher";
 import { NotificationType } from "@/lib/generated/prisma/enums";
 
@@ -32,6 +33,12 @@ export async function creerNotification(data: CreateNotificationData) {
     );
   } catch (err) {
     console.error("[Pusher] trigger failed:", err);
+  }
+
+  try {
+    await envoyerEmailNotification(data, notification.id);
+  } catch (err) {
+    console.error("[Email] notification email failed:", err);
   }
 
   return notification;
