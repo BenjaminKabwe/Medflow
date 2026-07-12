@@ -1,17 +1,16 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaNeonHTTP } from "@prisma/adapter-neon";
+import { PrismaNeon } from "@prisma/adapter-neon";
+import { neonConfig } from "@neondatabase/serverless";
 
-// DATABASE_URL points to the PgBouncer pooled endpoint — strip it to get the
-// direct endpoint required by the Neon serverless HTTP adapter.
-const getDirectUrl = () =>
-  process.env.DATABASE_URL!
-    .replace("-pooler.", ".")
-    .replace("&pgbouncer=true", "")
-    .replace(/&pool_timeout=\d+/, "")
-    .replace(/&connection_limit=\d+/, "");
+// Le driver Neon en mode WebSocket (Pool) supporte les transactions
+// interactives (db.$transaction), contrairement au mode HTTP.
+// Node 22+ expose WebSocket en global ; on le fournit au driver.
+if (!neonConfig.webSocketConstructor) {
+  neonConfig.webSocketConstructor = WebSocket;
+}
 
 const prismaClientSingleton = () => {
-  const adapter = new PrismaNeonHTTP(getDirectUrl(), {});
+  const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL });
   return new PrismaClient({ adapter });
 };
 

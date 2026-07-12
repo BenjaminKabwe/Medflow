@@ -1,5 +1,7 @@
 "use server";
 
+import { am } from "@/lib/action-messages";
+
 import db from "@/lib/db";
 import {
   DoctorSchema,
@@ -58,13 +60,13 @@ export async function createNewStaff(data: any) {
     const { userId } = await auth();
 
     if (!userId) {
-      return { success: false, msg: "Non autorisé" };
+      return { success: false, msg: await am("unauthorized") };
     }
 
     const isAdmin = await checkRole("ADMIN");
 
     if (!isAdmin) {
-      return { success: false, msg: "Non autorisé" };
+      return { success: false, msg: await am("unauthorized") };
     }
 
     const values = StaffSchema.safeParse(data);
@@ -122,7 +124,7 @@ export async function createNewStaff(data: any) {
 
     return {
       success: true,
-      message: "Personnel ajouté avec succès",
+      message: await am("staffAdded"),
       error: false,
     };
   } catch (error) {
@@ -135,13 +137,13 @@ export async function createNewDoctor(data: any) {
     const { userId } = await auth();
 
     if (!userId) {
-      return { success: false, msg: "Non autorisé" };
+      return { success: false, msg: await am("unauthorized") };
     }
 
     const isAdmin = await checkRole("ADMIN");
 
     if (!isAdmin) {
-      return { success: false, msg: "Non autorisé" };
+      return { success: false, msg: await am("unauthorized") };
     }
 
     const values = DoctorSchema.safeParse(data);
@@ -208,7 +210,7 @@ export async function createNewDoctor(data: any) {
 
     return {
       success: true,
-      message: "Médecin ajouté avec succès",
+      message: await am("doctorAdded"),
       error: false,
     };
   } catch (error) {
@@ -226,7 +228,7 @@ export async function addNewService(data: any) {
     const isValidData = ServicesSchema.safeParse(data);
 
     if (!isValidData.success) {
-      return { success: false, error: true, msg: "Données invalides. Vérifiez les champs." };
+      return { success: false, error: true, msg: await am("invalidFields") };
     }
 
     const validatedData = isValidData.data;

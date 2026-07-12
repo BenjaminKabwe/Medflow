@@ -2,58 +2,58 @@ import db from "@/lib/db";
 import { Table } from "../tables/table";
 import { Payment } from "@prisma/client";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { fr, enUS } from "date-fns/locale";
 import { ViewAction } from "../action-options";
 import { checkRole } from "@/utils/roles";
 import { ActionDialog } from "../action-dialog";
 import { PdfDownloadButton } from "../pdf-download-button";
+import { getLang } from "@/lib/i18n-server";
 
-const columns = [
-  {
-    header: "N°",
-    key: "id",
+const STR = {
+  fr: {
+    colNo: "N°",
+    colBillDate: "Date de facturation",
+    colPayDate: "Date de paiement",
+    colTotal: "Total",
+    colDiscount: "Remise",
+    colPayable: "Montant payable",
+    colPaid: "Montant payé",
+    colActions: "Actions",
+    paymentsTotal: (n: number) => `paiement${n !== 1 ? "s" : ""} au total`,
   },
-  {
-    header: "Date de facturation",
-    key: "bill_date",
-    className: "",
+  en: {
+    colNo: "No.",
+    colBillDate: "Billing date",
+    colPayDate: "Payment date",
+    colTotal: "Total",
+    colDiscount: "Discount",
+    colPayable: "Amount payable",
+    colPaid: "Amount paid",
+    colActions: "Actions",
+    paymentsTotal: (n: number) => `payment${n !== 1 ? "s" : ""} in total`,
   },
-  {
-    header: "Date de paiement",
-    key: "pay_date",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Total",
-    key: "total",
-    className: "",
-  },
-  {
-    header: "Remise",
-    key: "discount",
-    className: "hidden xl:table-cell",
-  },
-  {
-    header: "Montant payable",
-    key: "payable",
-    className: "hidden xl:table-cell",
-  },
-  {
-    header: "Montant payé",
-    key: "paid",
-    className: "hidden xl:table-cell",
-  },
-  {
-    header: "Actions",
-    key: "action",
-  },
-];
+};
 
 export const PaymentsContainer = async ({
   patientId,
 }: {
   patientId: string;
 }) => {
+  const lang = await getLang();
+  const t = STR[lang];
+  const dateLocale = lang === "en" ? enUS : fr;
+
+  const columns = [
+    { header: t.colNo, key: "id" },
+    { header: t.colBillDate, key: "bill_date", className: "" },
+    { header: t.colPayDate, key: "pay_date", className: "hidden md:table-cell" },
+    { header: t.colTotal, key: "total", className: "" },
+    { header: t.colDiscount, key: "discount", className: "hidden xl:table-cell" },
+    { header: t.colPayable, key: "payable", className: "hidden xl:table-cell" },
+    { header: t.colPaid, key: "paid", className: "hidden xl:table-cell" },
+    { header: t.colActions, key: "action" },
+  ];
+
   const [data, patient, isAdmin] = await Promise.all([
     db.payment.findMany({ where: { patient_id: patientId } }),
     db.patient.findUnique({
@@ -78,9 +78,9 @@ export const PaymentsContainer = async ({
         <td className="flex items-center gap-2 md:gap-4 py-2 xl:py-4">
           #{item?.id}
         </td>
-        <td>{format(item?.bill_date, "d MMM yyyy", { locale: fr })}</td>
+        <td>{format(item?.bill_date, "d MMM yyyy", { locale: dateLocale })}</td>
         <td className="hidden items-center py-2 md:table-cell">
-          {format(item?.payment_date, "d MMM yyyy", { locale: fr })}
+          {format(item?.payment_date, "d MMM yyyy", { locale: dateLocale })}
         </td>
         <td>{item?.total_amount.toFixed(2)}</td>
         <td className="hidden xl:table-cell">{item?.discount.toFixed(2)}</td>
@@ -118,7 +118,7 @@ export const PaymentsContainer = async ({
             {data?.length ?? 0}
           </p>
           <span className="text-gray-600 dark:text-slate-400 text-sm xl:text-base">
-            paiement{(data?.length ?? 0) !== 1 ? "s" : ""} au total
+            {t.paymentsTotal(data?.length ?? 0)}
           </span>
         </div>
       </div>

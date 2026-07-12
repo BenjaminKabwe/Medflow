@@ -13,10 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ─────────────────────────────────────────
-// MODÈLES EXISTANTS (inchangés)
-// ─────────────────────────────────────────
-
 model Department {
   id          Int      @id @default(autoincrement())
   name        String   @unique
@@ -59,6 +55,8 @@ model Patient {
   payments                 Payment[]
   ratings                  Rating[]
   vital_signs              VitalSigns[]
+  dispensations            Dispensation[]
+  prescriptions            Prescription[]
 
   @@index([last_name, first_name])
   @@index([phone])
@@ -84,6 +82,7 @@ model Doctor {
   department          Department?         @relation(fields: [department_id], references: [id])
   doctor_leaves       DoctorLeave[]
   medical_records     MedicalRecords[]
+  prescriptions       Prescription[]
   ratings             Rating[]
   working_days        WorkingDays[]
 
@@ -218,17 +217,22 @@ model PatientBills {
 }
 
 model LabTest {
-  id             Int            @id @default(autoincrement())
-  record_id      Int
-  test_date      DateTime
-  result         String
-  status         LabTestStatus  @default(REQUESTED)
-  notes          String?
-  service_id     Int
-  created_at     DateTime       @default(now())
-  updated_at     DateTime       @updatedAt
-  medical_record MedicalRecords @relation(fields: [record_id], references: [id], onDelete: Cascade)
-  services       Services       @relation(fields: [service_id], references: [id])
+  id                Int            @id @default(autoincrement())
+  record_id         Int
+  service_id        Int
+  status            LabTestStatus  @default(REQUESTED)
+  result            String?
+  notes             String?
+  requested_by      String?
+  requested_by_name String?
+  performed_by      String?
+  performed_by_name String?
+  test_date         DateTime?
+  completed_at      DateTime?
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @updatedAt
+  medical_record    MedicalRecords @relation(fields: [record_id], references: [id], onDelete: Cascade)
+  services          Services       @relation(fields: [service_id], references: [id])
 
   @@index([record_id])
   @@index([service_id])
@@ -236,7 +240,7 @@ model LabTest {
 }
 
 model MedicalRecords {
-  id             Int          @id @default(autoincrement())
+  id             Int             @id @default(autoincrement())
   patient_id     String
   appointment_id Int
   doctor_id      String
@@ -244,14 +248,16 @@ model MedicalRecords {
   prescriptions  String?
   lab_request    String?
   notes          String?
-  created_at     DateTime     @default(now())
-  updated_at     DateTime     @updatedAt
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @updatedAt
   diagnosis      Diagnosis[]
   lab_test       LabTest[]
-  appointment    Appointment  @relation(fields: [appointment_id], references: [id], onDelete: Cascade)
-  doctor         Doctor       @relation(fields: [doctor_id], references: [id], onDelete: Cascade)
-  patient        Patient      @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+  appointment    Appointment     @relation(fields: [appointment_id], references: [id], onDelete: Cascade)
+  doctor         Doctor          @relation(fields: [doctor_id], references: [id], onDelete: Cascade)
+  patient        Patient         @relation(fields: [patient_id], references: [id], onDelete: Cascade)
   vital_signs    VitalSigns[]
+  dispensations  Dispensation[]
+  structured_prescriptions Prescription[]
 
   @@index([patient_id])
   @@index([appointment_id])
@@ -337,6 +343,7 @@ model Services {
   service_name String         @unique
   description  String
   price        Float
+  category     String?
   created_at   DateTime       @default(now())
   updated_at   DateTime       @updatedAt
   labtest      LabTest[]
@@ -402,6 +409,216 @@ model CashierSession {
 }
 
 // ─────────────────────────────────────────
+// MODULE PHARMACIE (V2)
+// ─────────────────────────────────────────
+
+model Medication {
+  id                    Int                  @id @default(autoincrement())
+  name                  String
+  dci                   String
+  form                  MedicationForm       @default(COMPRIME)
+  dosage                String
+  unit                  String               @default("boîte")
+  category              String?
+  description           String?
+  barcode               String?              @unique
+  prescription_required Boolean              @default(true)
+  reorder_level         Int                  @default(10)
+  is_active             Boolean              @default(true)
+  created_at            DateTime             @default(now())
+  updated_at            DateTime             @updatedAt
+  stocks                MedicationStock[]
+  purchase_items        PurchaseOrderItem[]
+  dispensation_items    DispensationItem[]
+  prescription_items    PrescriptionItem[]
+
+  @@unique([dci, dosage, form])
+  @@index([name])
+  @@index([dci])
+  @@index([category])
+  @@index([is_active])
+}
+
+model MedicationStock {
+  id             Int              @id @default(autoincrement())
+  medication_id  Int
+  batch_number   String
+  quantity       Int              @default(0)
+  unit_cost      Float
+  selling_price  Float
+  expiry_date    DateTime
+  received_date  DateTime         @default(now())
+  supplier_id    Int?
+  notes          String?
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @updatedAt
+  medication     Medication       @relation(fields: [medication_id], references: [id], onDelete: Cascade)
+  supplier       Supplier?        @relation(fields: [supplier_id], references: [id], onDelete: SetNull)
+  movements      StockMovement[]
+  dispensation_items DispensationItem[]
+
+  @@unique([medication_id, batch_number])
+  @@index([medication_id])
+  @@index([expiry_date])
+  @@index([supplier_id])
+}
+
+model StockMovement {
+  id           Int               @id @default(autoincrement())
+  stock_id     Int
+  type         StockMovementType
+  quantity     Int
+  reason       String?
+  reference    String?
+  user_id      String
+  user_name    String
+  created_at   DateTime          @default(now())
+  stock        MedicationStock   @relation(fields: [stock_id], references: [id], onDelete: Cascade)
+
+  @@index([stock_id])
+  @@index([type])
+  @@index([created_at])
+}
+
+model Supplier {
+  id             Int              @id @default(autoincrement())
+  name           String           @unique
+  contact_person String?
+  email          String?
+  phone          String
+  address        String?
+  tax_id         String?
+  is_active      Boolean          @default(true)
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @updatedAt
+  stocks         MedicationStock[]
+  orders         PurchaseOrder[]
+
+  @@index([is_active])
+}
+
+model PurchaseOrder {
+  id            Int                 @id @default(autoincrement())
+  reference     String              @unique
+  supplier_id   Int
+  order_date    DateTime            @default(now())
+  expected_date DateTime?
+  received_date DateTime?
+  status        PurchaseOrderStatus @default(DRAFT)
+  total_amount  Float               @default(0)
+  notes         String?
+  created_by    String
+  created_at    DateTime            @default(now())
+  updated_at    DateTime            @updatedAt
+  supplier      Supplier            @relation(fields: [supplier_id], references: [id])
+  items         PurchaseOrderItem[]
+
+  @@index([supplier_id])
+  @@index([status])
+  @@index([order_date])
+}
+
+model PurchaseOrderItem {
+  id                Int           @id @default(autoincrement())
+  order_id          Int
+  medication_id     Int
+  quantity_ordered  Int
+  quantity_received Int           @default(0)
+  unit_cost         Float
+  total_cost        Float
+  order             PurchaseOrder @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  medication        Medication    @relation(fields: [medication_id], references: [id])
+
+  @@index([order_id])
+  @@index([medication_id])
+}
+
+model Dispensation {
+  id                Int                @id @default(autoincrement())
+  reference         String             @unique
+  patient_id        String
+  medical_record_id Int?
+  prescription_id   Int?
+  dispensed_by      String
+  dispensed_by_name String
+  dispensed_at      DateTime           @default(now())
+  notes             String?
+  total_amount      Float              @default(0)
+  status            DispensationStatus @default(DISPENSED)
+  created_at        DateTime           @default(now())
+  updated_at        DateTime           @updatedAt
+  patient           Patient            @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+  medical_record    MedicalRecords?    @relation(fields: [medical_record_id], references: [id], onDelete: SetNull)
+  prescription      Prescription?      @relation(fields: [prescription_id], references: [id], onDelete: SetNull)
+  items             DispensationItem[]
+
+  @@index([patient_id])
+  @@index([medical_record_id])
+  @@index([prescription_id])
+  @@index([dispensed_at])
+  @@index([status])
+}
+
+model DispensationItem {
+  id              Int             @id @default(autoincrement())
+  dispensation_id Int
+  stock_id        Int
+  medication_id   Int
+  quantity        Int
+  unit_price      Float
+  total_price     Float
+  instructions    String?
+  dispensation    Dispensation    @relation(fields: [dispensation_id], references: [id], onDelete: Cascade)
+  stock           MedicationStock @relation(fields: [stock_id], references: [id])
+  medication      Medication      @relation(fields: [medication_id], references: [id])
+
+  @@index([dispensation_id])
+  @@index([stock_id])
+  @@index([medication_id])
+}
+
+model Prescription {
+  id                Int                @id @default(autoincrement())
+  reference         String             @unique
+  patient_id        String
+  medical_record_id Int?
+  appointment_id    Int?
+  doctor_id         String
+  doctor_name       String
+  status            PrescriptionStatus @default(PENDING)
+  notes             String?
+  created_at        DateTime           @default(now())
+  updated_at        DateTime           @updatedAt
+  patient           Patient            @relation(fields: [patient_id], references: [id], onDelete: Cascade)
+  medical_record    MedicalRecords?    @relation(fields: [medical_record_id], references: [id], onDelete: SetNull)
+  doctor            Doctor             @relation(fields: [doctor_id], references: [id], onDelete: Cascade)
+  items             PrescriptionItem[]
+  dispensations     Dispensation[]
+
+  @@index([patient_id])
+  @@index([doctor_id])
+  @@index([medical_record_id])
+  @@index([status])
+  @@index([created_at])
+}
+
+model PrescriptionItem {
+  id                  Int          @id @default(autoincrement())
+  prescription_id     Int
+  medication_id       Int
+  quantity_prescribed Int
+  quantity_dispensed  Int          @default(0)
+  dosage              String
+  duration            String?
+  instructions        String?
+  prescription        Prescription @relation(fields: [prescription_id], references: [id], onDelete: Cascade)
+  medication          Medication   @relation(fields: [medication_id], references: [id])
+
+  @@index([prescription_id])
+  @@index([medication_id])
+}
+
+// ─────────────────────────────────────────
 // ENUMS
 // ─────────────────────────────────────────
 
@@ -412,6 +629,7 @@ enum Role {
   LAB_TECHNICIAN
   PATIENT
   CASHIER
+  PHARMACIST
 }
 
 enum Status {
@@ -502,4 +720,53 @@ enum NotificationType {
   RENDEZ_VOUS_ANNULE
   RENDEZ_VOUS_MODIFIE
   PAIEMENT_RECU
+  STOCK_BAS
+  MEDICAMENT_EXPIRE
+  DISPENSATION
+}
+
+enum MedicationForm {
+  COMPRIME
+  GELULE
+  SIROP
+  SUSPENSION
+  INJECTION
+  POMMADE
+  CREME
+  GOUTTE
+  SUPPOSITOIRE
+  PATCH
+  INHALATEUR
+  SACHET
+  AUTRE
+}
+
+enum StockMovementType {
+  IN
+  OUT
+  ADJUSTMENT
+  RETURN
+  EXPIRED
+  LOSS
+}
+
+enum PurchaseOrderStatus {
+  DRAFT
+  ORDERED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+}
+
+enum DispensationStatus {
+  DISPENSED
+  CANCELLED
+  RETURNED
+}
+
+enum PrescriptionStatus {
+  PENDING
+  PARTIALLY_DISPENSED
+  DISPENSED
+  CANCELLED
 }

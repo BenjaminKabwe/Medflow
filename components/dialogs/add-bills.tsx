@@ -23,6 +23,40 @@ import {
 import { Form } from "../ui/form";
 import { CustomInput } from "../custom-input";
 import { addNewBill } from "@/app/actions/medical";
+import { useLanguage } from "@/components/providers";
+
+const STR = {
+  fr: {
+    success: "Facture ajoutée avec succès !",
+    error: "Une erreur est survenue. Veuillez réessayer.",
+    trigger: "Ajouter une facture",
+    description: "Vérifiez les informations avant de valider la facturation.",
+    servicePh: "Sélectionner un service",
+    serviceLabel: "Nom du service",
+    unitCost: "Coût unitaire",
+    quantityPh: "Saisir la quantité",
+    quantity: "Quantité",
+    totalCost: "Coût total",
+    serviceDate: "Date du service",
+    submitting: "Envoi en cours...",
+    submit: "Soumettre",
+  },
+  en: {
+    success: "Bill added successfully!",
+    error: "An error occurred. Please try again.",
+    trigger: "Add a bill",
+    description: "Check the information before validating the billing.",
+    servicePh: "Select a service",
+    serviceLabel: "Service name",
+    unitCost: "Unit cost",
+    quantityPh: "Enter the quantity",
+    quantity: "Quantity",
+    totalCost: "Total cost",
+    serviceDate: "Service date",
+    submitting: "Sending...",
+    submit: "Submit",
+  },
+};
 
 interface DataProps {
   id?: string | number;
@@ -33,6 +67,8 @@ interface DataProps {
 export const AddBills = ({ id, appId, servicesData }: DataProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { lang } = useLanguage();
+  const t = STR[lang];
   const [data, setData] = useState<{ value: string; label: string }[]>([]);
 
   const form = useForm<z.infer<typeof PatientBillSchema>>({
@@ -54,7 +90,7 @@ export const AddBills = ({ id, appId, servicesData }: DataProps) => {
       const resp = await addNewBill(values);
 
       if (resp.success) {
-        toast.success("Facture ajoutée avec succès !");
+        toast.success(t.success);
         router.refresh();
         form.reset();
       } else if (resp.error) {
@@ -62,7 +98,7 @@ export const AddBills = ({ id, appId, servicesData }: DataProps) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error("Une erreur est survenue. Veuillez réessayer.");
+      toast.error(t.error);
     } finally {
       setIsLoading(false);
     }
@@ -105,14 +141,14 @@ export const AddBills = ({ id, appId, servicesData }: DataProps) => {
       <DialogTrigger asChild>
         <Button size="sm" className="text-sm font-normal">
           <Plus size={22} className="text-gray-400" />
-          Ajouter une facture
+          {t.trigger}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <CardHeader className="px-0">
-          <DialogTitle>Ajouter une facture</DialogTitle>
+          <DialogTitle>{t.trigger}</DialogTitle>
           <DialogDescription>
-            Vérifiez les informations avant de valider la facturation.
+            {t.description}
           </DialogDescription>
         </CardHeader>
 
@@ -126,8 +162,8 @@ export const AddBills = ({ id, appId, servicesData }: DataProps) => {
                 type="select"
                 control={form.control}
                 name="service_id"
-                placeholder="Sélectionner un service"
-                label="Nom du service"
+                placeholder={t.servicePh}
+                label={t.serviceLabel}
                 selectList={data!}
               />
               <CustomInput
@@ -135,7 +171,7 @@ export const AddBills = ({ id, appId, servicesData }: DataProps) => {
                 control={form.control}
                 name="unit_cost"
                 placeholder=""
-                label="Coût unitaire"
+                label={t.unitCost}
               />
             </div>
 
@@ -144,15 +180,15 @@ export const AddBills = ({ id, appId, servicesData }: DataProps) => {
                 type="input"
                 control={form.control}
                 name="quantity"
-                placeholder="Saisir la quantité"
-                label="Quantité"
+                placeholder={t.quantityPh}
+                label={t.quantity}
               />
               <CustomInput
                 type="input"
                 control={form.control}
                 name="total_cost"
                 placeholder="0.00"
-                label="Coût total"
+                label={t.totalCost}
               />
             </div>
 
@@ -160,7 +196,7 @@ export const AddBills = ({ id, appId, servicesData }: DataProps) => {
               type="input"
               control={form.control}
               name="service_date"
-              label="Date du service"
+              label={t.serviceDate}
               placeholder=""
               inputType="date"
             />
@@ -170,7 +206,7 @@ export const AddBills = ({ id, appId, servicesData }: DataProps) => {
               disabled={isLoading}
               className="bg-blue-600 w-full"
             >
-              {isLoading ? "Envoi en cours..." : "Soumettre"}
+              {isLoading ? t.submitting : t.submit}
             </Button>
           </form>
         </Form>

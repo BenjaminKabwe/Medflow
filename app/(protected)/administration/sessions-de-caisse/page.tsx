@@ -16,8 +16,58 @@ import { Role } from "@prisma/client";
 import { AdminCloseSessionButton } from "@/components/cashier/admin-close-session-button";
 import { getAllSessions } from "@/lib/sessions-caisse";
 import { SearchParamsProps } from "@/types";
+import { getLang } from "@/lib/i18n-server";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+const STR = {
+  fr: {
+    active: "Active",
+    closed: "Clôturée",
+    sessionN: (n: number) => `Session #${n}`,
+    payments: (n: number) => `${n} ${n !== 1 ? "paiements" : "paiement"}`,
+    viewDetails: "Voir détails",
+    title: "Sessions de Caisse",
+    summary: (total: number, active: number, closed: number) =>
+      `${total} session${total !== 1 ? "s" : ""} · ${active} active${active !== 1 ? "s" : ""} · ${closed} clôturée${closed !== 1 ? "s" : ""}`,
+    totalCollected: "Total encaissé",
+    totalSessions: "Total sessions",
+    activeSessions: "Sessions actives",
+    closedSessions: "Sessions clôturées",
+    totalPayments: "Paiements total",
+    allSessions: "Toutes les sessions",
+    activeSessionsOpt: "Sessions actives",
+    closedSessionsOpt: "Sessions clôturées",
+    filter: "Filtrer",
+    reset: "Réinitialiser",
+    noSessions: "Aucune session de caisse trouvée.",
+    noSessionsHint:
+      "Les sessions sont créées automatiquement lors du premier paiement validé, ou manuellement depuis le tableau de bord caissier.",
+  },
+  en: {
+    active: "Active",
+    closed: "Closed",
+    sessionN: (n: number) => `Session #${n}`,
+    payments: (n: number) => `${n} payment${n !== 1 ? "s" : ""}`,
+    viewDetails: "View details",
+    title: "Cashier Sessions",
+    summary: (total: number, active: number, closed: number) =>
+      `${total} session${total !== 1 ? "s" : ""} · ${active} active · ${closed} closed`,
+    totalCollected: "Total collected",
+    totalSessions: "Total sessions",
+    activeSessions: "Active sessions",
+    closedSessions: "Closed sessions",
+    totalPayments: "Total payments",
+    allSessions: "All sessions",
+    activeSessionsOpt: "Active sessions",
+    closedSessionsOpt: "Closed sessions",
+    filter: "Filter",
+    reset: "Reset",
+    noSessions: "No cashier session found.",
+    noSessionsHint:
+      "Sessions are created automatically on the first validated payment, or manually from the cashier dashboard.",
+  },
+} as const;
 
 const STATUS_STYLE: Record<string, string> = {
   OPEN:   "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
@@ -32,7 +82,8 @@ function totalEncaisse(session: { payments: { amount_paid: number }[] }) {
 
 type Session = Awaited<ReturnType<typeof getAllSessions>>[number];
 
-function SessionCard({ session, index }: { session: Session; index: number }) {
+async function SessionCard({ session, index }: { session: Session; index: number }) {
+  const t = STR[await getLang()];
   const total    = totalEncaisse(session);
   const isActive = session.status === "OPEN";
 
@@ -56,14 +107,14 @@ function SessionCard({ session, index }: { session: Session; index: number }) {
           <div>
             <div className="flex items-center gap-2">
               <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                Session #{index + 1}
+                {t.sessionN(index + 1)}
               </p>
               <span
                 className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                   STATUS_STYLE[session.status] ?? STATUS_STYLE.CLOSED
                 }`}
               >
-                {isActive ? "Active" : "Clôturée"}
+                {isActive ? t.active : t.closed}
               </span>
             </div>
             <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
@@ -82,8 +133,7 @@ function SessionCard({ session, index }: { session: Session; index: number }) {
             {total.toLocaleString("fr-CD")} USD
           </p>
           <p className="text-xs text-slate-400 dark:text-slate-500">
-            {session._count.payments}{" "}
-            {session._count.payments !== 1 ? "paiements" : "paiement"}
+            {t.payments(session._count.payments)}
           </p>
         </div>
       </div>
@@ -95,7 +145,7 @@ function SessionCard({ session, index }: { session: Session; index: number }) {
           className="flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-medium bg-slate-50 hover:bg-slate-100 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-colors"
         >
           <Eye className="w-3 h-3" />
-          Voir détails
+          {t.viewDetails}
         </Link>
         {isActive && <AdminCloseSessionButton sessionId={session.id} />}
       </div>
@@ -106,6 +156,7 @@ function SessionCard({ session, index }: { session: Session; index: number }) {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function SessionsDeCaissePage(props: SearchParamsProps) {
+  const t = STR[await getLang()];
   const user = await getCurrentUser();
   if (!user || user.role !== Role.ADMIN) redirect("/admin");
 
@@ -136,18 +187,16 @@ export default async function SessionsDeCaissePage(props: SearchParamsProps) {
           </div>
           <div>
             <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">
-              Sessions de Caisse
+              {t.title}
             </h1>
             <p className="text-xs text-slate-400 dark:text-slate-500">
-              {sessions.length} session{sessions.length !== 1 ? "s" : ""} ·{" "}
-              {activeCount} active{activeCount !== 1 ? "s" : ""} ·{" "}
-              {closedCount} clôturée{closedCount !== 1 ? "s" : ""}
+              {t.summary(sessions.length, activeCount, closedCount)}
             </p>
           </div>
         </div>
         <div className="rounded-xl border border-slate-100 dark:border-slate-800 px-4 py-2 text-right">
           <p className="text-[10px] text-slate-400 uppercase tracking-widest">
-            Total encaissé
+            {t.totalCollected}
           </p>
           <p className="text-base font-bold text-slate-800 dark:text-slate-100">
             {grandTotal.toLocaleString("fr-CD")} USD
@@ -158,28 +207,28 @@ export default async function SessionsDeCaissePage(props: SearchParamsProps) {
       {/* ── Stats cards ── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <StatCard
-          label="Total sessions"
+          label={t.totalSessions}
           value={sessions.length.toString()}
           Icon={LayoutList}
           color="text-blue-600 dark:text-blue-400"
           bg="bg-blue-50 dark:bg-blue-950/40"
         />
         <StatCard
-          label="Sessions actives"
+          label={t.activeSessions}
           value={activeCount.toString()}
           Icon={CheckCircle2}
           color="text-emerald-600 dark:text-emerald-400"
           bg="bg-emerald-50 dark:bg-emerald-950/40"
         />
         <StatCard
-          label="Sessions clôturées"
+          label={t.closedSessions}
           value={closedCount.toString()}
           Icon={XCircle}
           color="text-slate-500 dark:text-slate-400"
           bg="bg-slate-100 dark:bg-slate-800/50"
         />
         <StatCard
-          label="Paiements total"
+          label={t.totalPayments}
           value={totalPaiements.toString()}
           Icon={TrendingUp}
           color="text-violet-600 dark:text-violet-400"
@@ -194,9 +243,9 @@ export default async function SessionsDeCaissePage(props: SearchParamsProps) {
           defaultValue={statutParam ?? ""}
           className="h-9 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-700 dark:text-slate-200 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="">Toutes les sessions</option>
-          <option value="OPEN">Sessions actives</option>
-          <option value="CLOSED">Sessions clôturées</option>
+          <option value="">{t.allSessions}</option>
+          <option value="OPEN">{t.activeSessionsOpt}</option>
+          <option value="CLOSED">{t.closedSessionsOpt}</option>
         </select>
         <input
           type="date"
@@ -214,14 +263,14 @@ export default async function SessionsDeCaissePage(props: SearchParamsProps) {
           type="submit"
           className="h-9 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors"
         >
-          Filtrer
+          {t.filter}
         </button>
         {(statutParam || fromParam || toParam) && (
           <a
             href="/administration/sessions-de-caisse"
             className="h-9 px-4 rounded-lg border border-slate-200 dark:border-slate-700 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center transition-colors"
           >
-            Réinitialiser
+            {t.reset}
           </a>
         )}
       </form>
@@ -233,11 +282,10 @@ export default async function SessionsDeCaissePage(props: SearchParamsProps) {
             <Banknote className="w-6 h-6 text-slate-400" />
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Aucune session de caisse trouvée.
+            {t.noSessions}
           </p>
           <p className="text-xs text-slate-400 dark:text-slate-500 text-center max-w-xs">
-            Les sessions sont créées automatiquement lors du premier paiement validé,
-            ou manuellement depuis le tableau de bord caissier.
+            {t.noSessionsHint}
           </p>
         </div>
       ) : (

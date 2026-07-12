@@ -14,15 +14,34 @@ import { CalendarDays } from "lucide-react";
 import React from "react";
 import { Pagination } from "@/components/pagination";
 import { AppointmentContainer } from "@/components/appointment-container";
+import { getLang } from "@/lib/i18n-server";
 
-const columns = [
-  { header: "Patient",  key: "name" },
-  { header: "Date",     key: "appointment_date", className: "hidden md:table-cell" },
-  { header: "Heure",    key: "time",             className: "hidden md:table-cell" },
-  { header: "Médecin",  key: "doctor",           className: "hidden md:table-cell" },
-  { header: "Statut",   key: "status",           className: "hidden xl:table-cell" },
-  { header: "Actions",  key: "action" },
-];
+const STR = {
+  fr: {
+    colPatient: "Patient",
+    colDate: "Date",
+    colTime: "Heure",
+    colDoctor: "Médecin",
+    colStatus: "Statut",
+    colActions: "Actions",
+    male: "Homme",
+    female: "Femme",
+    title: "Rendez-vous",
+    total: "au total",
+  },
+  en: {
+    colPatient: "Patient",
+    colDate: "Date",
+    colTime: "Time",
+    colDoctor: "Doctor",
+    colStatus: "Status",
+    colActions: "Actions",
+    male: "Male",
+    female: "Female",
+    title: "Appointments",
+    total: "in total",
+  },
+};
 
 interface DataProps extends Appointment {
   patient: Patient;
@@ -36,6 +55,16 @@ const Appointments = async (props: {
   const userRole = await getRole();
   const { userId } = await auth();
   const isPatient = await checkRole("PATIENT");
+  const t = STR[await getLang()];
+
+  const columns = [
+    { header: t.colPatient, key: "name" },
+    { header: t.colDate, key: "appointment_date", className: "hidden md:table-cell" },
+    { header: t.colTime, key: "time", className: "hidden md:table-cell" },
+    { header: t.colDoctor, key: "doctor", className: "hidden md:table-cell" },
+    { header: t.colStatus, key: "status", className: "hidden xl:table-cell" },
+    { header: t.colActions, key: "action" },
+  ];
 
   const page = (searchParams?.p || "1") as string;
   const searchQuery = searchParams?.q || "";
@@ -59,8 +88,8 @@ const Appointments = async (props: {
   const renderItem = (item: DataProps) => {
     const patient_name = `${item?.patient?.first_name} ${item?.patient?.last_name}`;
     const gender =
-      item?.patient?.gender === "MALE" ? "Homme"
-      : item?.patient?.gender === "FEMALE" ? "Femme"
+      item?.patient?.gender === "MALE" ? t.male
+      : item?.patient?.gender === "FEMALE" ? t.female
       : String(item?.patient?.gender ?? "").toLowerCase();
 
     return (
@@ -142,12 +171,12 @@ const Appointments = async (props: {
           </div>
           <div>
             <p className="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">
-              Rendez-vous
+              {t.title}
             </p>
             <p className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-none">
               {totalRecord ?? 0}{" "}
               <span className="text-sm font-normal text-slate-400 dark:text-slate-500">
-                au total
+                {t.total}
               </span>
             </p>
           </div>

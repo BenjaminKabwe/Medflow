@@ -1,8 +1,80 @@
 import db from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { fr, enUS } from "date-fns/locale";
 import { CalendarDays, Stethoscope, ShieldCheck } from "lucide-react";
+import { getLang } from "@/lib/i18n-server";
+
+const STR = {
+  fr: {
+    generalPrescription: "Prescription générale",
+    myPrescriptions: "Mes ordonnances",
+    prescriptionsCount: (n: number) => `ordonnance${n !== 1 ? "s" : ""}`,
+    secureRecord: "Dossier médical sécurisé",
+    noPrescription: "Aucune ordonnance",
+    noPrescriptionDesc:
+      "Vos ordonnances médicales apparaîtront ici après vos consultations.",
+    prescribedTreatment: "Traitement prescrit",
+    prescriptionNum: (n: string) => `Ordonnance n°${n}`,
+    footer: "Dossier électronique",
+    specializations: {
+      cardiologist: "Cardiologue",
+      dermatologist: "Dermatologue",
+      gastroenterologist: "Gastro-entérologue",
+      neurologist: "Neurologue",
+      orthopedist: "Orthopédiste",
+      pediatrician: "Pédiatre",
+      psychiatrist: "Psychiatre",
+      gynecologist: "Gynécologue",
+      ophthalmologist: "Ophtalmologue",
+      urologist: "Urologue",
+      oncologist: "Oncologue",
+      general_practitioner: "Médecin généraliste",
+      radiologist: "Radiologue",
+      anesthesiologist: "Anesthésiste",
+      surgeon: "Chirurgien",
+      endocrinologist: "Endocrinologue",
+      nephrologist: "Néphrologue",
+      pulmonologist: "Pneumologue",
+      rheumatologist: "Rhumatologue",
+      hematologist: "Hématologue",
+    } as Record<string, string>,
+  },
+  en: {
+    generalPrescription: "General prescription",
+    myPrescriptions: "My prescriptions",
+    prescriptionsCount: (n: number) => `prescription${n !== 1 ? "s" : ""}`,
+    secureRecord: "Secure medical record",
+    noPrescription: "No prescription",
+    noPrescriptionDesc:
+      "Your medical prescriptions will appear here after your consultations.",
+    prescribedTreatment: "Prescribed treatment",
+    prescriptionNum: (n: string) => `Prescription no.${n}`,
+    footer: "Electronic record",
+    specializations: {
+      cardiologist: "Cardiologist",
+      dermatologist: "Dermatologist",
+      gastroenterologist: "Gastroenterologist",
+      neurologist: "Neurologist",
+      orthopedist: "Orthopedist",
+      pediatrician: "Pediatrician",
+      psychiatrist: "Psychiatrist",
+      gynecologist: "Gynecologist",
+      ophthalmologist: "Ophthalmologist",
+      urologist: "Urologist",
+      oncologist: "Oncologist",
+      general_practitioner: "General practitioner",
+      radiologist: "Radiologist",
+      anesthesiologist: "Anesthesiologist",
+      surgeon: "Surgeon",
+      endocrinologist: "Endocrinologist",
+      nephrologist: "Nephrologist",
+      pulmonologist: "Pulmonologist",
+      rheumatologist: "Rheumatologist",
+      hematologist: "Hematologist",
+    } as Record<string, string>,
+  },
+};
 
 /* ── Parse medication text into individual lines ─────────────────────────── */
 function parseMedications(text: string): string[] {
@@ -27,32 +99,14 @@ function Initials({ name }: { name: string }) {
   );
 }
 
-const SPECIALIZATION_FR: Record<string, string> = {
-  cardiologist: "Cardiologue",
-  dermatologist: "Dermatologue",
-  gastroenterologist: "Gastro-entérologue",
-  neurologist: "Neurologue",
-  orthopedist: "Orthopédiste",
-  pediatrician: "Pédiatre",
-  psychiatrist: "Psychiatre",
-  gynecologist: "Gynécologue",
-  ophthalmologist: "Ophtalmologue",
-  urologist: "Urologue",
-  oncologist: "Oncologue",
-  general_practitioner: "Médecin généraliste",
-  radiologist: "Radiologue",
-  anesthesiologist: "Anesthésiste",
-  surgeon: "Chirurgien",
-  endocrinologist: "Endocrinologue",
-  nephrologist: "Néphrologue",
-  pulmonologist: "Pneumologue",
-  rheumatologist: "Rhumatologue",
-  hematologist: "Hématologue",
-};
-
 const PrescriptionPage = async () => {
   const { userId } = await auth();
   if (!userId) return null;
+
+  const lang = await getLang();
+  const t = STR[lang];
+  const dateLocale = lang === "en" ? enUS : fr;
+  const SPECIALIZATION_FR = t.specializations;
 
   const [diagnoses, medRecords] = await Promise.all([
     db.diagnosis.findMany({
@@ -113,7 +167,7 @@ const PrescriptionPage = async () => {
       date: r.created_at,
       doctorId: r.doctor_id,
       text: r.prescriptions!,
-      label: "Prescription générale",
+      label: t.generalPrescription,
       source: "record" as const,
       index: 0,
     })),
@@ -125,7 +179,7 @@ const PrescriptionPage = async () => {
     <div className="flex flex-col gap-6">
 
       {/* ── Header ──────────────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 to-slate-950 rounded-2xl border border-slate-800 p-6 shadow-xl">
+      <div className="relative overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xl">
         {/* decorative Rx watermark */}
         <span
           aria-hidden
@@ -139,19 +193,19 @@ const PrescriptionPage = async () => {
         <div className="relative flex items-end justify-between gap-4 flex-wrap">
           <div>
             <p className="text-xs text-amber-500/80 uppercase tracking-[0.2em] font-semibold mb-1">
-              Mes ordonnances
+              {t.myPrescriptions}
             </p>
             <div className="flex items-baseline gap-3">
               <span
-                className="text-5xl text-amber-400 leading-none"
+                className="text-5xl text-amber-600 dark:text-amber-400 leading-none"
                 style={{ fontFamily: "var(--font-instrument-serif)" }}
               >
                 ℞
               </span>
-              <h1 className="text-3xl font-bold text-white leading-none">
+              <h1 className="text-3xl font-bold text-slate-900 dark:text-white leading-none">
                 {entries.length}
-                <span className="text-base font-normal text-slate-400 ml-2">
-                  ordonnance{entries.length !== 1 ? "s" : ""}
+                <span className="text-base font-normal text-slate-500 dark:text-slate-400 ml-2">
+                  {t.prescriptionsCount(entries.length)}
                 </span>
               </h1>
             </div>
@@ -160,7 +214,7 @@ const PrescriptionPage = async () => {
           {entries.length > 0 && (
             <div className="flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-3 py-1.5">
               <ShieldCheck className="w-3.5 h-3.5" />
-              Dossier médical sécurisé
+              {t.secureRecord}
             </div>
           )}
         </div>
@@ -168,18 +222,18 @@ const PrescriptionPage = async () => {
 
       {/* ── Empty state ─────────────────────────────────────────────────────── */}
       {entries.length === 0 && (
-        <div className="bg-slate-900 rounded-2xl border border-slate-800 p-16 flex flex-col items-center text-center">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-16 flex flex-col items-center text-center">
           <div
-            className="text-7xl text-slate-700 mb-4 leading-none"
+            className="text-7xl text-slate-300 dark:text-slate-700 mb-4 leading-none"
             style={{ fontFamily: "var(--font-instrument-serif)" }}
           >
             ℞
           </div>
-          <h2 className="text-base font-semibold text-slate-400 mb-1">
-            Aucune ordonnance
+          <h2 className="text-base font-semibold text-slate-500 dark:text-slate-400 mb-1">
+            {t.noPrescription}
           </h2>
           <p className="text-sm text-slate-500 max-w-xs">
-            Vos ordonnances médicales apparaîtront ici après vos consultations.
+            {t.noPrescriptionDesc}
           </p>
         </div>
       )}
@@ -197,7 +251,7 @@ const PrescriptionPage = async () => {
             return (
               <div
                 key={entry.key}
-                className="group relative bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden
+                className="group relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden
                            shadow-lg hover:border-amber-500/30 transition-all duration-300"
               >
                 {/* amber left stripe */}
@@ -222,14 +276,14 @@ const PrescriptionPage = async () => {
 
                       <div className="min-w-0">
                         {doctor && (
-                          <p className="text-sm font-semibold text-white leading-tight">
+                          <p className="text-sm font-semibold text-slate-900 dark:text-white leading-tight">
                             Dr. {doctor.name}
                           </p>
                         )}
                         {specFr && (
                           <div className="flex items-center gap-1 mt-0.5">
                             <Stethoscope className="w-3 h-3 text-slate-500 flex-shrink-0" />
-                            <p className="text-xs text-slate-400">{specFr}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{specFr}</p>
                           </div>
                         )}
                         {entry.source === "diagnosis" && (
@@ -241,24 +295,24 @@ const PrescriptionPage = async () => {
                     </div>
 
                     {/* date badge */}
-                    <div className="flex-shrink-0 flex items-center gap-1.5 bg-slate-800 border border-slate-700
-                                    rounded-xl px-3 py-1.5 text-xs text-slate-300">
-                      <CalendarDays className="w-3.5 h-3.5 text-amber-400" />
-                      {format(entry.date, "d MMM yyyy", { locale: fr })}
+                    <div className="flex-shrink-0 flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700
+                                    rounded-xl px-3 py-1.5 text-xs text-slate-600 dark:text-slate-300">
+                      <CalendarDays className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                      {format(entry.date, "d MMM yyyy", { locale: dateLocale })}
                     </div>
                   </div>
 
                   {/* ── Divider with Rx label ──────────────────────────────── */}
                   <div className="flex items-center gap-3 mb-4">
                     <span
-                      className="text-base text-amber-400/70 leading-none flex-shrink-0"
+                      className="text-base text-amber-600/70 dark:text-amber-400/70 leading-none flex-shrink-0"
                       style={{ fontFamily: "var(--font-instrument-serif)" }}
                     >
                       ℞
                     </span>
-                    <div className="h-px flex-1 bg-gradient-to-r from-slate-700 to-transparent" />
-                    <span className="text-[10px] uppercase tracking-widest text-slate-600 flex-shrink-0">
-                      Traitement prescrit
+                    <div className="h-px flex-1 bg-gradient-to-r from-slate-200 dark:from-slate-700 to-transparent" />
+                    <span className="text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-600 flex-shrink-0">
+                      {t.prescribedTreatment}
                     </span>
                   </div>
 
@@ -267,8 +321,8 @@ const PrescriptionPage = async () => {
                     {meds.map((med, i) => (
                       <div
                         key={i}
-                        className="flex items-start gap-3 bg-slate-800/60 border border-slate-700/50
-                                   rounded-xl px-4 py-3 hover:bg-slate-800 transition-colors duration-150"
+                        className="flex items-start gap-3 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/50
+                                   rounded-xl px-4 py-3 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors duration-150"
                       >
                         <span
                           className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-500/15 border border-amber-500/25
@@ -276,19 +330,19 @@ const PrescriptionPage = async () => {
                         >
                           {i + 1}
                         </span>
-                        <p className="text-sm text-slate-200 leading-relaxed">{med}</p>
+                        <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">{med}</p>
                       </div>
                     ))}
                   </div>
 
                   {/* ── Footer ────────────────────────────────────────────── */}
-                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-800">
-                    <p className="text-[10px] uppercase tracking-widest text-slate-600">
-                      Ordonnance n°{String(entry.index).padStart(3, "0")}
+                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-200 dark:border-slate-800">
+                    <p className="text-[10px] uppercase tracking-widest text-slate-400 dark:text-slate-600">
+                      {t.prescriptionNum(String(entry.index).padStart(3, "0"))}
                     </p>
-                    <div className="flex items-center gap-1 text-[10px] text-slate-600">
+                    <div className="flex items-center gap-1 text-[10px] text-slate-400 dark:text-slate-600">
                       <ShieldCheck className="w-3 h-3" />
-                      MedFlow · Dossier électronique
+                      MedFlow · {t.footer}
                     </div>
                   </div>
                 </div>

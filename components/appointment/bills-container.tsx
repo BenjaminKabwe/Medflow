@@ -4,48 +4,47 @@ import { ReceiptText } from "lucide-react";
 import { Table } from "../tables/table";
 import { PatientBills } from "@prisma/client";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { fr, enUS } from "date-fns/locale";
 import { ActionDialog } from "../action-dialog";
 import { Separator } from "../ui/separator";
 import { AddBills } from "../dialogs/add-bills";
 import { GenerateFinalBills } from "./generate-final-bill";
+import { getLang } from "@/lib/i18n-server";
 
-const columns = [
-  {
-    header: "N°",
-    key: "no",
-    className: "hidden md:table-cell",
+const STR = {
+  fr: {
+    colNo: "N°",
+    colService: "Service",
+    colDate: "Date",
+    colQty: "Quantité",
+    colPrice: "Prix unitaire",
+    colTotal: "Coût total",
+    colAction: "Action",
+    title: "Factures du patient",
+    billsTotal: (n: number) => `facture${n !== 1 ? "s" : ""} au total`,
+    total: "Total",
+    discount: "Remise",
+    payable: "Montant payable",
+    paid: "Montant payé",
+    unpaid: "Montant impayé",
   },
-  {
-    header: "Service",
-    key: "service",
+  en: {
+    colNo: "No.",
+    colService: "Service",
+    colDate: "Date",
+    colQty: "Quantity",
+    colPrice: "Unit price",
+    colTotal: "Total cost",
+    colAction: "Action",
+    title: "Patient bills",
+    billsTotal: (n: number) => `bill${n !== 1 ? "s" : ""} in total`,
+    total: "Total",
+    discount: "Discount",
+    payable: "Amount payable",
+    paid: "Amount paid",
+    unpaid: "Amount unpaid",
   },
-  {
-    header: "Date",
-    key: "date",
-    className: "",
-  },
-  {
-    header: "Quantité",
-    key: "qnty",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Prix unitaire",
-    key: "price",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Coût total",
-    key: "total",
-    className: "",
-  },
-  {
-    header: "Action",
-    key: "action",
-    className: "hidden xl:table-cell",
-  },
-];
+};
 
 interface ExtendedBillProps extends PatientBills {
   service: {
@@ -55,6 +54,20 @@ interface ExtendedBillProps extends PatientBills {
 }
 
 export const BillsContainer = async ({ id }: { id: string }) => {
+  const lang = await getLang();
+  const t = STR[lang];
+  const dateLocale = lang === "en" ? enUS : fr;
+
+  const columns = [
+    { header: t.colNo, key: "no", className: "hidden md:table-cell" },
+    { header: t.colService, key: "service" },
+    { header: t.colDate, key: "date", className: "" },
+    { header: t.colQty, key: "qnty", className: "hidden md:table-cell" },
+    { header: t.colPrice, key: "price", className: "hidden md:table-cell" },
+    { header: t.colTotal, key: "total", className: "" },
+    { header: t.colAction, key: "action", className: "hidden xl:table-cell" },
+  ];
+
   const [data, servicesData] = await Promise.all([
     db.payment.findFirst({
       where: { appointment_id: Number(id) },
@@ -88,7 +101,7 @@ export const BillsContainer = async ({ id }: { id: string }) => {
       >
         <td className="hidden md:table-cell py-2 xl:py-6"># {item?.id}</td>
         <td className="items-center py-2">{item?.service?.service_name}</td>
-        <td className="">{format(item?.service_date, "d MMM yyyy", { locale: fr })}</td>
+        <td className="">{format(item?.service_date, "d MMM yyyy", { locale: dateLocale })}</td>
         <td className="hidden items-center py-2 md:table-cell">{item?.quantity}</td>
         <td className="hidden lg:table-cell">{item?.unit_cost.toFixed(2)}</td>
         <td>{item?.total_cost.toFixed(2)}</td>
@@ -108,7 +121,7 @@ export const BillsContainer = async ({ id }: { id: string }) => {
       <div className="w-full flex flex-col md:flex-row md:items-center justify-between mb-6">
         <div>
           <h1 className="font-semibold text-xl text-slate-800 dark:text-slate-100">
-            Factures du patient
+            {t.title}
           </h1>
           <div className="hidden lg:flex items-center gap-1">
             <ReceiptText size={20} className="text-gray-500 dark:text-slate-400" />
@@ -116,7 +129,7 @@ export const BillsContainer = async ({ id }: { id: string }) => {
               {billData?.length}
             </p>
             <span className="text-gray-600 dark:text-slate-400 text-sm xl:text-base">
-              facture{billData?.length !== 1 ? "s" : ""} au total
+              {t.billsTotal(billData?.length)}
             </span>
           </div>
         </div>
@@ -134,15 +147,15 @@ export const BillsContainer = async ({ id }: { id: string }) => {
       <Separator className="dark:bg-slate-700" />
 
       <div className="flex flex-wrap lg:flex-nowrap items-center justify-between md:text-center py-2 space-y-6">
-        <SummaryItem label="Total" value={totalBills.toFixed(2)} />
+        <SummaryItem label={t.total} value={totalBills.toFixed(2)} />
         <SummaryItem
-          label="Remise"
+          label={t.discount}
           value={`${discountAmount.toFixed(2)} (${discountPct.toFixed(2)}%)`}
           color="yellow"
         />
-        <SummaryItem label="Montant payable" value={payable.toFixed(2)} />
-        <SummaryItem label="Montant payé"    value={amountPaid.toFixed(2)}   color="green" />
-        <SummaryItem label="Montant impayé"  value={amountUnpaid.toFixed(2)} color="red"   />
+        <SummaryItem label={t.payable} value={payable.toFixed(2)} />
+        <SummaryItem label={t.paid}    value={amountPaid.toFixed(2)}   color="green" />
+        <SummaryItem label={t.unpaid}  value={amountUnpaid.toFixed(2)} color="red"   />
       </div>
     </div>
   );

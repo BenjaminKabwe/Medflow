@@ -7,6 +7,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import React from "react";
+import { getLang } from "@/lib/i18n-server";
+
+const STR = {
+  fr: { title: "Historique médical", desc: "Historique médical du patient" },
+  en: { title: "Medical history", desc: "Patient's medical history" },
+};
 
 interface DataProps {
   id: string | number;
@@ -21,6 +27,7 @@ export const MedicalHistoryDialog = async ({
   doctor_id,
   label,
 }: DataProps) => {
+  const t = STR[await getLang()];
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -32,9 +39,9 @@ export const MedicalHistoryDialog = async ({
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[90%] max-w-[425px] md:max-w-2xl 2xl:max-w-4xl p-8 overflow-y-auto">
-        <DialogTitle className="sr-only">Historique médical</DialogTitle>
+        <DialogTitle className="sr-only">{t.title}</DialogTitle>
         <DialogDescription className="sr-only">
-          Historique médical du patient
+          {t.desc}
         </DialogDescription>
         {/* <DiagnosisContainer
           id={id}

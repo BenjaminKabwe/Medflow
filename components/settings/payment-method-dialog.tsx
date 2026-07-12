@@ -30,6 +30,50 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { updatePaymentMethodConfig } from "@/app/actions/payment-methods";
 import type { PaymentMethodConfigRow } from "@/types";
+import { useLanguage } from "@/components/providers";
+
+const STR = {
+  fr: {
+    error: "Une erreur est survenue. Veuillez réessayer.",
+    configure: "Configurer",
+    configuration: "Configuration",
+    description:
+      "Personnalisez le libellé, la description et les frais de ce mode de paiement.",
+    labelLabel: "Libellé affiché",
+    labelPh: "Ex : Espèces",
+    descLabel: "Description",
+    descPh: "Description affichée au caissier…",
+    fees: "Frais de transaction",
+    activeOperators: "Opérateurs actifs",
+    acceptedProviders: "Organismes acceptés",
+    coverage: (n: number) => `${n}% prise en charge`,
+    activeMode: "Mode actif",
+    activeModeDesc: "Les caissiers peuvent utiliser ce mode à l'encaissement",
+    cancel: "Annuler",
+    saving: "Enregistrement…",
+    save: "Enregistrer",
+  },
+  en: {
+    error: "An error occurred. Please try again.",
+    configure: "Configure",
+    configuration: "Configuration",
+    description:
+      "Customize the label, description and fees of this payment method.",
+    labelLabel: "Displayed label",
+    labelPh: "E.g. Cash",
+    descLabel: "Description",
+    descPh: "Description shown to the cashier…",
+    fees: "Transaction fees",
+    activeOperators: "Active operators",
+    acceptedProviders: "Accepted providers",
+    coverage: (n: number) => `${n}% coverage`,
+    activeMode: "Active method",
+    activeModeDesc: "Cashiers can use this method at checkout",
+    cancel: "Cancel",
+    saving: "Saving…",
+    save: "Save",
+  },
+};
 
 // ─── Metadata sub-types ───────────────────────────────────────────────────────
 
@@ -83,6 +127,8 @@ interface PaymentMethodDialogProps {
 export function PaymentMethodDialog({ config }: PaymentMethodDialogProps) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { lang } = useLanguage();
+  const t = STR[lang];
   const { operators, providers } = parseMeta(config.metadata);
 
   const form = useForm<ConfigFormValues>({
@@ -132,7 +178,7 @@ export function PaymentMethodDialog({ config }: PaymentMethodDialogProps) {
         toast.error(result.message);
       }
     } catch {
-      toast.error("Une erreur est survenue. Veuillez réessayer.");
+      toast.error(t.error);
     } finally {
       setIsLoading(false);
     }
@@ -147,21 +193,20 @@ export function PaymentMethodDialog({ config }: PaymentMethodDialogProps) {
           className="gap-1.5 text-xs h-8 px-3 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/60"
         >
           <Settings className="w-3.5 h-3.5" />
-          Configurer
+          {t.configure}
         </Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            Configuration
+            {t.configuration}
             <span className="text-xs font-mono font-medium px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
               {config.method}
             </span>
           </DialogTitle>
           <DialogDescription>
-            Personnalisez le libellé, la description et les frais de ce mode de
-            paiement.
+            {t.description}
           </DialogDescription>
         </DialogHeader>
 
@@ -176,9 +221,9 @@ export function PaymentMethodDialog({ config }: PaymentMethodDialogProps) {
               name="label"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Libellé affiché</FormLabel>
+                  <FormLabel>{t.labelLabel}</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="Ex : Espèces" />
+                    <Input {...field} placeholder={t.labelPh} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -191,11 +236,11 @@ export function PaymentMethodDialog({ config }: PaymentMethodDialogProps) {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t.descLabel}</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
-                      placeholder="Description affichée au caissier…"
+                      placeholder={t.descPh}
                       rows={2}
                       className="resize-none"
                     />
@@ -211,7 +256,7 @@ export function PaymentMethodDialog({ config }: PaymentMethodDialogProps) {
               name="fees"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Frais de transaction</FormLabel>
+                  <FormLabel>{t.fees}</FormLabel>
                   <FormControl>
                     <div className="flex items-center border border-input rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
                       <Input
@@ -239,7 +284,7 @@ export function PaymentMethodDialog({ config }: PaymentMethodDialogProps) {
                 name="activeOperators"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Opérateurs actifs</FormLabel>
+                    <FormLabel>{t.activeOperators}</FormLabel>
                     <div className="space-y-2.5 mt-1 rounded-lg border border-slate-100 dark:border-slate-800 p-3">
                       {operators.map((op) => {
                         const checked = field.value?.includes(op.code) ?? false;
@@ -285,7 +330,7 @@ export function PaymentMethodDialog({ config }: PaymentMethodDialogProps) {
                 name="activeProviders"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Organismes acceptés</FormLabel>
+                    <FormLabel>{t.acceptedProviders}</FormLabel>
                     <div className="space-y-2.5 mt-1 rounded-lg border border-slate-100 dark:border-slate-800 p-3">
                       {providers.map((p) => {
                         const checked = field.value?.includes(p.code) ?? false;
@@ -310,7 +355,7 @@ export function PaymentMethodDialog({ config }: PaymentMethodDialogProps) {
                               {p.name}
                               {p.coveragePercent != null && (
                                 <span className="ml-2 text-[11px] text-slate-400 dark:text-slate-500">
-                                  {p.coveragePercent}% prise en charge
+                                  {t.coverage(p.coveragePercent)}
                                 </span>
                               )}
                             </Label>
@@ -332,10 +377,10 @@ export function PaymentMethodDialog({ config }: PaymentMethodDialogProps) {
                 <FormItem className="flex items-center justify-between rounded-xl border border-slate-100 dark:border-slate-800 p-3.5">
                   <div className="space-y-0.5">
                     <FormLabel className="text-sm font-medium">
-                      Mode actif
+                      {t.activeMode}
                     </FormLabel>
                     <p className="text-xs text-muted-foreground">
-                      Les caissiers peuvent utiliser ce mode à l'encaissement
+                      {t.activeModeDesc}
                     </p>
                   </div>
                   <FormControl>
@@ -358,14 +403,14 @@ export function PaymentMethodDialog({ config }: PaymentMethodDialogProps) {
                 onClick={() => setOpen(false)}
                 disabled={isLoading}
               >
-                Annuler
+                {t.cancel}
               </Button>
               <Button
                 type="submit"
                 disabled={isLoading}
                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
               >
-                {isLoading ? "Enregistrement…" : "Enregistrer"}
+                {isLoading ? t.saving : t.save}
               </Button>
             </div>
           </form>

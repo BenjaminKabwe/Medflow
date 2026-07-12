@@ -3,12 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_OPTIONS='--dns-result-order=ipv4first' next dev",
-    "build": "NODE_OPTIONS='--dns-result-order=ipv4first' next build",
-    "start": "NODE_OPTIONS='--dns-result-order=ipv4first' next start",
+    "dev": "NODE_OPTIONS='--dns-result-order=ipv6first' next dev",
+    "build": "prisma generate && NODE_OPTIONS='--dns-result-order=ipv6first' next build",
+    "postinstall": "prisma generate",
+    "start": "NODE_OPTIONS='--dns-result-order=ipv6first' next start",
     "lint": "next lint",
-    "migrate:dev": "npx tsx scripts/migrate.ts",
-    "migrate:deploy": "npx tsx scripts/migrate.ts --deploy"
+    "migrate:dev": "NODE_OPTIONS='--dns-result-order=ipv6first' npx tsx scripts/migrate.ts",
+    "migrate:deploy": "NODE_OPTIONS='--dns-result-order=ipv6first' npx tsx scripts/migrate.ts --deploy",
+    "desktop": "tauri dev",
+    "desktop:build": "tauri build",
+    "tauri": "tauri"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
@@ -50,6 +54,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2.11.4",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",

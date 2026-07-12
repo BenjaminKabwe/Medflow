@@ -18,6 +18,46 @@ import { Textarea } from "./ui/textarea";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { appointmentAction } from "@/app/actions/appointment";
+import { useLanguage } from "@/components/providers";
+
+const STR = {
+  fr: {
+    provideReason: "Veuillez indiquer un motif d'annulation.",
+    errorGeneric: "Une erreur est survenue. Veuillez réessayer.",
+    autoReason: (approved: boolean, date: string) =>
+      `Rendez-vous ${approved ? "planifié" : "annulé"} le ${date}`,
+    approve: "Approuver",
+    cancel: "Annuler",
+    confirmTitle: "Confirmation du rendez-vous",
+    cancelTitle: "Annulation du rendez-vous",
+    confirmDesc:
+      "Vous êtes sur le point de confirmer ce rendez-vous. Oui pour approuver ou Non pour annuler.",
+    cancelDesc: "Êtes-vous sûr de vouloir annuler ce rendez-vous ?",
+    reasonPh: "Motif de l'annulation...",
+    yesApprove: "Oui, approuver",
+    yesCancel: "Oui, annuler",
+    no: "Non",
+    dateLocale: "fr-FR",
+  },
+  en: {
+    provideReason: "Please provide a cancellation reason.",
+    errorGeneric: "An error occurred. Please try again.",
+    autoReason: (approved: boolean, date: string) =>
+      `Appointment ${approved ? "scheduled" : "cancelled"} on ${date}`,
+    approve: "Approve",
+    cancel: "Cancel",
+    confirmTitle: "Appointment confirmation",
+    cancelTitle: "Appointment cancellation",
+    confirmDesc:
+      "You are about to confirm this appointment. Yes to approve or No to cancel.",
+    cancelDesc: "Are you sure you want to cancel this appointment?",
+    reasonPh: "Cancellation reason...",
+    yesApprove: "Yes, approve",
+    yesCancel: "Yes, cancel",
+    no: "No",
+    dateLocale: "en-GB",
+  },
+};
 
 interface ActionsProps {
   type: "approve" | "cancel";
@@ -33,10 +73,12 @@ export const AppointmentActionDialog = ({
   const [isLoading, setIsLoading] = useState(false);
   const [reason, setReason] = useState("");
   const router = useRouter();
+  const { lang } = useLanguage();
+  const t = STR[lang];
 
   const handleAction = async () => {
     if (type === "cancel" && !reason) {
-      toast.error("Veuillez indiquer un motif d'annulation.");
+      toast.error(t.provideReason);
       return;
     }
 
@@ -44,9 +86,10 @@ export const AppointmentActionDialog = ({
       setIsLoading(true);
       const newReason =
         reason ||
-        `Rendez-vous ${
-          type === "approve" ? "planifié" : "annulé"
-        } le ${new Date().toLocaleDateString("fr-FR")}`;
+        t.autoReason(
+          type === "approve",
+          new Date().toLocaleDateString(t.dateLocale)
+        );
 
       const resp = await appointmentAction(
         id,
@@ -63,7 +106,7 @@ export const AppointmentActionDialog = ({
       }
     } catch (error) {
       console.log(error);
-      toast.error("Une erreur est survenue. Veuillez réessayer.");
+      toast.error(t.errorGeneric);
     } finally {
       setIsLoading(false);
     }
@@ -74,7 +117,7 @@ export const AppointmentActionDialog = ({
       <DialogTrigger asChild disabled={!disabled}>
         {type === "approve" ? (
           <Button size="sm" variant="ghost" className="w-full justify-start">
-            <Check size={16} /> Approuver
+            <Check size={16} /> {t.approve}
           </Button>
         ) : (
           <Button
@@ -82,7 +125,7 @@ export const AppointmentActionDialog = ({
             variant="outline"
             className="w-full flex items-center justify-start gap-2 rounded-full text-red-500 disabled:cursor-not-allowed"
           >
-            <Ban size={16} /> Annuler
+            <Ban size={16} /> {t.cancel}
           </Button>
         )}
       </DialogTrigger>
@@ -102,19 +145,17 @@ export const AppointmentActionDialog = ({
           </DialogTitle>
 
           <span className="text-xl text-black">
-            {type === "approve" ? "Confirmation du rendez-vous" : "Annulation du rendez-vous"}
+            {type === "approve" ? t.confirmTitle : t.cancelTitle}
           </span>
           <DialogDescription className="text-sm text-center text-gray-500">
-            {type === "approve"
-              ? "Vous êtes sur le point de confirmer ce rendez-vous. Oui pour approuver ou Non pour annuler."
-              : "Êtes-vous sûr de vouloir annuler ce rendez-vous ?"}
+            {type === "approve" ? t.confirmDesc : t.cancelDesc}
           </DialogDescription>
 
           {type == "cancel" && (
             <Textarea
               disabled={isLoading}
               className="mt-4"
-              placeholder="Motif de l'annulation..."
+              placeholder={t.reasonPh}
               onChange={(e) => setReason(e.target.value)}
             ></Textarea>
           )}
@@ -131,14 +172,14 @@ export const AppointmentActionDialog = ({
                   : "bg-destructive hover:bg-destructive"
               )}
             >
-              {type === "approve" ? "Oui, approuver" : "Oui, annuler"}
+              {type === "approve" ? t.yesApprove : t.yesCancel}
             </Button>
             <DialogClose asChild>
               <Button
                 variant="outline"
                 className="px-4 py-2 text-sm underline text-gray-500"
               >
-                Non
+                {t.no}
               </Button>
             </DialogClose>
           </div>

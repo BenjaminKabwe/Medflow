@@ -5,8 +5,28 @@ import SearchInput from "@/components/search-input";
 import { SearchParamsProps } from "@/types";
 import { getMedications } from "@/utils/services/medications";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { fr, enUS } from "date-fns/locale";
 import { Pill, Stethoscope, Calendar } from "lucide-react";
+import { getLang } from "@/lib/i18n-server";
+
+const STR = {
+  fr: {
+    title: "Administration",
+    prescriptions: (n: number) => `prescription${n !== 1 ? "s" : ""}`,
+    male: "Homme",
+    female: "Femme",
+    prescribedMeds: "Médicaments prescrits",
+    empty: "Aucune prescription trouvée.",
+  },
+  en: {
+    title: "Administration",
+    prescriptions: (n: number) => `prescription${n !== 1 ? "s" : ""}`,
+    male: "Male",
+    female: "Female",
+    prescribedMeds: "Prescribed medications",
+    empty: "No prescription found.",
+  },
+};
 
 const DATA_LIMIT = 10;
 
@@ -20,6 +40,9 @@ const AdministerMedicationsPage = async (props: SearchParamsProps) => {
   const searchParams = await props.searchParams;
   const page        = (searchParams?.p || "1") as string;
   const searchQuery = (searchParams?.q || "") as string;
+  const lang = await getLang();
+  const t = STR[lang];
+  const dateLocale = lang === "en" ? enUS : fr;
 
   const { data, totalPages, totalRecords, currentPage } = await getMedications({
     page,
@@ -37,12 +60,12 @@ const AdministerMedicationsPage = async (props: SearchParamsProps) => {
           </div>
           <div>
             <p className="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">
-              Administration
+              {t.title}
             </p>
             <p className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-none">
               {totalRecords}{" "}
               <span className="text-sm font-normal text-slate-400 dark:text-slate-500">
-                prescription{totalRecords !== 1 ? "s" : ""}
+                {t.prescriptions(totalRecords)}
               </span>
             </p>
           </div>
@@ -75,7 +98,7 @@ const AdministerMedicationsPage = async (props: SearchParamsProps) => {
                       {name.toLowerCase()}
                     </p>
                     <p className="text-xs text-slate-400">
-                      {item.patient.gender === "MALE" ? "Homme" : "Femme"}
+                      {item.patient.gender === "MALE" ? t.male : t.female}
                     </p>
                   </div>
                 </div>
@@ -87,7 +110,7 @@ const AdministerMedicationsPage = async (props: SearchParamsProps) => {
               {/* Medications */}
               <div>
                 <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2">
-                  Médicaments prescrits
+                  {t.prescribedMeds}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {meds.length > 0 ? (
@@ -116,7 +139,7 @@ const AdministerMedicationsPage = async (props: SearchParamsProps) => {
                 </div>
                 <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
                   <Calendar className="w-3.5 h-3.5" />
-                  {format(new Date(item.created_at), "dd MMM yyyy", { locale: fr })}
+                  {format(new Date(item.created_at), "dd MMM yyyy", { locale: dateLocale })}
                 </div>
               </div>
             </div>
@@ -127,7 +150,7 @@ const AdministerMedicationsPage = async (props: SearchParamsProps) => {
       {/* Empty state */}
       {data.length === 0 && (
         <div className="text-center py-16 text-slate-400 dark:text-slate-500">
-          Aucune prescription trouvée.
+          {t.empty}
         </div>
       )}
 

@@ -11,9 +11,42 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
+import { getLang } from "@/lib/i18n-server";
+
+const STR = {
+  fr: {
+    space: "Espace Médecin",
+    hello: "Bonjour, Dr.",
+    myProfile: "Mon profil",
+    see: "Voir →",
+    patients: "Patients",
+    patientsNote: "Patients suivis",
+    nurses: "Infirmier(ère)s",
+    nursesNote: "Personnel soignant",
+    appointments: "Rendez-vous",
+    appointmentsNote: "Total rendez-vous",
+    consultations: "Consultations",
+    consultationsNote: "Consultations terminées",
+  },
+  en: {
+    space: "Doctor space",
+    hello: "Hello, Dr.",
+    myProfile: "My profile",
+    see: "View →",
+    patients: "Patients",
+    patientsNote: "Patients followed",
+    nurses: "Nurses",
+    nursesNote: "Care staff",
+    appointments: "Appointments",
+    appointmentsNote: "Total appointments",
+    consultations: "Consultations",
+    consultationsNote: "Completed consultations",
+  },
+};
 
 const DoctorDashboard = async () => {
   const { userId } = await auth();
+  const t = STR[await getLang()];
 
   const {
     totalPatient,
@@ -28,32 +61,32 @@ const DoctorDashboard = async () => {
 
   const cardData = [
     {
-      title: "Patients",
-      note: "Patients suivis",
+      title: t.patients,
+      note: t.patientsNote,
       value: totalPatient ?? 0,
       icon: Users,
       color: "sky",
       link: "/record/patients",
     },
     {
-      title: "Infirmier(ère)s",
-      note: "Personnel soignant",
+      title: t.nurses,
+      note: t.nursesNote,
       value: totalNurses ?? 0,
       icon: UserRound,
       color: "rose",
       link: "/record/staffs",
     },
     {
-      title: "Rendez-vous",
-      note: "Total rendez-vous",
+      title: t.appointments,
+      note: t.appointmentsNote,
       value: totalAppointment ?? 0,
       icon: CalendarDays,
       color: "amber",
       link: "/record/appointments",
     },
     {
-      title: "Consultations",
-      note: "Consultations terminées",
+      title: t.consultations,
+      note: t.consultationsNote,
       value: appointmentCounts?.COMPLETED ?? 0,
       icon: CheckCircle2,
       color: "emerald",
@@ -79,10 +112,10 @@ const DoctorDashboard = async () => {
           <div className="flex items-center justify-between mb-5">
             <div>
               <p className="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-widest font-medium mb-0.5">
-                Espace Médecin
+                {t.space}
               </p>
               <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">
-                Bonjour, Dr. {doctorName} 👋
+                {t.hello} {doctorName} 👋
               </h1>
             </div>
             <Link
@@ -90,7 +123,7 @@ const DoctorDashboard = async () => {
               className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-700
                          text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             >
-              Mon profil
+              {t.myProfile}
             </Link>
           </div>
 
@@ -111,7 +144,7 @@ const DoctorDashboard = async () => {
                       href={card.link}
                       className={`text-[11px] font-medium opacity-70 hover:opacity-100 transition-colors ${c.text}`}
                     >
-                      Voir →
+                      {t.see}
                     </Link>
                   </div>
                   <p className="text-3xl font-bold text-slate-800 dark:text-slate-100 leading-none">

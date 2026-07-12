@@ -89,7 +89,7 @@ export const AppointmentChart = ({ data }: DataProps) => {
                 color: "#94a3b8",
               }}
             />
-            <Bar dataKey="appointment" name={t.charts.barAppointment} fill="#0ea5e9" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="appointment" name={t.charts.barAppointment} fill="#0284c7" radius={[4, 4, 0, 0]} />
             <Bar dataKey="completed"   name={t.charts.barCompleted}   fill="#10b981" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>

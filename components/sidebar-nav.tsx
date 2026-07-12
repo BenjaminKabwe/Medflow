@@ -2,21 +2,27 @@
 
 import {
   Activity,
+  AlertTriangle,
   BellRing,
+  Boxes,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
   CircleUserRound,
+  ClipboardList,
   CreditCard,
   FileHeart,
   FlaskConical,
   HeartHandshake,
   LayoutGrid,
   LayoutList,
+  LayoutDashboard,
   LucideIcon,
+  Pill,
   ScrollText,
   SlidersHorizontal,
   Stethoscope,
+  Truck,
   UserCog,
   Users,
   UsersRound,
@@ -43,7 +49,7 @@ interface SidebarSection {
   links: SidebarNavLink[];
 }
 
-const ACCESS_ALL = ["admin", "doctor", "nurse", "lab technician", "patient"];
+const ACCESS_ALL = ["admin", "doctor", "nurse", "lab_technician", "patient"];
 
 const SIDEBAR_CONFIG: SidebarSection[] = [
   {
@@ -71,6 +77,25 @@ const SIDEBAR_CONFIG: SidebarSection[] = [
     ],
   },
   {
+    labelKey: "pharmacy",
+    links: [
+      { nameKey: "pharmacy",              href: "/pharmacy",              access: ["admin", "pharmacist", "doctor", "nurse"], icon: LayoutDashboard, exact: true },
+      { nameKey: "pharmacyCatalog",       href: "/pharmacy/medications",  access: ["admin", "pharmacist", "doctor"],          icon: Pill },
+      { nameKey: "pharmacyInventory",     href: "/pharmacy/inventory",    access: ["admin", "pharmacist"],                    icon: Boxes },
+      { nameKey: "pharmacyPrescriptions", href: "/pharmacy/prescriptions", access: ["admin", "pharmacist"],                    icon: ScrollText },
+      { nameKey: "pharmacyDispensation",  href: "/pharmacy/dispensation", access: ["admin", "pharmacist", "nurse"],           icon: FlaskConical },
+      { nameKey: "pharmacySuppliers",     href: "/pharmacy/suppliers",    access: ["admin", "pharmacist"],                    icon: Truck },
+      { nameKey: "pharmacyPurchaseOrders", href: "/pharmacy/purchase-orders", access: ["admin", "pharmacist"],                 icon: ClipboardList },
+      { nameKey: "pharmacyAlerts",        href: "/pharmacy/alerts",       access: ["admin", "pharmacist"],                    icon: AlertTriangle },
+    ],
+  },
+  {
+    labelKey: "laboratory",
+    links: [
+      { nameKey: "labQueue", href: "/lab/tests", access: ["admin", "lab_technician"], icon: FlaskConical },
+    ],
+  },
+  {
     labelKey: "system",
     links: [
       { nameKey: "notifications", href: "/notifications",         access: ACCESS_ALL, icon: BellRing,          exact: true },
@@ -86,7 +111,7 @@ interface SidebarNavProps {
 }
 
 export const SidebarNav = ({ role }: SidebarNavProps) => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { collapsed, toggleCollapsed } = useSidebarContext();
 
   const visibleSections = SIDEBAR_CONFIG.map((section) => ({
@@ -97,34 +122,40 @@ export const SidebarNav = ({ role }: SidebarNavProps) => {
   })).filter((section) => section.links.length > 0);
 
   return (
-    <div className="w-full h-full flex flex-col bg-white dark:bg-[hsl(222,47%,8%)] border-r border-slate-200 dark:border-[hsl(222,47%,14%)]">
+    <div className="w-full h-full flex flex-col bg-[hsl(var(--sidebar-bg))] border-r border-slate-200 dark:border-white/[0.06] relative">
+      {/* Signature petrol glow at the top */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_60%_100%_at_50%_0%,hsl(199_89%_48%_/_0.10),transparent_70%)]" />
 
       {/* Logo + collapse toggle */}
       <div className={cn(
-        "flex-shrink-0 flex items-center border-b border-slate-200 dark:border-[hsl(222,47%,13%)] h-14",
+        "flex-shrink-0 flex items-center border-b border-slate-200 dark:border-white/[0.06] h-14 relative",
         collapsed ? "justify-center px-2" : "justify-between px-4"
       )}>
         {collapsed ? (
           <Link href={`/${role}`}>
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center shadow-lg shadow-sky-900/40 ring-1 ring-white/10">
               <Activity className="w-4 h-4 text-white" />
             </div>
           </Link>
         ) : (
           <Link href={`/${role}`} className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-sky-900/40 ring-1 ring-white/10">
               <Activity className="w-4 h-4 text-white" />
             </div>
-            <span className="text-base font-bold text-slate-900 dark:text-white tracking-tight">MedFlow</span>
+            <span className="text-base font-heading font-bold text-slate-900 dark:text-white tracking-tight">MedFlow</span>
           </Link>
         )}
 
         <button
           onClick={toggleCollapsed}
           className="hidden lg:flex items-center justify-center w-6 h-6 rounded-md
-                     text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300
-                     hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
-          aria-label={collapsed ? "Déplier" : "Replier"}
+                     text-slate-400 hover:text-slate-700 hover:bg-slate-100
+                     dark:text-white/40 dark:hover:text-white dark:hover:bg-white/10 transition-colors"
+          aria-label={
+            collapsed
+              ? lang === "en" ? "Expand" : "Déplier"
+              : lang === "en" ? "Collapse" : "Replier"
+          }
         >
           {collapsed
             ? <ChevronRight className="w-3.5 h-3.5" />
@@ -137,7 +168,7 @@ export const SidebarNav = ({ role }: SidebarNavProps) => {
         {visibleSections.map((section) => (
           <div key={section.labelKey}>
             {!collapsed && (
-              <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-600">
+              <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/35">
                 {t.sections[section.labelKey]}
               </p>
             )}
@@ -162,7 +193,7 @@ export const SidebarNav = ({ role }: SidebarNavProps) => {
 
       {/* Logout */}
       <div className={cn(
-        "py-4 border-t border-slate-200 dark:border-[hsl(222,47%,13%)]",
+        "py-4 border-t border-slate-200 dark:border-white/[0.06]",
         collapsed ? "px-1 flex justify-center" : "px-3"
       )}>
         <LogoutButton collapsed={collapsed} />

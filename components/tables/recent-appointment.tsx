@@ -3,16 +3,37 @@ import { Button } from "../ui/button";
 import { Appointment } from "@/types/data-types";
 import { ProfileImage } from "../profile-image";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { fr, enUS } from "date-fns/locale";
 import { AppointmentStatusIndicator } from "../appointment-status-indicator";
 import { ViewAppointment } from "../view-appointment";
 import { CalendarClock, ChevronRight } from "lucide-react";
+import { getLang } from "@/lib/i18n-server";
+
+const STR = {
+  fr: {
+    title: "Rendez-vous récents",
+    seeAll: "Voir tout",
+    empty: "Aucun rendez-vous récent.",
+    headers: ["Patient", "Date", "Heure", "Médecin", "Statut", "Actions"],
+    view: "Voir",
+  },
+  en: {
+    title: "Recent appointments",
+    seeAll: "View all",
+    empty: "No recent appointment.",
+    headers: ["Patient", "Date", "Time", "Doctor", "Status", "Actions"],
+    view: "View",
+  },
+};
 
 interface DataProps {
   data: any[];
 }
 
-export const RecentAppointments = ({ data }: DataProps) => {
+export const RecentAppointments = async ({ data }: DataProps) => {
+  const lang = await getLang();
+  const t = STR[lang];
+  const dateLocale = lang === "en" ? enUS : fr;
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-card overflow-hidden">
       {/* Header */}
@@ -22,7 +43,7 @@ export const RecentAppointments = ({ data }: DataProps) => {
             <CalendarClock className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
           </div>
           <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-            Rendez-vous récents
+            {t.title}
           </h2>
         </div>
 
@@ -32,7 +53,7 @@ export const RecentAppointments = ({ data }: DataProps) => {
             size="sm"
             className="text-xs h-7 px-3 rounded-lg border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-600 bg-transparent"
           >
-            Voir tout
+            {t.seeAll}
             <ChevronRight className="w-3 h-3 ml-1" />
           </Button>
         </Link>
@@ -41,14 +62,14 @@ export const RecentAppointments = ({ data }: DataProps) => {
       {/* Table */}
       {!data || data.length === 0 ? (
         <p className="px-5 py-8 text-sm text-slate-400 text-center">
-          Aucun rendez-vous récent.
+          {t.empty}
         </p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
-                {["Patient", "Date", "Heure", "Médecin", "Statut", "Actions"].map(
+                {t.headers.map(
                   (col, i) => (
                     <th
                       key={col}
@@ -97,7 +118,7 @@ export const RecentAppointments = ({ data }: DataProps) => {
 
                     {/* Date */}
                     <td className="px-5 py-3.5 hidden md:table-cell text-slate-600 dark:text-slate-300 text-sm">
-                      {format(new Date(item?.appointment_date), "d MMM yyyy", { locale: fr })}
+                      {format(new Date(item?.appointment_date), "d MMM yyyy", { locale: dateLocale })}
                     </td>
 
                     {/* Time */}
@@ -138,7 +159,7 @@ export const RecentAppointments = ({ data }: DataProps) => {
                           href={`/record/appointments/${item?.id}`}
                           className="text-xs text-sky-500 hover:text-sky-600 font-medium transition-colors"
                         >
-                          Voir
+                          {t.view}
                         </Link>
                       </div>
                     </td>

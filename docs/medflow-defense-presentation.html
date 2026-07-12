@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MedFlow - Soutenance de Licence en Informatique</title>
+  <style>
+:root {
+  --paper: #f7f5ef;
+  --ink: #16211f;
+  --muted: #66726f;
+  --line: #d7ddd4;
+  --panel: #fffdf8;
+  --green: #0c7f74;
+  --green-2: #095f58;
+  --blue: #2e6fa3;
+  --gold: #b77a1f;
+  --red: #a94652;
+  --shadow: 0 24px 70px rgba(22, 33, 31, .13);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, rgba(12,127,116,.05) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(12,127,116,.04) 1px, transparent 1px),
+    radial-gradient(circle at 12% 8%, rgba(183,122,31,.12), transparent 28%),
+    var(--paper);
+  background-size: 30px 30px, 30px 30px, auto, auto;
+  font-family: Aptos, "Segoe UI", sans-serif;
+  line-height: 1.48;
+}
+.deck { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 28px 0 72px; }
+.topbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0 18px; background: linear-gradient(180deg, var(--paper) 72%, rgba(247,245,239,0)); }
+.brand { display: flex; align-items: center; gap: 12px; font-weight: 900; }
+.mark { width: 42px; height: 42px; border-radius: 8px; display: grid; place-items: center; color: white; background: linear-gradient(135deg, var(--green), var(--blue)); box-shadow: 0 10px 28px rgba(12,127,116,.26); }
+.meta { color: var(--muted); font-size: 14px; font-weight: 600; }
+.toolbar { display: flex; gap: 8px; }
+button { border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.84); color: var(--ink); padding: 9px 12px; font: inherit; font-weight: 800; cursor: pointer; }
+button:hover { border-color: var(--green); color: var(--green-2); }
+.slide { min-height: 720px; margin: 22px 0 36px; padding: 54px; border: 1px solid var(--line); border-radius: 8px; background: linear-gradient(145deg, rgba(225,244,238,.78), rgba(255,255,255,.68) 34%, rgba(255,253,248,.96)), var(--panel); box-shadow: var(--shadow); position: relative; overflow: hidden; page-break-after: always; }
+.slide::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, transparent 0 93%, rgba(12,127,116,.14) 93% 94%, transparent 94%), linear-gradient(180deg, transparent 0 92%, rgba(183,122,31,.15) 92% 93%, transparent 93%); }
+.slide > * { position: relative; }
+.slide-number { position: absolute; top: 24px; right: 28px; color: var(--muted); font-size: 13px; font-weight: 900; }
+.kicker { color: var(--green-2); font-size: 14px; font-weight: 950; text-transform: uppercase; margin-bottom: 18px; }
+h1, h2, h3 { margin: 0; line-height: 1.05; letter-spacing: 0; }
+h1 { max-width: 920px; font-family: "Iowan Old Style", Georgia, serif; font-size: clamp(58px, 8vw, 108px); font-weight: 700; }
+h2 { max-width: 960px; font-family: "Iowan Old Style", Georgia, serif; font-size: 50px; font-weight: 700; margin-bottom: 24px; }
+h3 { color: var(--green-2); font-size: 19px; margin: 18px 0 10px; }
+p { font-size: 22px; margin: 10px 0 18px; }
+ul, ol { margin: 0; padding-left: 24px; font-size: 22px; }
+li { margin: 9px 0; }
+strong { color: var(--green-2); }
+.subtitle { max-width: 820px; color: var(--muted); font-size: 24px; }
+.grid { display: grid; gap: 18px; }
+.grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.box { border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.78); padding: 20px; }
+.box p { font-size: 19px; margin: 8px 0 0; color: #394642; }
+table { width: 100%; border-collapse: collapse; border-radius: 8px; overflow: hidden; background: rgba(255,255,255,.84); font-size: 18px; }
+th, td { border-bottom: 1px solid var(--line); padding: 13px 14px; text-align: left; vertical-align: top; }
+th { background: rgba(225,244,238,.78); color: var(--green-2); font-size: 14px; text-transform: uppercase; }
+code, pre { font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace; }
+pre { margin: 0; padding: 20px; border-radius: 8px; border: 1px solid #cdd9d4; background: #152420; color: #eef8f3; font-size: 18px; line-height: 1.48; white-space: pre-wrap; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
+.chip { border: 1px solid rgba(12,127,116,.28); border-radius: 999px; background: rgba(225,244,238,.72); color: var(--green-2); padding: 8px 12px; font-size: 14px; font-weight: 900; }
+.notes { margin-top: 28px; border-left: 5px solid var(--gold); padding: 14px 18px; background: rgba(255,255,255,.72); color: #394642; }
+.notes strong { display: block; color: #7a4d08; text-transform: uppercase; font-size: 13px; margin-bottom: 6px; }
+.notes p { margin: 0; font-size: 18px; line-height: 1.45; }
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 22px; }
+.metric { border-radius: 8px; padding: 20px; background: #16211f; color: white; min-height: 124px; }
+.metric:nth-child(2) { background: var(--green-2); }
+.metric:nth-child(3) { background: var(--gold); }
+.metric:nth-child(4) { background: var(--blue); }
+.metric b { display: block; font-size: 40px; line-height: 1; margin-bottom: 10px; }
+@media (max-width: 820px) {
+  .deck { width: min(100% - 20px, 1180px); padding-top: 16px; }
+  .topbar { position: static; align-items: flex-start; flex-direction: column; }
+  .slide { min-height: auto; padding: 34px 22px; }
+  h1 { font-size: 54px; }
+  h2 { font-size: 35px; }
+  p, ul, ol { font-size: 18px; }
+  .grid.two, .grid.three, .metrics { grid-template-columns: 1fr; }
+}
+@media print {
+  body { background: white; }
+  .deck { width: 100%; padding: 0; }
+  .topbar { display: none; }
+  .slide { min-height: 100vh; margin: 0; border: 0; border-radius: 0; box-shadow: none; }
+}
+</style>
+</head>
+<body>
+  <main class="deck">
+    <header class="topbar">
+      <div class="brand"><div class="mark">M</div><div><div>MedFlow - Soutenance de Licence</div><div class="meta">Support professionnel avec notes orales · imprimable en PDF</div></div></div>
+      <div class="toolbar"><button type="button" onclick="window.print()">Imprimer</button><button type="button" onclick="document.querySelector('#slide-1').scrollIntoView()">Début</button></div>
+    </header>
+    <section class="slide" id="slide-1">
+      <div class="slide-number">01 / 29</div>
+      <div class="kicker">Titre académique</div>
+      <h2>Conception et réalisation de MedFlow</h2>
+      <p><strong>Application web de gestion électronique des dossiers patients</strong></p>
+<p>Projet présenté en vue de l’obtention du diplôme de <strong>Licence en Informatique</strong>.</p>
+<ul><li>Domaine : informatique de gestion appliquée au secteur hospitalier</li><li>Projet : MedFlow, système de gestion hospitalière orienté dossier patient</li><li>Contexte : établissements de santé à Kinshasa, RDC</li><li>Stack : Next.js 15, TypeScript, PostgreSQL/Neon, Prisma, Clerk, Pusher</li></ul>
+<div class="chips"><span class="chip">Licence en Informatique</span><span class="chip">Gestion hospitalière</span><span class="chip">Full-stack</span><span class="chip">Sécurité RBAC</span></div>
+      <div class="notes"><strong>Notes orales</strong><p>Mesdames et Messieurs les membres du jury, je vous présente MedFlow, un projet de conception et réalisation d’une application web destinée à améliorer la gestion des dossiers patients et des processus hospitaliers associés. Ce travail s’inscrit dans le domaine de l’informatique de gestion, avec une application concrète au secteur de la santé.</p></div>
+    </section>
+
+    <section class="slide" id="slide-2">
+      <div class="slide-number">02 / 29</div>
+      <div class="kicker">Plan de présentation</div>
+      <h2>Fil conducteur de la défense</h2>
+      <ol>
+        <li>Contexte et problématique</li>
+        <li>Objectifs du projet</li>
+        <li>Méthodologie de conception et de réalisation</li>
+        <li>Analyse fonctionnelle et acteurs du système</li>
+        <li>Architecture technique</li>
+        <li>Modèle de données</li>
+        <li>Modules réalisés</li>
+        <li>Sécurité, validation et traçabilité</li>
+        <li>Démonstration proposée</li>
+        <li>Résultats, limites et perspectives</li>
+      </ol>
+      <div class="notes"><strong>Notes orales</strong><p>Je vais d’abord présenter le problème auquel le projet répond, puis les objectifs et la méthode utilisée. Ensuite, j’expliquerai la conception technique, les principaux modules réalisés, les mécanismes de sécurité, avant de terminer par les résultats, les limites et les perspectives.</p></div>
+    </section>
+
+    <section class="slide" id="slide-3">
+      <div class="slide-number">03 / 29</div>
+      <div class="kicker">Contexte général</div>
+      <h2>La numérisation comme levier d’amélioration du parcours patient</h2>
+      <p>Dans beaucoup de structures de santé, plusieurs opérations restent fragmentées : accueil du patient, suivi des rendez-vous, consultation médicale, facturation, encaissement et archivage.</p>
+<p>Cette fragmentation peut entraîner :</p>
+<ul><li>une perte de temps dans la recherche d’informations ;</li><li>des erreurs dans le suivi du patient ;</li><li>une faible visibilité sur les paiements ;</li><li>une traçabilité insuffisante des actions sensibles ;</li><li>une coordination difficile entre services.</li></ul>
+      <div class="notes"><strong>Notes orales</strong><p>Le contexte du projet part d’un constat simple : les informations liées au patient circulent souvent entre plusieurs services sans être réellement centralisées. Or, dans un établissement de santé, la continuité de l’information est essentielle pour la qualité du service, la rapidité de prise en charge et la fiabilité administrative.</p></div>
+    </section>
+
+    <section class="slide" id="slide-4">
+      <div class="slide-number">04 / 29</div>
+      <div class="kicker">Problématique</div>
+      <h2>Comment centraliser et sécuriser le parcours patient ?</h2>
+      <p><strong>Question centrale :</strong></p>
+<p>Comment concevoir une application web capable de centraliser les informations médicales, administratives et financières d’un patient, tout en garantissant un accès sécurisé selon les responsabilités de chaque utilisateur ?</p>
+<p><strong>Contraintes principales :</strong></p>
+<ul><li>gérer plusieurs profils d’utilisateurs ;</li><li>préserver la cohérence des données médicales ;</li><li>relier rendez-vous, consultation, dossier et facture ;</li><li>assurer la traçabilité ;</li><li>adapter le système au contexte local, notamment les modes de paiement.</li></ul>
+      <div class="notes"><strong>Notes orales</strong><p>La problématique n’est pas seulement de stocker des données. Il faut organiser un flux complet, depuis l’enregistrement du patient jusqu’au paiement, avec des rôles clairement définis et des données cohérentes.</p></div>
+    </section>
+
+    <section class="slide" id="slide-5">
+      <div class="slide-number">05 / 29</div>
+      <div class="kicker">Objectif général</div>
+      <h2>Mettre en place un système web intégré de gestion hospitalière</h2>
+      <p>L’objectif général de MedFlow est de concevoir et réaliser une application web permettant de centraliser le parcours patient dans un établissement de santé.</p>
+<p>Le système doit permettre de :</p>
+<ul><li>enregistrer et gérer les patients ;</li><li>planifier les rendez-vous ;</li><li>suivre les consultations ;</li><li>gérer les dossiers médicaux ;</li><li>facturer les prestations ;</li><li>encaisser les paiements ;</li><li>notifier les utilisateurs concernés ;</li><li>conserver un historique des actions sensibles.</li></ul>
+      <div class="notes"><strong>Notes orales</strong><p>L’objectif général est donc de proposer une solution intégrée. Le mot important ici est intégré : les modules ne sont pas indépendants, ils sont reliés autour du patient et du rendez-vous.</p></div>
+    </section>
+
+    <section class="slide" id="slide-6">
+      <div class="slide-number">06 / 29</div>
+      <div class="kicker">Objectifs spécifiques</div>
+      <h2>Transformer les besoins métier en fonctionnalités mesurables</h2>
+      <p>Objectifs fonctionnels :</p>
+<ul><li>créer des dossiers patients complets ;</li><li>organiser les rendez-vous selon les médecins et les créneaux ;</li><li>enregistrer les signes vitaux, diagnostics et prescriptions ;</li><li>générer des factures avec reçu unique ;</li><li>gérer des sessions de caisse ;</li><li>envoyer des notifications en temps réel.</li></ul>
+<p>Objectifs techniques :</p>
+<ul><li>utiliser une architecture modulaire ;</li><li>sécuriser l’accès par rôle ;</li><li>valider les données côté serveur ;</li><li>structurer la base relationnelle ;</li><li>produire une interface responsive et maintenable.</li></ul>
+      <div class="notes"><strong>Notes orales</strong><p>Ces objectifs montrent le passage du besoin métier vers des fonctionnalités concrètes. Ils permettent aussi d’évaluer le projet : chaque objectif correspond à un module ou à une contrainte technique vérifiable.</p></div>
+    </section>
+
+    <section class="slide" id="slide-7">
+      <div class="slide-number">07 / 29</div>
+      <div class="kicker">Méthodologie</div>
+      <h2>Une démarche orientée analyse, conception et réalisation</h2>
+      <p>La réalisation a suivi une démarche progressive :</p>
+<p>1. Analyse du domaine hospitalier et identification des acteurs.</p>
+<p>2. Définition des modules fonctionnels prioritaires.</p>
+<p>3. Conception de l’architecture applicative.</p>
+<p>4. Modélisation de la base de données avec Prisma.</p>
+<p>5. Développement des interfaces, actions serveur et API routes.</p>
+<p>6. Intégration de l’authentification, des permissions et des notifications.</p>
+<p>7. Vérification des flux principaux : patient, rendez-vous, consultation, caisse.</p>
+      <div class="notes"><strong>Notes orales</strong><p>J’ai adopté une démarche structurée, proche d’un cycle incrémental. L’idée était de construire d’abord le socle : acteurs, données et architecture, puis d’ajouter progressivement les modules métier.</p></div>
+    </section>
+
+    <section class="slide" id="slide-8">
+      <div class="slide-number">08 / 29</div>
+      <div class="kicker">Acteurs du système</div>
+      <h2>Un système multi-profils avec responsabilités séparées</h2>
+      <table><thead><tr><th>Acteur</th><th>Responsabilités principales</th></tr></thead><tbody></tbody></table>
+<p>|---|---|</p>
+<table><thead><tr><th>Admin</th><th>Gestion des utilisateurs, paramètres, audit, supervision</th></tr></thead><tbody><tr><td>Médecin</td><td>Consultation, diagnostic, dossier médical</td></tr><tr><td>Infirmier</td><td>Signes vitaux, suivi patient, administration médicale</td></tr><tr><td>Patient</td><td>Profil, rendez-vous, ordonnances, paiements</td></tr><tr><td>Caissier</td><td>Sessions de caisse et encaissements</td></tr><tr><td>Technicien labo</td><td>Examens de laboratoire selon le périmètre</td></tr></tbody></table>
+<p>Chaque acteur accède à un espace adapté à son rôle.</p>
+      <div class="notes"><strong>Notes orales</strong><p>La séparation des rôles est essentielle. Elle répond à un besoin d’ergonomie, mais aussi à un besoin de sécurité. Un caissier n’a pas les mêmes responsabilités qu’un médecin, et un patient ne doit pas accéder aux informations administratives globales.</p></div>
+    </section>
+
+    <section class="slide" id="slide-9">
+      <div class="slide-number">09 / 29</div>
+      <div class="kicker">Cas d’utilisation principaux</div>
+      <h2>Les scénarios métier couverts par MedFlow</h2>
+      <p>Principaux cas d’utilisation :</p>
+<ul><li>s’authentifier et accéder à son tableau de bord ;</li><li>enregistrer un patient ;</li><li>créer et confirmer un rendez-vous ;</li><li>consulter les détails d’un rendez-vous ;</li><li>enregistrer les signes vitaux ;</li><li>ajouter un diagnostic et des prescriptions ;</li><li>générer une facture ;</li><li>encaisser un paiement ;</li><li>consulter les notifications ;</li><li>auditer les opérations sensibles.</li></ul>
+      <div class="notes"><strong>Notes orales</strong><p>Ces cas d’utilisation représentent le cœur du système. Ils suivent la réalité d’un parcours patient : accueil, rendez-vous, consultation, facturation et suivi.</p></div>
+    </section>
+
+    <section class="slide" id="slide-10">
+      <div class="slide-number">10 / 29</div>
+      <div class="kicker">Choix technologiques</div>
+      <h2>Une stack moderne pour une application full-stack typée</h2>
+      <table><thead><tr><th>Couche</th><th>Technologies retenues</th></tr></thead><tbody></tbody></table>
+<p>|---|---|</p>
+<table><thead><tr><th>Framework</th><th>Next.js 15 avec App Router</th></tr></thead><tbody><tr><td>Langage</td><td>TypeScript</td></tr><tr><td>Interface</td><td>React 18, Tailwind CSS, shadcn/ui, Radix UI</td></tr><tr><td>Base de données</td><td>PostgreSQL via Neon</td></tr><tr><td>ORM</td><td>Prisma 6</td></tr><tr><td>Authentification</td><td>Clerk</td></tr><tr><td>Temps réel</td><td>Pusher</td></tr><tr><td>Validation</td><td>Zod et React Hook Form</td></tr><tr><td>PDF</td><td><code>@react-pdf/renderer</code></td></tr><tr><td>Graphiques</td><td>Recharts</td></tr></tbody></table>
+      <div class="notes"><strong>Notes orales</strong><p>Le choix de Next.js permet d’avoir dans un même projet le frontend, les pages serveur, les API routes et les server actions. TypeScript et Prisma apportent un typage fort, ce qui réduit les erreurs dans une application où les données sont sensibles.</p></div>
+    </section>
+
+    <section class="slide" id="slide-11">
+      <div class="slide-number">11 / 29</div>
+      <div class="kicker">Architecture globale</div>
+      <h2>Une architecture en couches pour séparer les responsabilités</h2>
+      <pre>Navigateur utilisateur
+  -&gt; composants React et formulaires
+Next.js App Router
+  -&gt; pages, layouts, API routes, server actions
+Couche métier
+  -&gt; lib/* et utils/services/*
+Prisma
+  -&gt; client ORM et adaptateur Neon
+PostgreSQL
+  -&gt; persistance relationnelle</pre>
+<p>Cette organisation limite le couplage entre interface, logique métier et accès aux données.</p>
+      <div class="notes"><strong>Notes orales</strong><p>L’architecture est organisée en couches. Les composants affichent les données, les server actions et API traitent les opérations, les services manipulent les requêtes métier, et Prisma communique avec PostgreSQL. Cette séparation facilite la maintenance.</p></div>
+    </section>
+
+    <section class="slide" id="slide-12">
+      <div class="slide-number">12 / 29</div>
+      <div class="kicker">Organisation du projet</div>
+      <h2>Un découpage cohérent avec l’architecture Next.js</h2>
+      <ul><li><code>app/</code> : routes, pages protégées, API routes et server actions.</li><li><code>components/</code> : composants UI, formulaires, tableaux, caisse, rendez-vous, PDF.</li><li><code>lib/</code> : base de données, permissions, audit, notifications, i18n, Pusher.</li><li><code>utils/services/</code> : couche d’accès aux données par domaine métier.</li><li><code>prisma/</code> : schéma de données, migrations et seed.</li><li><code>docs/</code> : documentation technique et support de présentation.</li></ul>
+<p>Le projet distingue clairement les responsabilités techniques.</p>
+      <div class="notes"><strong>Notes orales</strong><p>La structure du projet est importante dans une défense, car elle montre la capacité à organiser une application qui peut évoluer. Chaque dossier a une responsabilité identifiable.</p></div>
+    </section>
+
+    <section class="slide" id="slide-13">
+      <div class="slide-number">13 / 29</div>
+      <div class="kicker">Modèle de données</div>
+      <h2>Un modèle relationnel centré sur le patient et le rendez-vous</h2>
+      <p>Le schéma Prisma contient <strong>19 modèles</strong> et <strong>13 enums</strong>.</p>
+<p>Entités principales :</p>
+<ul><li><code>Patient</code> : identité, contact, consentements, assurance, antécédents ;</li><li><code>Doctor</code> : spécialisation, licence, disponibilité, horaires ;</li><li><code>Appointment</code> : lien entre patient, médecin, date, heure et statut ;</li><li><code>MedicalRecords</code> : dossier médical rattaché au rendez-vous ;</li><li><code>Diagnosis</code>, <code>VitalSigns</code>, <code>LabTest</code> : informations cliniques ;</li><li><code>Payment</code>, <code>PatientBills</code>, <code>Services</code> : facturation ;</li><li><code>CashierSession</code> : suivi des encaissements ;</li><li><code>Notification</code> et <code>AuditLog</code> : communication et traçabilité.</li></ul>
+<div class="metrics"><div class="metric"><b>19</b><span>modèles Prisma</span></div><div class="metric"><b>13</b><span>enums métier</span></div><div class="metric"><b>1:1</b><span>Facture / rendez-vous</span></div><div class="metric"><b>RBAC</b><span>accès par rôle</span></div></div>
+      <div class="notes"><strong>Notes orales</strong><p>Le choix d’un modèle relationnel est justifié par la nature fortement liée des informations hospitalières. Le rendez-vous devient un point d’articulation entre le patient, le médecin, le dossier médical et la facture.</p></div>
+    </section>
+
+    <section class="slide" id="slide-14">
+      <div class="slide-number">14 / 29</div>
+      <div class="kicker">Intégrité des données</div>
+      <h2>Des contraintes pour protéger les règles métier</h2>
+      <p>Règles importantes intégrées au modèle :</p>
+<ul><li>un médecin ne peut pas avoir deux rendez-vous au même créneau ;</li><li>un patient ne peut pas avoir deux rendez-vous au même créneau ;</li><li>une facture finale est liée à un rendez-vous unique ;</li><li>chaque reçu possède un numéro unique ;</li><li>les champs fréquemment recherchés sont indexés ;</li><li>plusieurs relations utilisent des suppressions en cascade maîtrisées.</li></ul>
+<p>Ces contraintes évitent une partie des incohérences directement au niveau de la base.</p>
+      <div class="notes"><strong>Notes orales</strong><p>Ces règles ne sont pas de simples détails techniques. Elles traduisent des règles métier : éviter les conflits d’agenda, empêcher les doublons de reçu et garantir que les informations restent liées correctement.</p></div>
+    </section>
+
+    <section class="slide" id="slide-15">
+      <div class="slide-number">15 / 29</div>
+      <div class="kicker">Authentification et autorisation</div>
+      <h2>Un contrôle d’accès basé sur les rôles</h2>
+      <p>Flux de sécurité :</p>
+<pre>Requête HTTP
+  -&gt; middleware.ts
+  -&gt; vérification de session par Clerk
+  -&gt; lecture du rôle dans les métadonnées JWT
+  -&gt; comparaison avec lib/routes.ts
+  -&gt; accès autorisé ou redirection</pre>
+<p>Exemples :</p>
+<ul><li><code>/admin(.*)</code> : admin uniquement ;</li><li><code>/cashier(.*)</code> : cashier ou admin ;</li><li><code>/record/patients</code> : admin, doctor, nurse ;</li><li><code>/nurse(.*)</code> : nurse ou admin.</li></ul>
+      <div class="notes"><strong>Notes orales</strong><p>La sécurité est traitée avant même l’affichage des pages grâce au middleware. Le rôle de l’utilisateur est fourni par Clerk puis comparé aux routes autorisées. Les helpers serveur renforcent cette protection pour les actions sensibles.</p></div>
+    </section>
+
+    <section class="slide" id="slide-16">
+      <div class="slide-number">16 / 29</div>
+      <div class="kicker">Module patient</div>
+      <h2>Centraliser l’identité et l’historique médical du patient</h2>
+      <p>Fonctionnalités principales :</p>
+<ul><li>inscription du patient ;</li><li>informations personnelles et contacts d’urgence ;</li><li>consentements : confidentialité, service et suivi médical ;</li><li>antécédents, allergies, groupe sanguin ;</li><li>assurance ;</li><li>recherche, pagination et consultation de profil ;</li><li>lien avec rendez-vous, diagnostics, paiements et évaluations.</li></ul>
+      <div class="notes"><strong>Notes orales</strong><p>Le patient est l’entité centrale. Le dossier patient rassemble les informations nécessaires à l’accueil, à la consultation et au suivi administratif.</p></div>
+    </section>
+
+    <section class="slide" id="slide-17">
+      <div class="slide-number">17 / 29</div>
+      <div class="kicker">Module rendez-vous</div>
+      <h2>Organiser le parcours clinique autour du rendez-vous</h2>
+      <p>Workflow principal :</p>
+<pre>Création de la demande
+  -&gt; PENDING
+Confirmation du rendez-vous
+  -&gt; SCHEDULED
+Consultation
+  -&gt; signes vitaux + diagnostic + dossier médical
+Fin de consultation
+  -&gt; COMPLETED
+Annulation possible
+  -&gt; CANCELLED</pre>
+<p>Le rendez-vous relie le patient, le médecin, la consultation et la facture.</p>
+      <div class="notes"><strong>Notes orales</strong><p>Le rendez-vous est l’un des éléments les plus importants du système. Il donne un cadre temporel et métier à la consultation. Il sert aussi de point de départ pour la facturation.</p></div>
+    </section>
+
+    <section class="slide" id="slide-18">
+      <div class="slide-number">18 / 29</div>
+      <div class="kicker">Module dossier médical</div>
+      <h2>Structurer les informations cliniques de la consultation</h2>
+      <p>Le dossier médical gère :</p>
+<ul><li>signes vitaux : température, tension, fréquence cardiaque, SpO2, poids, taille ;</li><li>diagnostic : symptômes, conclusion, notes ;</li><li>prescriptions et plan de traitement ;</li><li>demandes d’examens laboratoire ;</li><li>historique rattaché au patient, au médecin et au rendez-vous.</li></ul>
+<p>Chaque donnée clinique est rattachée à un contexte précis.</p>
+      <div class="notes"><strong>Notes orales</strong><p>Le dossier médical n’est pas une fiche isolée. Il est lié à une consultation précise, ce qui permet de savoir quand l’information a été produite et par quel professionnel.</p></div>
+    </section>
+
+    <section class="slide" id="slide-19">
+      <div class="slide-number">19 / 29</div>
+      <div class="kicker">Module facturation</div>
+      <h2>Relier les prestations médicales au paiement</h2>
+      <p>Fonctionnalités :</p>
+<ul><li>configuration des services facturables ;</li><li>ajout de lignes de facture par prestation ;</li><li>calcul du montant total ;</li><li>gestion des remises ;</li><li>paiements partiels ou complets ;</li><li>génération d’un reçu unique ;</li><li>export PDF de la facture.</li></ul>
+<p>La facture est liée au rendez-vous, donc au dossier patient.</p>
+      <div class="notes"><strong>Notes orales</strong><p>La facturation n’est pas traitée comme un module séparé du soin. Elle est reliée au rendez-vous, ce qui permet de suivre les actes facturés et le statut du paiement.</p></div>
+    </section>
+
+    <section class="slide" id="slide-20">
+      <div class="slide-number">20 / 29</div>
+      <div class="kicker">Module caisse</div>
+      <h2>Contrôler les encaissements par session de caisse</h2>
+      <p>Workflow caisse :</p>
+<pre>Ouverture de session
+  -&gt; montant initial
+Encaissement des paiements impayés
+  -&gt; rattachement à la session
+Clôture de session
+  -&gt; totaux par mode de paiement
+  -&gt; statut CLOSED</pre>
+<p>Modes adaptés au contexte local : espèces CDF/USD, carte, Mobile Money, assurance et virement bancaire.</p>
+      <div class="notes"><strong>Notes orales</strong><p>La session de caisse permet de responsabiliser le caissier et de produire un contrôle de fin de période. Les modes de paiement tiennent compte du contexte local, notamment Mobile Money.</p></div>
+    </section>
+
+    <section class="slide" id="slide-21">
+      <div class="slide-number">21 / 29</div>
+      <div class="kicker">Notifications temps réel</div>
+      <h2>Informer rapidement sans perdre l’historique</h2>
+      <p>Architecture des notifications :</p>
+<pre>Action métier
+  -&gt; création d’une notification en base
+  -&gt; envoi Pusher sur canal privé
+  -&gt; réception dans NotificationBell
+  -&gt; lecture, suppression ou marquage via API</pre>
+<p>Types : nouveau rendez-vous, confirmation, annulation, modification, paiement reçu et information générale.</p>
+      <div class="notes"><strong>Notes orales</strong><p>Les notifications sont d’abord enregistrées en base, puis envoyées en temps réel. Ainsi, même si l’utilisateur n’est pas connecté au moment de l’événement, il peut retrouver l’information plus tard.</p></div>
+    </section>
+
+    <section class="slide" id="slide-22">
+      <div class="slide-number">22 / 29</div>
+      <div class="kicker">Validation et robustesse</div>
+      <h2>Réduire les erreurs par plusieurs niveaux de contrôle</h2>
+      <p>Mécanismes utilisés :</p>
+<ul><li>formulaires structurés avec React Hook Form ;</li><li>validation des données avec Zod ;</li><li>contraintes Prisma et PostgreSQL ;</li><li>index sur les champs de recherche ;</li><li>migrations versionnées ;</li><li>seed pour initialiser les services et modes de paiement ;</li><li>journalisation des actions sensibles dans <code>AuditLog</code>.</li></ul>
+      <div class="notes"><strong>Notes orales</strong><p>La robustesse ne repose pas sur une seule couche. Les données sont contrôlées à l’entrée, structurées dans le modèle, puis protégées par les contraintes de la base. L’audit complète ce dispositif.</p></div>
+    </section>
+
+    <section class="slide" id="slide-23">
+      <div class="slide-number">23 / 29</div>
+      <div class="kicker">Interface utilisateur</div>
+      <h2>Une expérience adaptée aux profils utilisateurs</h2>
+      <p>Principes d’interface :</p>
+<ul><li>layout protégé avec sidebar et navbar ;</li><li>navigation dynamique selon le rôle ;</li><li>composants shadcn/ui pour cohérence et accessibilité ;</li><li>tableaux, modales, formulaires, graphiques ;</li><li>mode clair/sombre ;</li><li>internationalisation français/anglais ;</li><li>interface responsive pour desktop et mobile.</li></ul>
+      <div class="notes"><strong>Notes orales</strong><p>L’interface a été pensée pour que chaque utilisateur accède rapidement à ses tâches. La navigation par rôle réduit la surcharge visuelle et rend l’application plus simple à utiliser.</p></div>
+    </section>
+
+    <section class="slide" id="slide-24">
+      <div class="slide-number">24 / 29</div>
+      <div class="kicker">Démonstration proposée</div>
+      <h2>Présenter le projet à travers un parcours patient complet</h2>
+      <p>Scénario conseillé devant le jury :</p>
+<p>1. Connexion avec un rôle autorisé.</p>
+<p>2. Affichage du tableau de bord et de la navigation filtrée.</p>
+<p>3. Création ou consultation d’un patient.</p>
+<p>4. Création d’un rendez-vous.</p>
+<p>5. Consultation : signes vitaux, diagnostic, dossier médical.</p>
+<p>6. Génération de facture.</p>
+<p>7. Ouverture de session caisse et encaissement.</p>
+<p>8. Notification temps réel.</p>
+<p>9. Consultation de l’audit ou des paramètres admin.</p>
+      <div class="notes"><strong>Notes orales</strong><p>La démonstration doit raconter une histoire simple : un patient arrive, il est enregistré, il obtient un rendez-vous, il est consulté, puis il passe à la caisse. Ce scénario montre la cohérence de l’ensemble du système.</p></div>
+    </section>
+
+    <section class="slide" id="slide-25">
+      <div class="slide-number">25 / 29</div>
+      <div class="kicker">Résultats obtenus</div>
+      <h2>Une application complète couvrant les flux essentiels</h2>
+      <p>Résultats fonctionnels :</p>
+<ul><li>gestion des profils et des rôles ;</li><li>gestion des patients, médecins, staff et rendez-vous ;</li><li>dossier médical lié à la consultation ;</li><li>facturation et encaissement ;</li><li>notifications temps réel ;</li><li>audit et paramètres d’administration.</li></ul>
+<p>Résultats techniques :</p>
+<ul><li>architecture Next.js modulaire ;</li><li>modèle Prisma structuré ;</li><li>contrôle d’accès par middleware ;</li><li>intégration PostgreSQL, Clerk et Pusher.</li></ul>
+      <div class="notes"><strong>Notes orales</strong><p>Le résultat principal est un socle applicatif fonctionnel et cohérent. Le projet ne se limite pas à une interface : il intègre l’authentification, la base de données, les workflows métier et le temps réel.</p></div>
+    </section>
+
+    <section class="slide" id="slide-26">
+      <div class="slide-number">26 / 29</div>
+      <div class="kicker">Limites du projet</div>
+      <h2>Une analyse critique nécessaire pour une soutenance solide</h2>
+      <p>Limites actuelles :</p>
+<ul><li>absence de suite complète de tests automatisés ;</li><li>module laboratoire encore améliorable ;</li><li>permissions médicales pouvant être rendues plus fines ;</li><li>monitoring et sauvegardes à formaliser ;</li><li>conformité réglementaire santé à approfondir selon l’établissement ;</li><li>indicateurs analytiques encore limités.</li></ul>
+      <div class="notes"><strong>Notes orales</strong><p>Reconnaître les limites ne diminue pas la valeur du projet. Au contraire, cela montre une capacité d’analyse critique et une vision réaliste de ce qu’il faudrait faire pour passer vers une solution de production complète.</p></div>
+    </section>
+
+    <section class="slide" id="slide-27">
+      <div class="slide-number">27 / 29</div>
+      <div class="kicker">Perspectives</div>
+      <h2>Évolutions possibles après la défense</h2>
+      <p>Améliorations futures :</p>
+<ul><li>tests unitaires et end-to-end ;</li><li>module pharmacie et gestion des stocks ;</li><li>module laboratoire plus complet ;</li><li>rapports statistiques et exports administratifs ;</li><li>messagerie interne ;</li><li>sauvegardes automatiques et monitoring ;</li><li>audit de sécurité ;</li><li>règles de conformité et confidentialité plus détaillées.</li></ul>
+      <div class="notes"><strong>Notes orales</strong><p>Les perspectives montrent que MedFlow peut évoluer vers un système d’information hospitalier plus large. Les priorités futures seraient les tests, la sécurité, la conformité et l’enrichissement des modules métier.</p></div>
+    </section>
+
+    <section class="slide" id="slide-28">
+      <div class="slide-number">28 / 29</div>
+      <div class="kicker">Questions probables</div>
+      <h2>Réponses techniques à préparer</h2>
+      <p><strong>Pourquoi Next.js ?</strong>  </p>
+<p>Pour disposer d’un framework full-stack combinant interface, rendu serveur, API routes et server actions.</p>
+<p><strong>Pourquoi Prisma ?</strong>  </p>
+<p>Pour modéliser clairement les relations, gérer les migrations et bénéficier du typage.</p>
+<p><strong>Comment les accès sont-ils sécurisés ?</strong>  </p>
+<p>Par Clerk, le middleware RBAC, les helpers de permissions et la séparation des routes.</p>
+<p><strong>Comment éviter les conflits de rendez-vous ?</strong>  </p>
+<p>Par des contraintes uniques sur le médecin, le patient, la date et l’heure.</p>
+<p><strong>Pourquoi Pusher ?</strong>  </p>
+<p>Pour informer les utilisateurs en temps réel sans recourir au polling permanent.</p>
+      <div class="notes"><strong>Notes orales</strong><p>Cette slide est une aide à la préparation. Les réponses doivent rester courtes, techniques et liées aux besoins métier.</p></div>
+    </section>
+
+    <section class="slide" id="slide-29">
+      <div class="slide-number">29 / 29</div>
+      <div class="kicker">Conclusion</div>
+      <h2>MedFlow, une solution intégrée pour le parcours patient</h2>
+      <p>MedFlow propose une base complète pour la gestion électronique des dossiers patients :</p>
+<ul><li>centralisation des informations médicales et administratives ;</li><li>coordination entre patient, médecin, infirmier, administration et caisse ;</li><li>sécurité par rôle ;</li><li>traçabilité des actions sensibles ;</li><li>architecture web moderne et maintenable ;</li><li>adaptation au contexte local.</li></ul>
+<p><strong>Phrase de clôture :</strong> MedFlow illustre comment l’informatique peut améliorer l’organisation, la fiabilité et la continuité de l’information dans un établissement de santé.</p>
+      <div class="notes"><strong>Notes orales</strong><p>Pour conclure, je rappellerais que la valeur du projet réside dans son intégration. MedFlow relie les modules essentiels du parcours patient et montre une application concrète des compétences acquises en licence informatique.</p></div>
+    </section>
+  </main>
+</body>
+</html>

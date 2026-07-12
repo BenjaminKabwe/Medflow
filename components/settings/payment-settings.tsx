@@ -5,12 +5,11 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
+import { getLang } from "@/lib/i18n-server";
 
-const PAYMENT_METHODS = [
+const METHODS_STATIC = [
   {
     id: "CASH",
-    label: "Espèces",
-    description: "Paiement en liquide à la caisse de l'établissement.",
     icon: Banknote,
     color: "text-emerald-600 dark:text-emerald-400",
     bg: "bg-emerald-50 dark:bg-emerald-950/40",
@@ -18,8 +17,6 @@ const PAYMENT_METHODS = [
   },
   {
     id: "CARD",
-    label: "Carte bancaire",
-    description: "Paiement par carte de crédit ou de débit (Visa, Mastercard).",
     icon: CreditCard,
     color: "text-blue-600 dark:text-blue-400",
     bg: "bg-blue-50 dark:bg-blue-950/40",
@@ -27,13 +24,40 @@ const PAYMENT_METHODS = [
   },
 ] as const;
 
-export const PaymentSettings = () => {
+const STR = {
+  fr: {
+    title: "Modes de paiement",
+    subtitle: "Modes de paiement acceptés par l'établissement.",
+    active: "Actif",
+    footer:
+      "Les modes de paiement sont définis au niveau du système. Contactez votre administrateur technique pour en ajouter de nouveaux.",
+    methods: {
+      CASH: { label: "Espèces", description: "Paiement en liquide à la caisse de l'établissement." },
+      CARD: { label: "Carte bancaire", description: "Paiement par carte de crédit ou de débit (Visa, Mastercard)." },
+    } as Record<string, { label: string; description: string }>,
+  },
+  en: {
+    title: "Payment methods",
+    subtitle: "Payment methods accepted by the facility.",
+    active: "Active",
+    footer:
+      "Payment methods are defined at the system level. Contact your technical administrator to add new ones.",
+    methods: {
+      CASH: { label: "Cash", description: "Cash payment at the facility's counter." },
+      CARD: { label: "Bank card", description: "Payment by credit or debit card (Visa, Mastercard)." },
+    } as Record<string, { label: string; description: string }>,
+  },
+};
+
+export const PaymentSettings = async () => {
+  const t = STR[await getLang()];
+  const PAYMENT_METHODS = METHODS_STATIC.map((m) => ({ ...m, ...t.methods[m.id] }));
   return (
     <>
       <CardHeader>
-        <CardTitle className="capitalize">Modes de paiement</CardTitle>
+        <CardTitle className="capitalize">{t.title}</CardTitle>
         <CardDescription>
-          Modes de paiement acceptés par l'établissement.
+          {t.subtitle}
         </CardDescription>
       </CardHeader>
 
@@ -53,7 +77,7 @@ export const PaymentSettings = () => {
                 </p>
                 <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400`}>
                   <CheckCircle className="w-2.5 h-2.5" />
-                  Actif
+                  {t.active}
                 </span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -67,7 +91,7 @@ export const PaymentSettings = () => {
         ))}
 
         <p className="text-xs text-slate-400 dark:text-slate-600 pt-2">
-          Les modes de paiement sont définis au niveau du système. Contactez votre administrateur technique pour en ajouter de nouveaux.
+          {t.footer}
         </p>
       </CardContent>
     </>

@@ -6,6 +6,22 @@ import { CollectPaymentDialog } from "./collect-payment-dialog";
 import { getUnpaidPayments } from "@/app/actions/cashier";
 import { getActivePaymentMethods } from "@/app/actions/payment-methods";
 import type { PaymentMethodConfigRow } from "@/types";
+import { getLang } from "@/lib/i18n-server";
+
+const STR = {
+  fr: {
+    noPending: "Aucun paiement en attente",
+    allCollected: "Tous les paiements ont été encaissés.",
+    pendingPayments: "Paiements en attente",
+    unpaid: "Impayé",
+  },
+  en: {
+    noPending: "No pending payments",
+    allCollected: "All payments have been collected.",
+    pendingPayments: "Pending payments",
+    unpaid: "Unpaid",
+  },
+} as const;
 
 interface UnpaidPaymentsListProps {
   hasActiveSession: boolean;
@@ -14,6 +30,7 @@ interface UnpaidPaymentsListProps {
 export async function UnpaidPaymentsList({
   hasActiveSession,
 }: UnpaidPaymentsListProps) {
+  const t = STR[await getLang()];
   const [payments, activeMethods] = await Promise.all([
     getUnpaidPayments(),
     getActivePaymentMethods() as unknown as Promise<PaymentMethodConfigRow[]>,
@@ -27,10 +44,10 @@ export async function UnpaidPaymentsList({
         </div>
         <div>
           <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
-            Aucun paiement en attente
+            {t.noPending}
           </p>
           <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-            Tous les paiements ont été encaissés.
+            {t.allCollected}
           </p>
         </div>
       </div>
@@ -41,7 +58,7 @@ export async function UnpaidPaymentsList({
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
       <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
         <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-          Paiements en attente
+          {t.pendingPayments}
         </h3>
         <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
           {payments.length}
@@ -81,7 +98,7 @@ export async function UnpaidPaymentsList({
                   {p.total_amount.toLocaleString("fr-CD")} USD
                 </p>
                 <p className="text-[10px] text-amber-600 dark:text-amber-400 font-medium uppercase tracking-wide">
-                  Impayé
+                  {t.unpaid}
                 </p>
               </div>
               <CollectPaymentDialog

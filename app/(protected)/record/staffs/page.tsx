@@ -12,17 +12,41 @@ import { Staff } from "@prisma/client";
 import { format } from "date-fns";
 import { Users } from "lucide-react";
 import React from "react";
+import { getLang } from "@/lib/i18n-server";
 
-const columns = [
-  { header: "Info",            key: "name" },
-  { header: "Rôle",            key: "role",       className: "hidden md:table-cell" },
-  { header: "Téléphone",       key: "contact",    className: "hidden md:table-cell" },
-  { header: "Email",           key: "email",      className: "hidden lg:table-cell" },
-  { header: "Date d'arrivée",  key: "created_at", className: "hidden xl:table-cell" },
-  { header: "Actions",         key: "action" },
-];
+const STR = {
+  fr: {
+    colInfo: "Info",
+    colRole: "Rôle",
+    colPhone: "Téléphone",
+    colEmail: "Email",
+    colCreatedAt: "Date d'arrivée",
+    colActions: "Actions",
+    headerLabel: "Personnels",
+    registered: "enregistrés",
+  },
+  en: {
+    colInfo: "Info",
+    colRole: "Role",
+    colPhone: "Phone",
+    colEmail: "Email",
+    colCreatedAt: "Join date",
+    colActions: "Actions",
+    headerLabel: "Staff",
+    registered: "recorded",
+  },
+} as const;
 
 const StaffList = async (props: SearchParamsProps) => {
+  const t = STR[await getLang()];
+  const columns = [
+    { header: t.colInfo, key: "name" },
+    { header: t.colRole, key: "role", className: "hidden md:table-cell" },
+    { header: t.colPhone, key: "contact", className: "hidden md:table-cell" },
+    { header: t.colEmail, key: "email", className: "hidden lg:table-cell" },
+    { header: t.colCreatedAt, key: "created_at", className: "hidden xl:table-cell" },
+    { header: t.colActions, key: "action" },
+  ];
   const searchParams = await props.searchParams;
   const page = (searchParams?.p || "1") as string;
   const searchQuery = (searchParams?.q || "") as string;

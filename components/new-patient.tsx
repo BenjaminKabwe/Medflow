@@ -21,6 +21,104 @@ import { GENDER, MARITAL_STATUS, RELATION } from "@/lib";
 import { Button } from "./ui/button";
 import { createNewPatient, updatePatient } from "@/app/actions/patient";
 import { toast } from "sonner";
+import { useLanguage } from "@/components/providers";
+
+const STR = {
+  fr: {
+    error: "Échec de la création du patient",
+    profilePhoto: "Photo de profil",
+    changePhoto: "Changer la photo",
+    title: "Inscription patient",
+    description:
+      "Veuillez fournir toutes les informations ci-dessous afin de nous aider à mieux vous comprendre et à vous offrir un service de qualité.",
+    personalInfo: "Information personnelle",
+    firstName: "Prénom",
+    lastName: "Nom",
+    email: "Adresse e-mail",
+    genderPh: "Sélectionner le sexe",
+    genderLabel: "Sexe",
+    dob: "Date de naissance",
+    phone: "Numéro de téléphone",
+    maritalPh: "Sélectionner la situation matrimoniale",
+    maritalLabel: "Situation matrimoniale",
+    address: "Adresse",
+    familyInfo: "Informations familiales",
+    emergencyName: "Nom du contact d'urgence",
+    emergencyNumber: "Numéro du contact d'urgence",
+    relationPh: "Sélectionner le lien avec le contact",
+    relationLabel: "Lien de parenté",
+    medicalInfo: "Informations médicales",
+    bloodGroup: "Groupe sanguin",
+    allergies: "Allergies",
+    allergiesPh: "Lait",
+    conditions: "Antécédents médicaux",
+    history: "Historique médical",
+    insurer: "Assureur",
+    insuranceNumber: "Numéro d'assurance",
+    consent: "Consentement",
+    privacyLabel: "Acceptation de la politique de confidentialité",
+    privacyText:
+      "Je consens à la collecte, au stockage et à l'utilisation de mes données personnelles et médicales conformément à la politique de confidentialité. Je comprends comment mes données seront utilisées, avec qui elles peuvent être partagées, ainsi que mes droits d'accès, de correction et de suppression.",
+    serviceLabel: "Acceptation des conditions d'utilisation",
+    serviceText:
+      "J'accepte les conditions d'utilisation, y compris mes responsabilités en tant qu'utilisateur du système de gestion de santé, les limitations de responsabilité et le processus de résolution des litiges",
+    medicalConsentLabel: "Consentement éclairé aux soins médicaux",
+    medicalConsentText:
+      "Je donne mon consentement éclairé pour recevoir des soins et services médicaux via ce système. Je reconnais avoir été informé de la nature, des risques, des bénéfices et des alternatives des traitements proposés.",
+    submit: "Soumettre",
+    update: "Mettre à jour",
+    genderOpts: { MALE: "Homme", FEMALE: "Femme" } as Record<string, string>,
+    maritalOpts: { SINGLE: "Célibataire", MARRIED: "Marié(e)", DIVORCED: "Divorcé(e)", WIDOWED: "Veuf(ve)" } as Record<string, string>,
+    relationOpts: { mother: "mère", father: "père", husband: "mari", wife: "épouse", other: "autre" } as Record<string, string>,
+  },
+  en: {
+    error: "Failed to create the patient",
+    profilePhoto: "Profile photo",
+    changePhoto: "Change photo",
+    title: "Patient registration",
+    description:
+      "Please provide all the information below to help us understand you better and offer you quality service.",
+    personalInfo: "Personal information",
+    firstName: "First name",
+    lastName: "Last name",
+    email: "Email address",
+    genderPh: "Select gender",
+    genderLabel: "Gender",
+    dob: "Date of birth",
+    phone: "Phone number",
+    maritalPh: "Select marital status",
+    maritalLabel: "Marital status",
+    address: "Address",
+    familyInfo: "Family information",
+    emergencyName: "Emergency contact name",
+    emergencyNumber: "Emergency contact number",
+    relationPh: "Select relation to contact",
+    relationLabel: "Relationship",
+    medicalInfo: "Medical information",
+    bloodGroup: "Blood group",
+    allergies: "Allergies",
+    allergiesPh: "Milk",
+    conditions: "Medical conditions",
+    history: "Medical history",
+    insurer: "Insurance provider",
+    insuranceNumber: "Insurance number",
+    consent: "Consent",
+    privacyLabel: "Acceptance of the privacy policy",
+    privacyText:
+      "I consent to the collection, storage and use of my personal and medical data in accordance with the privacy policy. I understand how my data will be used, with whom it may be shared, as well as my rights to access, correct and delete it.",
+    serviceLabel: "Acceptance of the terms of use",
+    serviceText:
+      "I accept the terms of use, including my responsibilities as a user of the health management system, the limitations of liability and the dispute resolution process",
+    medicalConsentLabel: "Informed consent to medical care",
+    medicalConsentText:
+      "I give my informed consent to receive medical care and services through this system. I acknowledge having been informed of the nature, risks, benefits and alternatives of the proposed treatments.",
+    submit: "Submit",
+    update: "Update",
+    genderOpts: { MALE: "Male", FEMALE: "Female" } as Record<string, string>,
+    maritalOpts: { SINGLE: "Single", MARRIED: "Married", DIVORCED: "Divorced", WIDOWED: "Widowed" } as Record<string, string>,
+    relationOpts: { mother: "mother", father: "father", husband: "husband", wife: "wife", other: "other" } as Record<string, string>,
+  },
+};
 
 interface DataProps {
   data?: Patient;
@@ -28,6 +126,11 @@ interface DataProps {
 }
 export const NewPatient = ({ data, type }: DataProps) => {
   const { user } = useUser();
+  const { lang } = useLanguage();
+  const t = STR[lang];
+  const genderList = GENDER.map((g) => ({ ...g, label: t.genderOpts[g.value] ?? g.label }));
+  const maritalList = MARITAL_STATUS.map((m) => ({ ...m, label: t.maritalOpts[m.value] ?? m.label }));
+  const relationList = RELATION.map((r) => ({ ...r, label: t.relationOpts[r.value] ?? r.label }));
   const [loading, setLoading] = useState(false);
   const [imgURL, setImgURL] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -88,7 +191,7 @@ export const NewPatient = ({ data, type }: DataProps) => {
       router.push("/patient");
     } else {
       console.log(res);
-      toast.error("Échec de la création du patient");
+      toast.error(t.error);
     }
   };
 
@@ -134,10 +237,9 @@ export const NewPatient = ({ data, type }: DataProps) => {
   return (
     <Card className="max-w-6xl w-full p-4 ">
       <CardHeader>
-        <CardTitle>Inscription patient</CardTitle>
+        <CardTitle>{t.title}</CardTitle>
         <CardDescription>
-        Veuillez fournir toutes les informations ci-dessous afin de nous aider à mieux vous comprendre
-        et à vous offrir un service de qualité.
+        {t.description}
         </CardDescription>
       </CardHeader>
 
@@ -147,7 +249,7 @@ export const NewPatient = ({ data, type }: DataProps) => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-8 mt-5"
           >
-            <h3 className="text-lg font-semibold">Information Personnelle</h3>
+            <h3 className="text-lg font-semibold">{t.personalInfo}</h3>
             <>
               {/* PROFILE IMAGE */}
               <div className="flex justify-start mb-4">
@@ -158,7 +260,7 @@ export const NewPatient = ({ data, type }: DataProps) => {
                   {imgURL ? (
                     <img
                       src={imgURL}
-                      alt="Photo de profil"
+                      alt={t.profilePhoto}
                       className="w-28 h-28 rounded-full object-cover border-2 border-muted"
                     />
                   ) : (
@@ -166,7 +268,7 @@ export const NewPatient = ({ data, type }: DataProps) => {
                       {user?.imageUrl ? (
                         <img
                           src={user.imageUrl}
-                          alt="Photo de profil"
+                          alt={t.profilePhoto}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -181,7 +283,7 @@ export const NewPatient = ({ data, type }: DataProps) => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    <span className="text-white text-xs text-center leading-tight px-1">Changer la photo</span>
+                    <span className="text-white text-xs text-center leading-tight px-1">{t.changePhoto}</span>
                   </div>
                 </div>
                 <input
@@ -199,14 +301,14 @@ export const NewPatient = ({ data, type }: DataProps) => {
                   control={form.control}
                   name="first_name"
                   placeholder="John"
-                  label="Prénom"
+                  label={t.firstName}
                 />
                 <CustomInput
                   type="input"
                   control={form.control}
                   name="last_name"
                   placeholder="Doe"
-                  label="Nom"
+                  label={t.lastName}
                 />
               </div>
               <CustomInput
@@ -214,23 +316,23 @@ export const NewPatient = ({ data, type }: DataProps) => {
                 control={form.control}
                 name="email"
                 placeholder="john@example.com"
-                label="Adresse e-mail"
+                label={t.email}
               />
               <div className="flex flex-col lg:flex-row  gap-y-6 items-center gap-2 md:gap-x-4">
                 <CustomInput
                   type="select"
                   control={form.control}
                   name="gender"
-                  placeholder="Sélectionner le sexe"
-                  label="Sexe"
-                  selectList={GENDER!}
+                  placeholder={t.genderPh}
+                  label={t.genderLabel}
+                  selectList={genderList}
                 />
                 <CustomInput
                   type="input"
                   control={form.control}
                   name="date_of_birth"
                   placeholder="01-05-2000"
-                  label="Date de naissance"
+                  label={t.dob}
                   inputType="date"
                 />
               </div>
@@ -240,15 +342,15 @@ export const NewPatient = ({ data, type }: DataProps) => {
                   control={form.control}
                   name="phone"
                   placeholder="9225600735"
-                  label="Numéro de téléphone"
+                  label={t.phone}
                 />
                 <CustomInput
                   type="select"
                   control={form.control}
                   name="marital_status"
-                  placeholder="Sélectionner la situation matrimoniale"
-                  label="Situation matrimoniale"
-                  selectList={MARITAL_STATUS!}
+                  placeholder={t.maritalPh}
+                  label={t.maritalLabel}
+                  selectList={maritalList}
                 />
               </div>
               <CustomInput
@@ -256,96 +358,94 @@ export const NewPatient = ({ data, type }: DataProps) => {
                 control={form.control}
                 name="address"
                 placeholder="Av, jasmin 18, Q/Mompono"
-                label="Adresse"
+                label={t.address}
               />
             </>
 
             <div className="space-y-8">
-              <h3 className="text-lg font-semibold">Informations familiales</h3>
+              <h3 className="text-lg font-semibold">{t.familyInfo}</h3>
               <CustomInput
                 type="input"
                 control={form.control}
                 name="emergency_contact_name"
                 placeholder="Anne Smith"
-                label="Nom du contact d’urgence"
+                label={t.emergencyName}
               />
               <CustomInput
                 type="input"
                 control={form.control}
                 name="emergency_contact_number"
                 placeholder="675444467"
-                label="Numéro du contact d’urgence"
+                label={t.emergencyNumber}
               />
               <CustomInput
                 type="select"
                 control={form.control}
                 name="relation"
-                placeholder="Sélectionner le lien avec le contact"
-                label="Lien de parenté"
-                selectList={RELATION}
+                placeholder={t.relationPh}
+                label={t.relationLabel}
+                selectList={relationList}
               />
             </div>
 
             <div className="space-y-8">
-              <h3 className="text-lg font-semibold">Informations médicales</h3>
+              <h3 className="text-lg font-semibold">{t.medicalInfo}</h3>
 
               <CustomInput
                 type="input"
                 control={form.control}
                 name="blood_group"
                 placeholder="A+"
-                label="Groupe sanguin"
+                label={t.bloodGroup}
               />
               <CustomInput
                 type="input"
                 control={form.control}
                 name="allergies"
-                placeholder="Lait"
-                label="Allergies"
+                placeholder={t.allergiesPh}
+                label={t.allergies}
               />
               <CustomInput
                 type="input"
                 control={form.control}
                 name="medical_conditions"
-                placeholder="Antécédents médicaux"
-                label="Antécédents médicaux"
+                placeholder={t.conditions}
+                label={t.conditions}
               />
               <CustomInput
                 type="input"
                 control={form.control}
                 name="medical_history"
-                placeholder="Historique médical"
-                label="Historique médical"
+                placeholder={t.history}
+                label={t.history}
               />
               <div className="flex flex-col lg:flex-row  gap-y-6 items-center gap-2 md:gap-4">
                 <CustomInput
                   type="input"
                   control={form.control}
                   name="insurance_provider"
-                  placeholder="Assureur"
-                  label="Assureur"
+                  placeholder={t.insurer}
+                  label={t.insurer}
                 />{" "}
                 <CustomInput
                   type="input"
                   control={form.control}
                   name="insurance_number"
-                  placeholder="Numéro d’assurance"
-                  label="Numéro d’assurance"
+                  placeholder={t.insuranceNumber}
+                  label={t.insuranceNumber}
                 />
               </div>
             </div>
 
             {type !== "update" && (
               <div className="">
-                <h3 className="text-lg font-semibold mb-2">Consentement</h3>
+                <h3 className="text-lg font-semibold mb-2">{t.consent}</h3>
 
                 <div className="space-y-6">
                   <CustomInput
                     name="privacy_consent"
-                    label="Acceptation de la politique de confidentialité"
-                    placeholder="Je consens à la collecte, au stockage et à l’utilisation de mes données personnelles et médicales conformément à la politique de confidentialité.
-                    Je comprends comment mes données seront utilisées, avec qui elles peuvent être partagées,
-                    ainsi que mes droits d’accès, de correction et de suppression."
+                    label={t.privacyLabel}
+                    placeholder={t.privacyText}
                     type="checkbox"
                     control={form.control}
                   />
@@ -354,20 +454,16 @@ export const NewPatient = ({ data, type }: DataProps) => {
                     control={form.control}
                     type="checkbox"
                     name="service_consent"
-                    label=" Acceptation des conditions d’utilisation "
-                    placeholder=" J’accepte les conditions d’utilisation,
-                    y compris mes responsabilités en tant qu’utilisateur du système de gestion de santé,
-                    les limitations de responsabilité et le processus de résolution des litiges"
+                    label={t.serviceLabel}
+                    placeholder={t.serviceText}
                   />
 
                   <CustomInput
                     control={form.control}
                     type="checkbox"
                     name="medical_consent"
-                    label="Consentement éclairé aux soins médicaux"
-                    placeholder="Je donne mon consentement éclairé pour recevoir des soins et services médicaux via ce système.
-                    Je reconnais avoir été informé de la nature, des risques,
-                    des bénéfices et des alternatives des traitements proposés."
+                    label={t.medicalConsentLabel}
+                    placeholder={t.medicalConsentText}
                   />
                 </div>
               </div>
@@ -378,7 +474,7 @@ export const NewPatient = ({ data, type }: DataProps) => {
               type="submit"
               className="w-full md:w-fit px-6"
             >
-              {type === "create" ? "Submit" : "Update"}
+              {type === "create" ? t.submit : t.update}
             </Button>
           </form>
         </Form>

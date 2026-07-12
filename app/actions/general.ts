@@ -1,5 +1,7 @@
 "use server";
 
+import { am } from "@/lib/action-messages";
+
 import { ReviewFormValues, reviewSchema } from "@/lib/schema";
 import db from "@/lib/db";
 import { clerkClient } from "@clerk/nextjs/server";
@@ -39,7 +41,7 @@ export async function deleteDataById(
 
     return {
       success: true,
-      message: "Enregistrement supprimé avec succès",
+      message: await am("recordDeleted"),
       status: 200,
     };
   } catch (error) {
@@ -65,7 +67,7 @@ export async function createReview(values: ReviewFormValues) {
 
     return {
       success: true,
-      message: "Avis créé avec succès",
+      message: await am("reviewCreated"),
       status: 200,
     };
   } catch (error) {

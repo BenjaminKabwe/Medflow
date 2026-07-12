@@ -26,22 +26,53 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { openSession } from "@/app/actions/cashier";
+import { useLanguage } from "@/components/providers";
 
-const Schema = z.object({
-  opening_amount: z.coerce
-    .number()
-    .min(0, "Le fond de caisse ne peut pas être négatif"),
-  notes: z.string().max(500).optional(),
-});
+const STR = {
+  fr: {
+    negativeAmount: "Le fond de caisse ne peut pas être négatif",
+    genericError: "Une erreur est survenue. Veuillez réessayer.",
+    openSession: "Ouvrir une session",
+    openCashSession: "Ouvrir la session de caisse",
+    description: "Indiquez le fond de caisse disponible à l'ouverture.",
+    initialFund: "Fond de caisse initial",
+    notes: "Notes (optionnel)",
+    notesPlaceholder: "Observations à l'ouverture…",
+    cancel: "Annuler",
+    opening: "Ouverture…",
+    confirmOpen: "Ouvrir la session",
+  },
+  en: {
+    negativeAmount: "The cash float cannot be negative",
+    genericError: "An error occurred. Please try again.",
+    openSession: "Open a session",
+    openCashSession: "Open cash session",
+    description: "Enter the cash float available at opening.",
+    initialFund: "Initial cash float",
+    notes: "Notes (optional)",
+    notesPlaceholder: "Observations at opening…",
+    cancel: "Cancel",
+    opening: "Opening…",
+    confirmOpen: "Open session",
+  },
+} as const;
 
-type Values = z.infer<typeof Schema>;
+const Schema = (t: (typeof STR)[keyof typeof STR]) =>
+  z.object({
+    opening_amount: z.coerce.number().min(0, t.negativeAmount),
+    notes: z.string().max(500).optional(),
+  });
+
+type Values = z.infer<ReturnType<typeof Schema>>;
 
 export function OpenSessionDialog() {
+  const { lang } = useLanguage();
+  const t = STR[lang];
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<Values>({
-    resolver: zodResolver(Schema),
+    resolver: zodResolver(Schema(t)),
     defaultValues: { opening_amount: 0, notes: "" },
   });
 
@@ -61,7 +92,7 @@ export function OpenSessionDialog() {
         toast.error(result.message);
       }
     } catch {
-      toast.error("Une erreur est survenue. Veuillez réessayer.");
+      toast.error(t.genericError);
     } finally {
       setIsLoading(false);
     }
@@ -72,7 +103,7 @@ export function OpenSessionDialog() {
       <DialogTrigger asChild>
         <Button className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">
           <PlayCircle className="w-4 h-4" />
-          Ouvrir une session
+          {t.openSession}
         </Button>
       </DialogTrigger>
 
@@ -82,10 +113,10 @@ export function OpenSessionDialog() {
             <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950/50 flex items-center justify-center">
               <Banknote className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             </div>
-            Ouvrir la session de caisse
+            {t.openCashSession}
           </DialogTitle>
           <DialogDescription>
-            Indiquez le fond de caisse disponible à l'ouverture.
+            {t.description}
           </DialogDescription>
         </DialogHeader>
 
@@ -99,7 +130,7 @@ export function OpenSessionDialog() {
               name="opening_amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Fond de caisse initial</FormLabel>
+                  <FormLabel>{t.initialFund}</FormLabel>
                   <FormControl>
                     <div className="flex items-center border border-input rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
                       <Input
@@ -124,11 +155,11 @@ export function OpenSessionDialog() {
               name="notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Notes (optionnel)</FormLabel>
+                  <FormLabel>{t.notes}</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
-                      placeholder="Observations à l'ouverture…"
+                      placeholder={t.notesPlaceholder}
                       rows={2}
                       className="resize-none"
                     />
@@ -146,14 +177,14 @@ export function OpenSessionDialog() {
                 onClick={() => setOpen(false)}
                 disabled={isLoading}
               >
-                Annuler
+                {t.cancel}
               </Button>
               <Button
                 type="submit"
                 disabled={isLoading}
                 className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
               >
-                {isLoading ? "Ouverture…" : "Ouvrir la session"}
+                {isLoading ? t.opening : t.confirmOpen}
               </Button>
             </div>
           </form>

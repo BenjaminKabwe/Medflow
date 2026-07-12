@@ -7,6 +7,36 @@ import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { useRouter } from "next/navigation";
 import { appointmentAction } from "@/app/actions/appointment";
+import { useLanguage } from "@/components/providers";
+
+const STR = {
+  fr: {
+    autoReason: (status: string, date: string) =>
+      `Rendez-vous ${status} le ${date}`,
+    error: "Une erreur est survenue. Veuillez réessayer.",
+    pending: "En attente",
+    approve: "Approuver",
+    completed: "Terminé",
+    cancel: "Annuler",
+    reasonPh: "Motif de l'annulation...",
+    confirm: "Confirmer cette action ?",
+    yes: "Oui",
+    dateLocale: "fr-FR",
+  },
+  en: {
+    autoReason: (status: string, date: string) =>
+      `Appointment ${status} on ${date}`,
+    error: "An error occurred. Please try again.",
+    pending: "Pending",
+    approve: "Approve",
+    completed: "Completed",
+    cancel: "Cancel",
+    reasonPh: "Cancellation reason...",
+    confirm: "Confirm this action?",
+    yes: "Yes",
+    dateLocale: "en-GB",
+  },
+};
 
 interface ActionProps {
   id: string | number;
@@ -17,13 +47,18 @@ export const AppointmentAction = ({ id, status }: ActionProps) => {
   const [selected, setSelected] = useState("");
   const [reason, setReason] = useState("");
   const router = useRouter();
+  const { lang } = useLanguage();
+  const t = STR[lang];
 
   const handleAction = async () => {
     try {
       setIsLoading(true);
       const newReason =
         reason ||
-        `Rendez-vous ${selected.toLowerCase()} le ${new Date().toLocaleDateString("fr-FR")}`;
+        t.autoReason(
+          selected.toLowerCase(),
+          new Date().toLocaleDateString(t.dateLocale)
+        );
 
       const resp = await appointmentAction(
         id,
@@ -40,7 +75,7 @@ export const AppointmentAction = ({ id, status }: ActionProps) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error("Une erreur est survenue. Veuillez réessayer.");
+      toast.error(t.error);
     } finally {
       setIsLoading(false);
     }
@@ -55,7 +90,7 @@ export const AppointmentAction = ({ id, status }: ActionProps) => {
           className="bg-yellow-200 text-black"
           onClick={() => setSelected("PENDING")}
         >
-          En attente
+          {t.pending}
         </Button>
         <Button
           variant="outline"
@@ -65,7 +100,7 @@ export const AppointmentAction = ({ id, status }: ActionProps) => {
           className="bg-blue-200 text-black"
           onClick={() => setSelected("SCHEDULED")}
         >
-          Approuver
+          {t.approve}
         </Button>
         <Button
           variant="outline"
@@ -75,7 +110,7 @@ export const AppointmentAction = ({ id, status }: ActionProps) => {
           className="bg-emerald-200 text-black"
           onClick={() => setSelected("COMPLETED")}
         >
-          Terminé
+          {t.completed}
         </Button>
         <Button
           variant="outline"
@@ -85,7 +120,7 @@ export const AppointmentAction = ({ id, status }: ActionProps) => {
           className="bg-red-200 text-black"
           onClick={() => setSelected("CANCELLED")}
         >
-          Annuler
+          {t.cancel}
         </Button>
       </div>
       {selected === "CANCELLED" && (
@@ -93,7 +128,7 @@ export const AppointmentAction = ({ id, status }: ActionProps) => {
           <Textarea
             disabled={isLoading}
             className="mt-4"
-            placeholder="Motif de l'annulation..."
+            placeholder={t.reasonPh}
             onChange={(e) => setReason(e.target.value)}
           ></Textarea>
         </>
@@ -101,9 +136,9 @@ export const AppointmentAction = ({ id, status }: ActionProps) => {
 
       {selected && (
         <div className="flex items-center justify-between mt-6 bg-red-100 p-4 rounded">
-          <p className="">Confirmer cette action ?</p>
+          <p className="">{t.confirm}</p>
           <Button disabled={isLoading} type="button" onClick={handleAction}>
-            Oui
+            {t.yes}
           </Button>
         </div>
       )}

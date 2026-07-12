@@ -41,6 +41,7 @@ export type ServicesMinAggregateOutputType = {
   service_name: string | null
   description: string | null
   price: number | null
+  category: string | null
   created_at: Date | null
   updated_at: Date | null
 }
@@ -50,6 +51,7 @@ export type ServicesMaxAggregateOutputType = {
   service_name: string | null
   description: string | null
   price: number | null
+  category: string | null
   created_at: Date | null
   updated_at: Date | null
 }
@@ -59,6 +61,7 @@ export type ServicesCountAggregateOutputType = {
   service_name: number
   description: number
   price: number
+  category: number
   created_at: number
   updated_at: number
   _all: number
@@ -80,6 +83,7 @@ export type ServicesMinAggregateInputType = {
   service_name?: true
   description?: true
   price?: true
+  category?: true
   created_at?: true
   updated_at?: true
 }
@@ -89,6 +93,7 @@ export type ServicesMaxAggregateInputType = {
   service_name?: true
   description?: true
   price?: true
+  category?: true
   created_at?: true
   updated_at?: true
 }
@@ -98,6 +103,7 @@ export type ServicesCountAggregateInputType = {
   service_name?: true
   description?: true
   price?: true
+  category?: true
   created_at?: true
   updated_at?: true
   _all?: true
@@ -194,6 +200,7 @@ export type ServicesGroupByOutputType = {
   service_name: string
   description: string
   price: number
+  category: string | null
   created_at: Date
   updated_at: Date
   _count: ServicesCountAggregateOutputType | null
@@ -226,6 +233,7 @@ export type ServicesWhereInput = {
   service_name?: Prisma.StringFilter<"Services"> | string
   description?: Prisma.StringFilter<"Services"> | string
   price?: Prisma.FloatFilter<"Services"> | number
+  category?: Prisma.StringNullableFilter<"Services"> | string | null
   created_at?: Prisma.DateTimeFilter<"Services"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"Services"> | Date | string
   labtest?: Prisma.LabTestListRelationFilter
@@ -237,6 +245,7 @@ export type ServicesOrderByWithRelationInput = {
   service_name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  category?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   labtest?: Prisma.LabTestOrderByRelationAggregateInput
@@ -251,6 +260,7 @@ export type ServicesWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ServicesWhereInput | Prisma.ServicesWhereInput[]
   description?: Prisma.StringFilter<"Services"> | string
   price?: Prisma.FloatFilter<"Services"> | number
+  category?: Prisma.StringNullableFilter<"Services"> | string | null
   created_at?: Prisma.DateTimeFilter<"Services"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"Services"> | Date | string
   labtest?: Prisma.LabTestListRelationFilter
@@ -262,6 +272,7 @@ export type ServicesOrderByWithAggregationInput = {
   service_name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  category?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   _count?: Prisma.ServicesCountOrderByAggregateInput
@@ -279,6 +290,7 @@ export type ServicesScalarWhereWithAggregatesInput = {
   service_name?: Prisma.StringWithAggregatesFilter<"Services"> | string
   description?: Prisma.StringWithAggregatesFilter<"Services"> | string
   price?: Prisma.FloatWithAggregatesFilter<"Services"> | number
+  category?: Prisma.StringNullableWithAggregatesFilter<"Services"> | string | null
   created_at?: Prisma.DateTimeWithAggregatesFilter<"Services"> | Date | string
   updated_at?: Prisma.DateTimeWithAggregatesFilter<"Services"> | Date | string
 }
@@ -287,6 +299,7 @@ export type ServicesCreateInput = {
   service_name: string
   description: string
   price: number
+  category?: string | null
   created_at?: Date | string
   updated_at?: Date | string
   labtest?: Prisma.LabTestCreateNestedManyWithoutServicesInput
@@ -298,6 +311,7 @@ export type ServicesUncheckedCreateInput = {
   service_name: string
   description: string
   price: number
+  category?: string | null
   created_at?: Date | string
   updated_at?: Date | string
   labtest?: Prisma.LabTestUncheckedCreateNestedManyWithoutServicesInput
@@ -308,6 +322,7 @@ export type ServicesUpdateInput = {
   service_name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   labtest?: Prisma.LabTestUpdateManyWithoutServicesNestedInput
@@ -319,6 +334,7 @@ export type ServicesUncheckedUpdateInput = {
   service_name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   labtest?: Prisma.LabTestUncheckedUpdateManyWithoutServicesNestedInput
@@ -330,6 +346,7 @@ export type ServicesCreateManyInput = {
   service_name: string
   description: string
   price: number
+  category?: string | null
   created_at?: Date | string
   updated_at?: Date | string
 }
@@ -338,6 +355,7 @@ export type ServicesUpdateManyMutationInput = {
   service_name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -347,6 +365,7 @@ export type ServicesUncheckedUpdateManyInput = {
   service_name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -361,6 +380,7 @@ export type ServicesCountOrderByAggregateInput = {
   service_name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  category?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
@@ -375,6 +395,7 @@ export type ServicesMaxOrderByAggregateInput = {
   service_name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  category?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
@@ -384,6 +405,7 @@ export type ServicesMinOrderByAggregateInput = {
   service_name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  category?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
@@ -425,6 +447,7 @@ export type ServicesCreateWithoutBillsInput = {
   service_name: string
   description: string
   price: number
+  category?: string | null
   created_at?: Date | string
   updated_at?: Date | string
   labtest?: Prisma.LabTestCreateNestedManyWithoutServicesInput
@@ -435,6 +458,7 @@ export type ServicesUncheckedCreateWithoutBillsInput = {
   service_name: string
   description: string
   price: number
+  category?: string | null
   created_at?: Date | string
   updated_at?: Date | string
   labtest?: Prisma.LabTestUncheckedCreateNestedManyWithoutServicesInput
@@ -460,6 +484,7 @@ export type ServicesUpdateWithoutBillsInput = {
   service_name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   labtest?: Prisma.LabTestUpdateManyWithoutServicesNestedInput
@@ -470,6 +495,7 @@ export type ServicesUncheckedUpdateWithoutBillsInput = {
   service_name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   labtest?: Prisma.LabTestUncheckedUpdateManyWithoutServicesNestedInput
@@ -479,6 +505,7 @@ export type ServicesCreateWithoutLabtestInput = {
   service_name: string
   description: string
   price: number
+  category?: string | null
   created_at?: Date | string
   updated_at?: Date | string
   bills?: Prisma.PatientBillsCreateNestedManyWithoutServiceInput
@@ -489,6 +516,7 @@ export type ServicesUncheckedCreateWithoutLabtestInput = {
   service_name: string
   description: string
   price: number
+  category?: string | null
   created_at?: Date | string
   updated_at?: Date | string
   bills?: Prisma.PatientBillsUncheckedCreateNestedManyWithoutServiceInput
@@ -514,6 +542,7 @@ export type ServicesUpdateWithoutLabtestInput = {
   service_name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bills?: Prisma.PatientBillsUpdateManyWithoutServiceNestedInput
@@ -524,6 +553,7 @@ export type ServicesUncheckedUpdateWithoutLabtestInput = {
   service_name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bills?: Prisma.PatientBillsUncheckedUpdateManyWithoutServiceNestedInput
@@ -574,6 +604,7 @@ export type ServicesSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   service_name?: boolean
   description?: boolean
   price?: boolean
+  category?: boolean
   created_at?: boolean
   updated_at?: boolean
   labtest?: boolean | Prisma.Services$labtestArgs<ExtArgs>
@@ -586,6 +617,7 @@ export type ServicesSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   service_name?: boolean
   description?: boolean
   price?: boolean
+  category?: boolean
   created_at?: boolean
   updated_at?: boolean
 }, ExtArgs["result"]["services"]>
@@ -595,6 +627,7 @@ export type ServicesSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   service_name?: boolean
   description?: boolean
   price?: boolean
+  category?: boolean
   created_at?: boolean
   updated_at?: boolean
 }, ExtArgs["result"]["services"]>
@@ -604,11 +637,12 @@ export type ServicesSelectScalar = {
   service_name?: boolean
   description?: boolean
   price?: boolean
+  category?: boolean
   created_at?: boolean
   updated_at?: boolean
 }
 
-export type ServicesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "service_name" | "description" | "price" | "created_at" | "updated_at", ExtArgs["result"]["services"]>
+export type ServicesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "service_name" | "description" | "price" | "category" | "created_at" | "updated_at", ExtArgs["result"]["services"]>
 export type ServicesInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   labtest?: boolean | Prisma.Services$labtestArgs<ExtArgs>
   bills?: boolean | Prisma.Services$billsArgs<ExtArgs>
@@ -628,6 +662,7 @@ export type $ServicesPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     service_name: string
     description: string
     price: number
+    category: string | null
     created_at: Date
     updated_at: Date
   }, ExtArgs["result"]["services"]>
@@ -1059,6 +1094,7 @@ export interface ServicesFieldRefs {
   readonly service_name: Prisma.FieldRef<"Services", 'String'>
   readonly description: Prisma.FieldRef<"Services", 'String'>
   readonly price: Prisma.FieldRef<"Services", 'Float'>
+  readonly category: Prisma.FieldRef<"Services", 'String'>
   readonly created_at: Prisma.FieldRef<"Services", 'DateTime'>
   readonly updated_at: Prisma.FieldRef<"Services", 'DateTime'>
 }

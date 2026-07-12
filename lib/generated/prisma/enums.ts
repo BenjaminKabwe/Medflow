@@ -15,7 +15,8 @@ export const Role = {
   DOCTOR: 'DOCTOR',
   LAB_TECHNICIAN: 'LAB_TECHNICIAN',
   PATIENT: 'PATIENT',
-  CASHIER: 'CASHIER'
+  CASHIER: 'CASHIER',
+  PHARMACIST: 'PHARMACIST'
 } as const
 
 export type Role = (typeof Role)[keyof typeof Role]
@@ -144,7 +145,71 @@ export const NotificationType = {
   RENDEZ_VOUS_CONFIRME: 'RENDEZ_VOUS_CONFIRME',
   RENDEZ_VOUS_ANNULE: 'RENDEZ_VOUS_ANNULE',
   RENDEZ_VOUS_MODIFIE: 'RENDEZ_VOUS_MODIFIE',
-  PAIEMENT_RECU: 'PAIEMENT_RECU'
+  PAIEMENT_RECU: 'PAIEMENT_RECU',
+  STOCK_BAS: 'STOCK_BAS',
+  MEDICAMENT_EXPIRE: 'MEDICAMENT_EXPIRE',
+  DISPENSATION: 'DISPENSATION'
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
+
+
+export const MedicationForm = {
+  COMPRIME: 'COMPRIME',
+  GELULE: 'GELULE',
+  SIROP: 'SIROP',
+  SUSPENSION: 'SUSPENSION',
+  INJECTION: 'INJECTION',
+  POMMADE: 'POMMADE',
+  CREME: 'CREME',
+  GOUTTE: 'GOUTTE',
+  SUPPOSITOIRE: 'SUPPOSITOIRE',
+  PATCH: 'PATCH',
+  INHALATEUR: 'INHALATEUR',
+  SACHET: 'SACHET',
+  AUTRE: 'AUTRE'
+} as const
+
+export type MedicationForm = (typeof MedicationForm)[keyof typeof MedicationForm]
+
+
+export const StockMovementType = {
+  IN: 'IN',
+  OUT: 'OUT',
+  ADJUSTMENT: 'ADJUSTMENT',
+  RETURN: 'RETURN',
+  EXPIRED: 'EXPIRED',
+  LOSS: 'LOSS'
+} as const
+
+export type StockMovementType = (typeof StockMovementType)[keyof typeof StockMovementType]
+
+
+export const PurchaseOrderStatus = {
+  DRAFT: 'DRAFT',
+  ORDERED: 'ORDERED',
+  PARTIALLY_RECEIVED: 'PARTIALLY_RECEIVED',
+  RECEIVED: 'RECEIVED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type PurchaseOrderStatus = (typeof PurchaseOrderStatus)[keyof typeof PurchaseOrderStatus]
+
+
+export const DispensationStatus = {
+  DISPENSED: 'DISPENSED',
+  CANCELLED: 'CANCELLED',
+  RETURNED: 'RETURNED'
+} as const
+
+export type DispensationStatus = (typeof DispensationStatus)[keyof typeof DispensationStatus]
+
+
+export const PrescriptionStatus = {
+  PENDING: 'PENDING',
+  PARTIALLY_DISPENSED: 'PARTIALLY_DISPENSED',
+  DISPENSED: 'DISPENSED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type PrescriptionStatus = (typeof PrescriptionStatus)[keyof typeof PrescriptionStatus]

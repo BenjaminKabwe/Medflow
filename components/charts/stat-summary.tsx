@@ -31,11 +31,11 @@ export const StatSummary = ({ data, total }: StatSummaryProps) => {
   const chartData = [
     { name: t.charts.cancelled, count: cancelled || 0.01, fill: "#f43f5e" },
     { name: t.charts.completed, count: completed || 0.01, fill: "#10b981" },
-    { name: t.charts.pending,   count: pending   || 0.01, fill: "#0ea5e9" },
+    { name: t.charts.pending,   count: pending   || 0.01, fill: "#0284c7" },
   ];
 
   const legend = [
-    { color: "#0ea5e9", label: t.charts.pending,   count: pending,   pct: pct(pending) },
+    { color: "#0284c7", label: t.charts.pending,   count: pending,   pct: pct(pending) },
     { color: "#10b981", label: t.charts.completed,  count: completed, pct: pct(completed) },
     { color: "#f43f5e", label: t.charts.cancelled,  count: cancelled, pct: pct(cancelled) },
   ];

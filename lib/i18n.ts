@@ -23,6 +23,15 @@ export const translations = {
       settings:          "Paramètres",
       cashierDashboard:  "Caisse",
       cashierSessions:   "Sessions de caisse",
+      pharmacy:          "Pharmacie",
+      pharmacyCatalog:   "Catalogue",
+      pharmacyInventory: "Inventaire",
+      pharmacySuppliers: "Fournisseurs",
+      pharmacyPurchaseOrders: "Bons de commande",
+      pharmacyPrescriptions: "Ordonnances",
+      pharmacyDispensation: "Dispensations",
+      pharmacyAlerts:    "Alertes stock",
+      labQueue:          "File d'attente",
       logout:            "Déconnexion",
     },
 
@@ -30,6 +39,8 @@ export const translations = {
     sections: {
       principal: "Principal",
       management: "Gestion",
+      pharmacy:  "Pharmacie",
+      laboratory: "Laboratoire",
       system: "Système",
     },
 
@@ -61,6 +72,13 @@ export const translations = {
       cashier:           "Caisse",
       dashboard:         "Tableau de bord",
       "cashier-sessions": "Sessions de caisse",
+      pharmacy:          "Pharmacie",
+      pharmacist:        "Espace pharmacien",
+      medications:       "Médicaments",
+      inventory:         "Inventaire",
+      suppliers:         "Fournisseurs",
+      dispensation:      "Dispensations",
+      alerts:            "Alertes",
     },
 
     /* ── Dashboard stat cards ── */
@@ -179,6 +197,15 @@ export const translations = {
       settings:          "Settings",
       cashierDashboard:  "Cashier",
       cashierSessions:   "Cashier sessions",
+      pharmacy:          "Pharmacy",
+      pharmacyCatalog:   "Catalog",
+      pharmacyInventory: "Inventory",
+      pharmacySuppliers: "Suppliers",
+      pharmacyPurchaseOrders: "Purchase orders",
+      pharmacyPrescriptions: "Prescriptions",
+      pharmacyDispensation: "Dispensations",
+      pharmacyAlerts:    "Stock alerts",
+      labQueue:          "Work queue",
       logout:            "Log out",
     },
 
@@ -186,6 +213,8 @@ export const translations = {
     sections: {
       principal:  "Main",
       management: "Management",
+      pharmacy:   "Pharmacy",
+      laboratory: "Laboratory",
       system:     "System",
     },
 
@@ -217,6 +246,13 @@ export const translations = {
       cashier:           "Cashier",
       dashboard:         "Dashboard",
       "cashier-sessions": "Cashier sessions",
+      pharmacy:          "Pharmacy",
+      pharmacist:        "Pharmacist space",
+      medications:       "Medications",
+      inventory:         "Inventory",
+      suppliers:         "Suppliers",
+      dispensation:      "Dispensations",
+      alerts:            "Alerts",
     },
 
     /* ── Dashboard stat cards ── */
@@ -322,9 +358,12 @@ export interface Translations {
     prescription: string; myPayments: string; notifications: string;
     auditLogs: string; settings: string;
     cashierDashboard: string; cashierSessions: string;
+    pharmacy: string; pharmacyCatalog: string; pharmacyInventory: string;
+    pharmacySuppliers: string; pharmacyPurchaseOrders: string; pharmacyPrescriptions: string; pharmacyDispensation: string; pharmacyAlerts: string;
+    labQueue: string;
     logout: string;
   };
-  sections: { principal: string; management: string; system: string };
+  sections: { principal: string; management: string; pharmacy: string; laboratory: string; system: string };
   navbar: { search: string; lang: string };
   pages: Record<string, string>;
   stats: {

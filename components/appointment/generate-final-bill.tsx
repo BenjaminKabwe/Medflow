@@ -20,6 +20,34 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { Form } from "../ui/form";
+import { useLanguage } from "@/components/providers";
+
+const STR = {
+  fr: {
+    success: "Facture générée avec succès !",
+    error: "Une erreur est survenue. Veuillez réessayer.",
+    trigger: "Générer la facture finale",
+    title: "Facture médicale du patient",
+    total: "Total",
+    discountPh: "ex : 5",
+    discount: "Remise (%)",
+    billDate: "Date de facturation",
+    generating: "Génération en cours...",
+    generate: "Générer la facture",
+  },
+  en: {
+    success: "Bill generated successfully!",
+    error: "An error occurred. Please try again.",
+    trigger: "Generate final bill",
+    title: "Patient medical bill",
+    total: "Total",
+    discountPh: "e.g. 5",
+    discount: "Discount (%)",
+    billDate: "Billing date",
+    generating: "Generating...",
+    generate: "Generate bill",
+  },
+};
 
 interface DataProps {
   id?: string | number;
@@ -32,6 +60,8 @@ export const GenerateFinalBills = ({ id, total_bill }: DataProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { lang } = useLanguage();
+  const t = STR[lang];
 
   const form = useForm<z.infer<typeof PaymentSchema>>({
     resolver: zodResolver(PaymentSchema),
@@ -50,7 +80,7 @@ export const GenerateFinalBills = ({ id, total_bill }: DataProps) => {
       const resp = await generateBill(values);
 
       if (resp.success) {
-        toast.success("Facture générée avec succès !");
+        toast.success(t.success);
         setOpen(false);
         router.refresh();
         form.reset();
@@ -59,7 +89,7 @@ export const GenerateFinalBills = ({ id, total_bill }: DataProps) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error("Une erreur est survenue. Veuillez réessayer.");
+      toast.error(t.error);
     } finally {
       setIsLoading(false);
     }
@@ -70,12 +100,12 @@ export const GenerateFinalBills = ({ id, total_bill }: DataProps) => {
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="text-sm font-normal">
           <Plus size={22} className="text-gray-400" />
-          Générer la facture finale
+          {t.trigger}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <CardHeader className="px-0">
-          <DialogTitle>Facture médicale du patient</DialogTitle>
+          <DialogTitle>{t.title}</DialogTitle>
         </CardHeader>
 
         <Form {...form}>
@@ -85,7 +115,7 @@ export const GenerateFinalBills = ({ id, total_bill }: DataProps) => {
           >
             <div className="flex items-center gap-2">
               <div>
-                <span className="text-sm text-gray-500">Total</span>
+                <span className="text-sm text-gray-500">{t.total}</span>
                 <p className="text-3xl font-semibold">
                   {total_bill?.toFixed(2)}
                 </p>
@@ -96,15 +126,15 @@ export const GenerateFinalBills = ({ id, total_bill }: DataProps) => {
               type="input"
               control={form.control}
               name="discount"
-              placeholder="ex : 5"
-              label="Remise (%)"
+              placeholder={t.discountPh}
+              label={t.discount}
             />
 
             <CustomInput
               type="input"
               control={form.control}
               name="bill_date"
-              label="Date de facturation"
+              label={t.billDate}
               placeholder=""
               inputType="date"
             />
@@ -114,7 +144,7 @@ export const GenerateFinalBills = ({ id, total_bill }: DataProps) => {
               disabled={isLoading}
               className="bg-blue-600 w-full"
             >
-              {isLoading ? "Génération en cours..." : "Générer la facture"}
+              {isLoading ? t.generating : t.generate}
             </Button>
           </form>
         </Form>

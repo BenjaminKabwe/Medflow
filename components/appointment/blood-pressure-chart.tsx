@@ -11,6 +11,26 @@ import {
   YAxis,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { useLanguage } from "@/components/providers";
+
+const STR = {
+  fr: {
+    title: "Tension artérielle",
+    lastMeasure: "Dernière mesure",
+    avg7days: "Moyenne 7 jours",
+    noData: "Aucune donnée disponible",
+    systolic: "Systolique",
+    diastolic: "Diastolique",
+  },
+  en: {
+    title: "Blood pressure",
+    lastMeasure: "Last measurement",
+    avg7days: "7-day average",
+    noData: "No data available",
+    systolic: "Systolic",
+    diastolic: "Diastolic",
+  },
+};
 
 interface BloodPressureChartProps {
   average: string;
@@ -22,12 +42,14 @@ interface BloodPressureChartProps {
 }
 
 const BloodPressureChart = ({ data, average }: BloodPressureChartProps) => {
+  const { lang } = useLanguage();
+  const t = STR[lang];
   const lastData = data[data.length - 1];
 
   return (
     <Card className="shadow-none col-span-2">
       <CardHeader>
-        <CardTitle>Tension artérielle</CardTitle>
+        <CardTitle>{t.title}</CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -36,18 +58,18 @@ const BloodPressureChart = ({ data, average }: BloodPressureChartProps) => {
             <p className="text-lg xl:text-xl font-semibold">
               {lastData?.systolic ?? 0}/{lastData?.diastolic ?? 0} mmHg
             </p>
-            <p className="text-sm text-muted-foreground">Dernière mesure</p>
+            <p className="text-sm text-muted-foreground">{t.lastMeasure}</p>
           </div>
 
           <div>
             <p className="text-lg xl:text-xl font-semibold">{average}</p>
-            <p className="text-sm text-muted-foreground">Moyenne 7 jours</p>
+            <p className="text-sm text-muted-foreground">{t.avg7days}</p>
           </div>
         </div>
 
         {data.length === 0 ? (
           <p className="text-center text-sm text-muted-foreground py-16">
-            Aucune donnée disponible
+            {t.noData}
           </p>
         ) : (
           <ResponsiveContainer width="100%" height={400}>
@@ -77,14 +99,14 @@ const BloodPressureChart = ({ data, average }: BloodPressureChartProps) => {
               />
               <Bar
                 dataKey="systolic"
-                name="Systolique"
+                name={t.systolic}
                 fill="#000000"
                 legendType="circle"
                 radius={[10, 10, 0, 0]}
               />
               <Bar
                 dataKey="diastolic"
-                name="Diastolique"
+                name={t.diastolic}
                 fill="#2563eb"
                 legendType="circle"
                 radius={[10, 10, 0, 0]}

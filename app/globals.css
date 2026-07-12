@@ -28,12 +28,12 @@
     --ring: 199 89% 48%;
     --radius: 0.75rem;
 
-    /* Sidebar premium dark vars */
-    --sidebar-bg: 222 47% 8%;
-    --sidebar-hover: 222 47% 13%;
-    --sidebar-border: 222 47% 14%;
-    --sidebar-text: 215 20% 60%;
-    --sidebar-text-muted: 215 14% 40%;
+    /* Sidebar — light theme */
+    --sidebar-bg: 0 0% 100%;
+    --sidebar-hover: 210 40% 96%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-text: 215 16% 47%;
+    --sidebar-text-muted: 215 14% 55%;
 
     /* Charts */
     --chart-1: 199 89% 48%;
@@ -68,6 +68,13 @@
     --chart-3: 38 92% 50%;
     --chart-4: 262 83% 58%;
     --chart-5: 0 72% 51%;
+
+    /* Sidebar premium dark vars */
+    --sidebar-bg: 222 47% 8%;
+    --sidebar-hover: 222 47% 13%;
+    --sidebar-border: 222 47% 14%;
+    --sidebar-text: 215 20% 60%;
+    --sidebar-text-muted: 215 14% 40%;
   }
 }
 
@@ -77,10 +84,24 @@
   }
   html {
     font-family: var(--font-inter), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
   body {
     @apply bg-background text-foreground;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-figtree), var(--font-inter), system-ui, sans-serif;
+    letter-spacing: -0.011em;
+  }
+  ::selection {
+    background: hsl(199 89% 48% / 0.18);
+    color: hsl(199 89% 25%);
+  }
+  .dark ::selection {
+    background: hsl(199 89% 48% / 0.28);
+    color: hsl(199 80% 90%);
   }
 }
 
@@ -130,7 +151,7 @@ body {
 
   /* Premium gradient text */
   .gradient-text {
-    @apply bg-gradient-to-r from-sky-500 to-indigo-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-teal-600 to-emerald-500 bg-clip-text text-transparent;
   }
 
   /* Glass card */
@@ -152,7 +173,7 @@ body {
 
 /* Premium Doctor Card */
 .doctorCard {
-  @apply bg-white dark:bg-[hsl(222,47%,11%)] p-4 rounded-xl flex gap-4 w-full md:w-[48%] xl:w-full border border-slate-100 dark:border-[hsl(222,47%,16%)] card-shadow hover:card-shadow-md transition-shadow duration-200 text-slate-800 dark:text-slate-100;
+  @apply bg-white dark:bg-[hsl(196,30%,10%)] p-4 rounded-xl flex gap-4 w-full md:w-[48%] xl:w-full border border-slate-100 dark:border-[hsl(196,22%,17%)] card-shadow hover:card-shadow-md transition-shadow duration-200 text-slate-800 dark:text-slate-100;
 }
 
 /* ─── Keyframe animations ─── */

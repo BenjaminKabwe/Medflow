@@ -4,12 +4,26 @@ import { useState } from "react";
 import { Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { adminCloseSession } from "@/app/actions/cashier";
+import { useLanguage } from "@/components/providers";
+
+const STR = {
+  fr: {
+    confirm: "Clôturer cette session de caisse ? Cette action est irréversible.",
+    close: "Clôturer",
+  },
+  en: {
+    confirm: "Close this cash session? This action is irreversible.",
+    close: "Close",
+  },
+} as const;
 
 export function AdminCloseSessionButton({ sessionId }: { sessionId: number }) {
+  const { lang } = useLanguage();
+  const t = STR[lang];
   const [loading, setLoading] = useState(false);
 
   async function handleClose() {
-    if (!confirm("Clôturer cette session de caisse ? Cette action est irréversible.")) return;
+    if (!confirm(t.confirm)) return;
     setLoading(true);
     try {
       const result = await adminCloseSession(sessionId);
@@ -34,7 +48,7 @@ export function AdminCloseSessionButton({ sessionId }: { sessionId: number }) {
       ) : (
         <X className="w-3 h-3" />
       )}
-      Clôturer
+      {t.close}
     </button>
   );
 }

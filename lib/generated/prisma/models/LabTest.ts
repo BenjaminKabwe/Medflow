@@ -41,11 +41,16 @@ export type LabTestSumAggregateOutputType = {
 export type LabTestMinAggregateOutputType = {
   id: number | null
   record_id: number | null
-  test_date: Date | null
-  result: string | null
-  status: $Enums.LabTestStatus | null
-  notes: string | null
   service_id: number | null
+  status: $Enums.LabTestStatus | null
+  result: string | null
+  notes: string | null
+  requested_by: string | null
+  requested_by_name: string | null
+  performed_by: string | null
+  performed_by_name: string | null
+  test_date: Date | null
+  completed_at: Date | null
   created_at: Date | null
   updated_at: Date | null
 }
@@ -53,11 +58,16 @@ export type LabTestMinAggregateOutputType = {
 export type LabTestMaxAggregateOutputType = {
   id: number | null
   record_id: number | null
-  test_date: Date | null
-  result: string | null
-  status: $Enums.LabTestStatus | null
-  notes: string | null
   service_id: number | null
+  status: $Enums.LabTestStatus | null
+  result: string | null
+  notes: string | null
+  requested_by: string | null
+  requested_by_name: string | null
+  performed_by: string | null
+  performed_by_name: string | null
+  test_date: Date | null
+  completed_at: Date | null
   created_at: Date | null
   updated_at: Date | null
 }
@@ -65,11 +75,16 @@ export type LabTestMaxAggregateOutputType = {
 export type LabTestCountAggregateOutputType = {
   id: number
   record_id: number
-  test_date: number
-  result: number
-  status: number
-  notes: number
   service_id: number
+  status: number
+  result: number
+  notes: number
+  requested_by: number
+  requested_by_name: number
+  performed_by: number
+  performed_by_name: number
+  test_date: number
+  completed_at: number
   created_at: number
   updated_at: number
   _all: number
@@ -91,11 +106,16 @@ export type LabTestSumAggregateInputType = {
 export type LabTestMinAggregateInputType = {
   id?: true
   record_id?: true
-  test_date?: true
-  result?: true
-  status?: true
-  notes?: true
   service_id?: true
+  status?: true
+  result?: true
+  notes?: true
+  requested_by?: true
+  requested_by_name?: true
+  performed_by?: true
+  performed_by_name?: true
+  test_date?: true
+  completed_at?: true
   created_at?: true
   updated_at?: true
 }
@@ -103,11 +123,16 @@ export type LabTestMinAggregateInputType = {
 export type LabTestMaxAggregateInputType = {
   id?: true
   record_id?: true
-  test_date?: true
-  result?: true
-  status?: true
-  notes?: true
   service_id?: true
+  status?: true
+  result?: true
+  notes?: true
+  requested_by?: true
+  requested_by_name?: true
+  performed_by?: true
+  performed_by_name?: true
+  test_date?: true
+  completed_at?: true
   created_at?: true
   updated_at?: true
 }
@@ -115,11 +140,16 @@ export type LabTestMaxAggregateInputType = {
 export type LabTestCountAggregateInputType = {
   id?: true
   record_id?: true
-  test_date?: true
-  result?: true
-  status?: true
-  notes?: true
   service_id?: true
+  status?: true
+  result?: true
+  notes?: true
+  requested_by?: true
+  requested_by_name?: true
+  performed_by?: true
+  performed_by_name?: true
+  test_date?: true
+  completed_at?: true
   created_at?: true
   updated_at?: true
   _all?: true
@@ -214,11 +244,16 @@ export type LabTestGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 export type LabTestGroupByOutputType = {
   id: number
   record_id: number
-  test_date: Date
-  result: string
-  status: $Enums.LabTestStatus
-  notes: string | null
   service_id: number
+  status: $Enums.LabTestStatus
+  result: string | null
+  notes: string | null
+  requested_by: string | null
+  requested_by_name: string | null
+  performed_by: string | null
+  performed_by_name: string | null
+  test_date: Date | null
+  completed_at: Date | null
   created_at: Date
   updated_at: Date
   _count: LabTestCountAggregateOutputType | null
@@ -249,11 +284,16 @@ export type LabTestWhereInput = {
   NOT?: Prisma.LabTestWhereInput | Prisma.LabTestWhereInput[]
   id?: Prisma.IntFilter<"LabTest"> | number
   record_id?: Prisma.IntFilter<"LabTest"> | number
-  test_date?: Prisma.DateTimeFilter<"LabTest"> | Date | string
-  result?: Prisma.StringFilter<"LabTest"> | string
-  status?: Prisma.EnumLabTestStatusFilter<"LabTest"> | $Enums.LabTestStatus
-  notes?: Prisma.StringNullableFilter<"LabTest"> | string | null
   service_id?: Prisma.IntFilter<"LabTest"> | number
+  status?: Prisma.EnumLabTestStatusFilter<"LabTest"> | $Enums.LabTestStatus
+  result?: Prisma.StringNullableFilter<"LabTest"> | string | null
+  notes?: Prisma.StringNullableFilter<"LabTest"> | string | null
+  requested_by?: Prisma.StringNullableFilter<"LabTest"> | string | null
+  requested_by_name?: Prisma.StringNullableFilter<"LabTest"> | string | null
+  performed_by?: Prisma.StringNullableFilter<"LabTest"> | string | null
+  performed_by_name?: Prisma.StringNullableFilter<"LabTest"> | string | null
+  test_date?: Prisma.DateTimeNullableFilter<"LabTest"> | Date | string | null
+  completed_at?: Prisma.DateTimeNullableFilter<"LabTest"> | Date | string | null
   created_at?: Prisma.DateTimeFilter<"LabTest"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"LabTest"> | Date | string
   medical_record?: Prisma.XOR<Prisma.MedicalRecordsScalarRelationFilter, Prisma.MedicalRecordsWhereInput>
@@ -263,11 +303,16 @@ export type LabTestWhereInput = {
 export type LabTestOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   record_id?: Prisma.SortOrder
-  test_date?: Prisma.SortOrder
-  result?: Prisma.SortOrder
-  status?: Prisma.SortOrder
-  notes?: Prisma.SortOrderInput | Prisma.SortOrder
   service_id?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  result?: Prisma.SortOrderInput | Prisma.SortOrder
+  notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  requested_by?: Prisma.SortOrderInput | Prisma.SortOrder
+  requested_by_name?: Prisma.SortOrderInput | Prisma.SortOrder
+  performed_by?: Prisma.SortOrderInput | Prisma.SortOrder
+  performed_by_name?: Prisma.SortOrderInput | Prisma.SortOrder
+  test_date?: Prisma.SortOrderInput | Prisma.SortOrder
+  completed_at?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   medical_record?: Prisma.MedicalRecordsOrderByWithRelationInput
@@ -280,11 +325,16 @@ export type LabTestWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.LabTestWhereInput[]
   NOT?: Prisma.LabTestWhereInput | Prisma.LabTestWhereInput[]
   record_id?: Prisma.IntFilter<"LabTest"> | number
-  test_date?: Prisma.DateTimeFilter<"LabTest"> | Date | string
-  result?: Prisma.StringFilter<"LabTest"> | string
-  status?: Prisma.EnumLabTestStatusFilter<"LabTest"> | $Enums.LabTestStatus
-  notes?: Prisma.StringNullableFilter<"LabTest"> | string | null
   service_id?: Prisma.IntFilter<"LabTest"> | number
+  status?: Prisma.EnumLabTestStatusFilter<"LabTest"> | $Enums.LabTestStatus
+  result?: Prisma.StringNullableFilter<"LabTest"> | string | null
+  notes?: Prisma.StringNullableFilter<"LabTest"> | string | null
+  requested_by?: Prisma.StringNullableFilter<"LabTest"> | string | null
+  requested_by_name?: Prisma.StringNullableFilter<"LabTest"> | string | null
+  performed_by?: Prisma.StringNullableFilter<"LabTest"> | string | null
+  performed_by_name?: Prisma.StringNullableFilter<"LabTest"> | string | null
+  test_date?: Prisma.DateTimeNullableFilter<"LabTest"> | Date | string | null
+  completed_at?: Prisma.DateTimeNullableFilter<"LabTest"> | Date | string | null
   created_at?: Prisma.DateTimeFilter<"LabTest"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"LabTest"> | Date | string
   medical_record?: Prisma.XOR<Prisma.MedicalRecordsScalarRelationFilter, Prisma.MedicalRecordsWhereInput>
@@ -294,11 +344,16 @@ export type LabTestWhereUniqueInput = Prisma.AtLeast<{
 export type LabTestOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   record_id?: Prisma.SortOrder
-  test_date?: Prisma.SortOrder
-  result?: Prisma.SortOrder
-  status?: Prisma.SortOrder
-  notes?: Prisma.SortOrderInput | Prisma.SortOrder
   service_id?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  result?: Prisma.SortOrderInput | Prisma.SortOrder
+  notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  requested_by?: Prisma.SortOrderInput | Prisma.SortOrder
+  requested_by_name?: Prisma.SortOrderInput | Prisma.SortOrder
+  performed_by?: Prisma.SortOrderInput | Prisma.SortOrder
+  performed_by_name?: Prisma.SortOrderInput | Prisma.SortOrder
+  test_date?: Prisma.SortOrderInput | Prisma.SortOrder
+  completed_at?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   _count?: Prisma.LabTestCountOrderByAggregateInput
@@ -314,20 +369,30 @@ export type LabTestScalarWhereWithAggregatesInput = {
   NOT?: Prisma.LabTestScalarWhereWithAggregatesInput | Prisma.LabTestScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"LabTest"> | number
   record_id?: Prisma.IntWithAggregatesFilter<"LabTest"> | number
-  test_date?: Prisma.DateTimeWithAggregatesFilter<"LabTest"> | Date | string
-  result?: Prisma.StringWithAggregatesFilter<"LabTest"> | string
-  status?: Prisma.EnumLabTestStatusWithAggregatesFilter<"LabTest"> | $Enums.LabTestStatus
-  notes?: Prisma.StringNullableWithAggregatesFilter<"LabTest"> | string | null
   service_id?: Prisma.IntWithAggregatesFilter<"LabTest"> | number
+  status?: Prisma.EnumLabTestStatusWithAggregatesFilter<"LabTest"> | $Enums.LabTestStatus
+  result?: Prisma.StringNullableWithAggregatesFilter<"LabTest"> | string | null
+  notes?: Prisma.StringNullableWithAggregatesFilter<"LabTest"> | string | null
+  requested_by?: Prisma.StringNullableWithAggregatesFilter<"LabTest"> | string | null
+  requested_by_name?: Prisma.StringNullableWithAggregatesFilter<"LabTest"> | string | null
+  performed_by?: Prisma.StringNullableWithAggregatesFilter<"LabTest"> | string | null
+  performed_by_name?: Prisma.StringNullableWithAggregatesFilter<"LabTest"> | string | null
+  test_date?: Prisma.DateTimeNullableWithAggregatesFilter<"LabTest"> | Date | string | null
+  completed_at?: Prisma.DateTimeNullableWithAggregatesFilter<"LabTest"> | Date | string | null
   created_at?: Prisma.DateTimeWithAggregatesFilter<"LabTest"> | Date | string
   updated_at?: Prisma.DateTimeWithAggregatesFilter<"LabTest"> | Date | string
 }
 
 export type LabTestCreateInput = {
-  test_date: Date | string
-  result: string
   status?: $Enums.LabTestStatus
+  result?: string | null
   notes?: string | null
+  requested_by?: string | null
+  requested_by_name?: string | null
+  performed_by?: string | null
+  performed_by_name?: string | null
+  test_date?: Date | string | null
+  completed_at?: Date | string | null
   created_at?: Date | string
   updated_at?: Date | string
   medical_record: Prisma.MedicalRecordsCreateNestedOneWithoutLab_testInput
@@ -337,20 +402,30 @@ export type LabTestCreateInput = {
 export type LabTestUncheckedCreateInput = {
   id?: number
   record_id: number
-  test_date: Date | string
-  result: string
-  status?: $Enums.LabTestStatus
-  notes?: string | null
   service_id: number
+  status?: $Enums.LabTestStatus
+  result?: string | null
+  notes?: string | null
+  requested_by?: string | null
+  requested_by_name?: string | null
+  performed_by?: string | null
+  performed_by_name?: string | null
+  test_date?: Date | string | null
+  completed_at?: Date | string | null
   created_at?: Date | string
   updated_at?: Date | string
 }
 
 export type LabTestUpdateInput = {
-  test_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  result?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabTestStatusFieldUpdateOperationsInput | $Enums.LabTestStatus
+  result?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  test_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   medical_record?: Prisma.MedicalRecordsUpdateOneRequiredWithoutLab_testNestedInput
@@ -360,11 +435,16 @@ export type LabTestUpdateInput = {
 export type LabTestUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   record_id?: Prisma.IntFieldUpdateOperationsInput | number
-  test_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  result?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumLabTestStatusFieldUpdateOperationsInput | $Enums.LabTestStatus
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service_id?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumLabTestStatusFieldUpdateOperationsInput | $Enums.LabTestStatus
+  result?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  test_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -372,20 +452,30 @@ export type LabTestUncheckedUpdateInput = {
 export type LabTestCreateManyInput = {
   id?: number
   record_id: number
-  test_date: Date | string
-  result: string
-  status?: $Enums.LabTestStatus
-  notes?: string | null
   service_id: number
+  status?: $Enums.LabTestStatus
+  result?: string | null
+  notes?: string | null
+  requested_by?: string | null
+  requested_by_name?: string | null
+  performed_by?: string | null
+  performed_by_name?: string | null
+  test_date?: Date | string | null
+  completed_at?: Date | string | null
   created_at?: Date | string
   updated_at?: Date | string
 }
 
 export type LabTestUpdateManyMutationInput = {
-  test_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  result?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabTestStatusFieldUpdateOperationsInput | $Enums.LabTestStatus
+  result?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  test_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -393,11 +483,16 @@ export type LabTestUpdateManyMutationInput = {
 export type LabTestUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   record_id?: Prisma.IntFieldUpdateOperationsInput | number
-  test_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  result?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumLabTestStatusFieldUpdateOperationsInput | $Enums.LabTestStatus
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service_id?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumLabTestStatusFieldUpdateOperationsInput | $Enums.LabTestStatus
+  result?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  test_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -405,11 +500,16 @@ export type LabTestUncheckedUpdateManyInput = {
 export type LabTestCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   record_id?: Prisma.SortOrder
-  test_date?: Prisma.SortOrder
-  result?: Prisma.SortOrder
-  status?: Prisma.SortOrder
-  notes?: Prisma.SortOrder
   service_id?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  result?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
+  requested_by?: Prisma.SortOrder
+  requested_by_name?: Prisma.SortOrder
+  performed_by?: Prisma.SortOrder
+  performed_by_name?: Prisma.SortOrder
+  test_date?: Prisma.SortOrder
+  completed_at?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
@@ -423,11 +523,16 @@ export type LabTestAvgOrderByAggregateInput = {
 export type LabTestMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   record_id?: Prisma.SortOrder
-  test_date?: Prisma.SortOrder
-  result?: Prisma.SortOrder
-  status?: Prisma.SortOrder
-  notes?: Prisma.SortOrder
   service_id?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  result?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
+  requested_by?: Prisma.SortOrder
+  requested_by_name?: Prisma.SortOrder
+  performed_by?: Prisma.SortOrder
+  performed_by_name?: Prisma.SortOrder
+  test_date?: Prisma.SortOrder
+  completed_at?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
@@ -435,11 +540,16 @@ export type LabTestMaxOrderByAggregateInput = {
 export type LabTestMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   record_id?: Prisma.SortOrder
-  test_date?: Prisma.SortOrder
-  result?: Prisma.SortOrder
-  status?: Prisma.SortOrder
-  notes?: Prisma.SortOrder
   service_id?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  result?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
+  requested_by?: Prisma.SortOrder
+  requested_by_name?: Prisma.SortOrder
+  performed_by?: Prisma.SortOrder
+  performed_by_name?: Prisma.SortOrder
+  test_date?: Prisma.SortOrder
+  completed_at?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
@@ -462,6 +572,10 @@ export type LabTestOrderByRelationAggregateInput = {
 
 export type EnumLabTestStatusFieldUpdateOperationsInput = {
   set?: $Enums.LabTestStatus
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
 }
 
 export type LabTestCreateNestedManyWithoutMedical_recordInput = {
@@ -549,10 +663,15 @@ export type LabTestUncheckedUpdateManyWithoutServicesNestedInput = {
 }
 
 export type LabTestCreateWithoutMedical_recordInput = {
-  test_date: Date | string
-  result: string
   status?: $Enums.LabTestStatus
+  result?: string | null
   notes?: string | null
+  requested_by?: string | null
+  requested_by_name?: string | null
+  performed_by?: string | null
+  performed_by_name?: string | null
+  test_date?: Date | string | null
+  completed_at?: Date | string | null
   created_at?: Date | string
   updated_at?: Date | string
   services: Prisma.ServicesCreateNestedOneWithoutLabtestInput
@@ -560,11 +679,16 @@ export type LabTestCreateWithoutMedical_recordInput = {
 
 export type LabTestUncheckedCreateWithoutMedical_recordInput = {
   id?: number
-  test_date: Date | string
-  result: string
-  status?: $Enums.LabTestStatus
-  notes?: string | null
   service_id: number
+  status?: $Enums.LabTestStatus
+  result?: string | null
+  notes?: string | null
+  requested_by?: string | null
+  requested_by_name?: string | null
+  performed_by?: string | null
+  performed_by_name?: string | null
+  test_date?: Date | string | null
+  completed_at?: Date | string | null
   created_at?: Date | string
   updated_at?: Date | string
 }
@@ -601,20 +725,30 @@ export type LabTestScalarWhereInput = {
   NOT?: Prisma.LabTestScalarWhereInput | Prisma.LabTestScalarWhereInput[]
   id?: Prisma.IntFilter<"LabTest"> | number
   record_id?: Prisma.IntFilter<"LabTest"> | number
-  test_date?: Prisma.DateTimeFilter<"LabTest"> | Date | string
-  result?: Prisma.StringFilter<"LabTest"> | string
-  status?: Prisma.EnumLabTestStatusFilter<"LabTest"> | $Enums.LabTestStatus
-  notes?: Prisma.StringNullableFilter<"LabTest"> | string | null
   service_id?: Prisma.IntFilter<"LabTest"> | number
+  status?: Prisma.EnumLabTestStatusFilter<"LabTest"> | $Enums.LabTestStatus
+  result?: Prisma.StringNullableFilter<"LabTest"> | string | null
+  notes?: Prisma.StringNullableFilter<"LabTest"> | string | null
+  requested_by?: Prisma.StringNullableFilter<"LabTest"> | string | null
+  requested_by_name?: Prisma.StringNullableFilter<"LabTest"> | string | null
+  performed_by?: Prisma.StringNullableFilter<"LabTest"> | string | null
+  performed_by_name?: Prisma.StringNullableFilter<"LabTest"> | string | null
+  test_date?: Prisma.DateTimeNullableFilter<"LabTest"> | Date | string | null
+  completed_at?: Prisma.DateTimeNullableFilter<"LabTest"> | Date | string | null
   created_at?: Prisma.DateTimeFilter<"LabTest"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"LabTest"> | Date | string
 }
 
 export type LabTestCreateWithoutServicesInput = {
-  test_date: Date | string
-  result: string
   status?: $Enums.LabTestStatus
+  result?: string | null
   notes?: string | null
+  requested_by?: string | null
+  requested_by_name?: string | null
+  performed_by?: string | null
+  performed_by_name?: string | null
+  test_date?: Date | string | null
+  completed_at?: Date | string | null
   created_at?: Date | string
   updated_at?: Date | string
   medical_record: Prisma.MedicalRecordsCreateNestedOneWithoutLab_testInput
@@ -623,10 +757,15 @@ export type LabTestCreateWithoutServicesInput = {
 export type LabTestUncheckedCreateWithoutServicesInput = {
   id?: number
   record_id: number
-  test_date: Date | string
-  result: string
   status?: $Enums.LabTestStatus
+  result?: string | null
   notes?: string | null
+  requested_by?: string | null
+  requested_by_name?: string | null
+  performed_by?: string | null
+  performed_by_name?: string | null
+  test_date?: Date | string | null
+  completed_at?: Date | string | null
   created_at?: Date | string
   updated_at?: Date | string
 }
@@ -659,20 +798,30 @@ export type LabTestUpdateManyWithWhereWithoutServicesInput = {
 
 export type LabTestCreateManyMedical_recordInput = {
   id?: number
-  test_date: Date | string
-  result: string
-  status?: $Enums.LabTestStatus
-  notes?: string | null
   service_id: number
+  status?: $Enums.LabTestStatus
+  result?: string | null
+  notes?: string | null
+  requested_by?: string | null
+  requested_by_name?: string | null
+  performed_by?: string | null
+  performed_by_name?: string | null
+  test_date?: Date | string | null
+  completed_at?: Date | string | null
   created_at?: Date | string
   updated_at?: Date | string
 }
 
 export type LabTestUpdateWithoutMedical_recordInput = {
-  test_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  result?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabTestStatusFieldUpdateOperationsInput | $Enums.LabTestStatus
+  result?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  test_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   services?: Prisma.ServicesUpdateOneRequiredWithoutLabtestNestedInput
@@ -680,22 +829,32 @@ export type LabTestUpdateWithoutMedical_recordInput = {
 
 export type LabTestUncheckedUpdateWithoutMedical_recordInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  test_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  result?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumLabTestStatusFieldUpdateOperationsInput | $Enums.LabTestStatus
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service_id?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumLabTestStatusFieldUpdateOperationsInput | $Enums.LabTestStatus
+  result?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  test_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type LabTestUncheckedUpdateManyWithoutMedical_recordInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  test_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  result?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumLabTestStatusFieldUpdateOperationsInput | $Enums.LabTestStatus
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service_id?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumLabTestStatusFieldUpdateOperationsInput | $Enums.LabTestStatus
+  result?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  test_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -703,19 +862,29 @@ export type LabTestUncheckedUpdateManyWithoutMedical_recordInput = {
 export type LabTestCreateManyServicesInput = {
   id?: number
   record_id: number
-  test_date: Date | string
-  result: string
   status?: $Enums.LabTestStatus
+  result?: string | null
   notes?: string | null
+  requested_by?: string | null
+  requested_by_name?: string | null
+  performed_by?: string | null
+  performed_by_name?: string | null
+  test_date?: Date | string | null
+  completed_at?: Date | string | null
   created_at?: Date | string
   updated_at?: Date | string
 }
 
 export type LabTestUpdateWithoutServicesInput = {
-  test_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  result?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabTestStatusFieldUpdateOperationsInput | $Enums.LabTestStatus
+  result?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  test_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   medical_record?: Prisma.MedicalRecordsUpdateOneRequiredWithoutLab_testNestedInput
@@ -724,10 +893,15 @@ export type LabTestUpdateWithoutServicesInput = {
 export type LabTestUncheckedUpdateWithoutServicesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   record_id?: Prisma.IntFieldUpdateOperationsInput | number
-  test_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  result?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabTestStatusFieldUpdateOperationsInput | $Enums.LabTestStatus
+  result?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  test_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -735,10 +909,15 @@ export type LabTestUncheckedUpdateWithoutServicesInput = {
 export type LabTestUncheckedUpdateManyWithoutServicesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   record_id?: Prisma.IntFieldUpdateOperationsInput | number
-  test_date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  result?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabTestStatusFieldUpdateOperationsInput | $Enums.LabTestStatus
+  result?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requested_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performed_by_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  test_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completed_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -748,11 +927,16 @@ export type LabTestUncheckedUpdateManyWithoutServicesInput = {
 export type LabTestSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   record_id?: boolean
-  test_date?: boolean
-  result?: boolean
-  status?: boolean
-  notes?: boolean
   service_id?: boolean
+  status?: boolean
+  result?: boolean
+  notes?: boolean
+  requested_by?: boolean
+  requested_by_name?: boolean
+  performed_by?: boolean
+  performed_by_name?: boolean
+  test_date?: boolean
+  completed_at?: boolean
   created_at?: boolean
   updated_at?: boolean
   medical_record?: boolean | Prisma.MedicalRecordsDefaultArgs<ExtArgs>
@@ -762,11 +946,16 @@ export type LabTestSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 export type LabTestSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   record_id?: boolean
-  test_date?: boolean
-  result?: boolean
-  status?: boolean
-  notes?: boolean
   service_id?: boolean
+  status?: boolean
+  result?: boolean
+  notes?: boolean
+  requested_by?: boolean
+  requested_by_name?: boolean
+  performed_by?: boolean
+  performed_by_name?: boolean
+  test_date?: boolean
+  completed_at?: boolean
   created_at?: boolean
   updated_at?: boolean
   medical_record?: boolean | Prisma.MedicalRecordsDefaultArgs<ExtArgs>
@@ -776,11 +965,16 @@ export type LabTestSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type LabTestSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   record_id?: boolean
-  test_date?: boolean
-  result?: boolean
-  status?: boolean
-  notes?: boolean
   service_id?: boolean
+  status?: boolean
+  result?: boolean
+  notes?: boolean
+  requested_by?: boolean
+  requested_by_name?: boolean
+  performed_by?: boolean
+  performed_by_name?: boolean
+  test_date?: boolean
+  completed_at?: boolean
   created_at?: boolean
   updated_at?: boolean
   medical_record?: boolean | Prisma.MedicalRecordsDefaultArgs<ExtArgs>
@@ -790,16 +984,21 @@ export type LabTestSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type LabTestSelectScalar = {
   id?: boolean
   record_id?: boolean
-  test_date?: boolean
-  result?: boolean
-  status?: boolean
-  notes?: boolean
   service_id?: boolean
+  status?: boolean
+  result?: boolean
+  notes?: boolean
+  requested_by?: boolean
+  requested_by_name?: boolean
+  performed_by?: boolean
+  performed_by_name?: boolean
+  test_date?: boolean
+  completed_at?: boolean
   created_at?: boolean
   updated_at?: boolean
 }
 
-export type LabTestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "record_id" | "test_date" | "result" | "status" | "notes" | "service_id" | "created_at" | "updated_at", ExtArgs["result"]["labTest"]>
+export type LabTestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "record_id" | "service_id" | "status" | "result" | "notes" | "requested_by" | "requested_by_name" | "performed_by" | "performed_by_name" | "test_date" | "completed_at" | "created_at" | "updated_at", ExtArgs["result"]["labTest"]>
 export type LabTestInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   medical_record?: boolean | Prisma.MedicalRecordsDefaultArgs<ExtArgs>
   services?: boolean | Prisma.ServicesDefaultArgs<ExtArgs>
@@ -822,11 +1021,16 @@ export type $LabTestPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     record_id: number
-    test_date: Date
-    result: string
-    status: $Enums.LabTestStatus
-    notes: string | null
     service_id: number
+    status: $Enums.LabTestStatus
+    result: string | null
+    notes: string | null
+    requested_by: string | null
+    requested_by_name: string | null
+    performed_by: string | null
+    performed_by_name: string | null
+    test_date: Date | null
+    completed_at: Date | null
     created_at: Date
     updated_at: Date
   }, ExtArgs["result"]["labTest"]>
@@ -1256,11 +1460,16 @@ export interface Prisma__LabTestClient<T, Null = never, ExtArgs extends runtime.
 export interface LabTestFieldRefs {
   readonly id: Prisma.FieldRef<"LabTest", 'Int'>
   readonly record_id: Prisma.FieldRef<"LabTest", 'Int'>
-  readonly test_date: Prisma.FieldRef<"LabTest", 'DateTime'>
-  readonly result: Prisma.FieldRef<"LabTest", 'String'>
-  readonly status: Prisma.FieldRef<"LabTest", 'LabTestStatus'>
-  readonly notes: Prisma.FieldRef<"LabTest", 'String'>
   readonly service_id: Prisma.FieldRef<"LabTest", 'Int'>
+  readonly status: Prisma.FieldRef<"LabTest", 'LabTestStatus'>
+  readonly result: Prisma.FieldRef<"LabTest", 'String'>
+  readonly notes: Prisma.FieldRef<"LabTest", 'String'>
+  readonly requested_by: Prisma.FieldRef<"LabTest", 'String'>
+  readonly requested_by_name: Prisma.FieldRef<"LabTest", 'String'>
+  readonly performed_by: Prisma.FieldRef<"LabTest", 'String'>
+  readonly performed_by_name: Prisma.FieldRef<"LabTest", 'String'>
+  readonly test_date: Prisma.FieldRef<"LabTest", 'DateTime'>
+  readonly completed_at: Prisma.FieldRef<"LabTest", 'DateTime'>
   readonly created_at: Prisma.FieldRef<"LabTest", 'DateTime'>
   readonly updated_at: Prisma.FieldRef<"LabTest", 'DateTime'>
 }

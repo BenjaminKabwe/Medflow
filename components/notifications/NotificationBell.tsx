@@ -107,10 +107,10 @@ export function NotificationBell() {
 
       <PopoverContent
         align="end"
-        className="w-[360px] p-0 shadow-card-lg border border-slate-200 dark:border-[hsl(222,47%,16%)]"
+        className="w-[360px] p-0 shadow-card-lg border border-slate-200 dark:border-[hsl(196,22%,17%)]"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-[hsl(222,47%,16%)]">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-[hsl(196,22%,17%)]">
           <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
             Notifications
           </span>
@@ -135,7 +135,7 @@ export function NotificationBell() {
           </div>
         ) : (
           <ul
-            className="divide-y divide-slate-100 dark:divide-[hsl(222,47%,16%)]
+            className="divide-y divide-slate-100 dark:divide-[hsl(196,22%,17%)]
                        max-h-[420px] overflow-y-auto"
           >
             {notifications.map((notif) => {
@@ -153,7 +153,7 @@ export function NotificationBell() {
                     ${
                       !notif.read
                         ? "bg-sky-50/50 dark:bg-sky-950/20 hover:bg-sky-50 dark:hover:bg-sky-950/30"
-                        : "hover:bg-slate-50 dark:hover:bg-[hsl(222,47%,13%)]"
+                        : "hover:bg-slate-50 dark:hover:bg-[hsl(196,24%,13%)]"
                     }`}
                 >
                   {/* Unread dot */}

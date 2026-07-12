@@ -36,8 +36,9 @@ export const Navbar = ({ notificationBell }: NavbarProps) => {
   return (
     <header
       className="h-14 flex-shrink-0 flex items-center justify-between px-4 md:px-6 gap-4
-                bg-white dark:bg-[hsl(222,47%,8%)]
-                border-b border-slate-200 dark:border-[hsl(222,47%,14%)]"
+                bg-white/80 dark:bg-[hsl(222,47%,9%)]/80 backdrop-blur-xl
+                border-b border-slate-200/80 dark:border-[hsl(222,47%,15%)]
+                sticky top-0 z-20"
     >
       {/* Left: hamburger (mobile) + breadcrumb */}
       <div className="flex items-center gap-1.5 min-w-0">
@@ -77,11 +78,12 @@ export const Navbar = ({ notificationBell }: NavbarProps) => {
       <div className="flex items-center gap-2 flex-shrink-0">
         {/* Search */}
         <button
-          className="hidden md:flex items-center gap-2
+          className="hidden md:flex items-center gap-2 group
                     text-slate-400 dark:text-slate-500
-                    bg-slate-100 dark:bg-slate-800
-                    hover:bg-slate-200 dark:hover:bg-slate-700
-                    px-3 py-1.5 rounded-lg text-xs transition-colors"
+                    bg-slate-100/80 dark:bg-slate-800/60
+                    hover:bg-white dark:hover:bg-slate-800
+                    hover:ring-1 hover:ring-sky-500/30 hover:text-sky-600 dark:hover:text-sky-400
+                    px-3 py-1.5 rounded-lg text-xs transition-all"
         >
           <Search className="w-3.5 h-3.5" />
           <span>{t.navbar.search}</span>
@@ -89,7 +91,7 @@ export const Navbar = ({ notificationBell }: NavbarProps) => {
             className="ml-2 px-1.5 py-0.5 rounded
                       bg-white dark:bg-slate-900
                       border border-slate-200 dark:border-slate-700
-                      text-[10px] font-mono text-slate-400"
+                      text-[10px] font-mono text-slate-400 group-hover:border-sky-500/30"
           >
             ⌘K
           </kbd>

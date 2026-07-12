@@ -1,6 +1,7 @@
 "use client";
 
 import { ThemeProvider } from "next-themes";
+import { useRouter } from "next/navigation";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Lang, translations, Translations } from "@/lib/i18n";
 
@@ -22,6 +23,7 @@ export const useLanguage = () => useContext(LanguageContext);
 
 const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
   const [lang, setLangState] = useState<Lang>("fr");
+  const router = useRouter();
 
   useEffect(() => {
     const stored = localStorage.getItem("medflow_lang") as Lang | null;
@@ -36,7 +38,12 @@ const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
 
   const setLang = (l: Lang) => {
     localStorage.setItem("medflow_lang", l);
+    // Set the cookie synchronously so a server refresh picks up the new value.
+    document.cookie = `medflow_lang=${l}; path=/; max-age=31536000; SameSite=Lax`;
     setLangState(l);
+    // Re-render the server component tree so any server-side translated
+    // content updates too (not just the client components using `t`).
+    router.refresh();
   };
 
   return (

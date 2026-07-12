@@ -1,5 +1,7 @@
 "use server";
 
+import { am } from "@/lib/action-messages";
+
 import db from "@/lib/db";
 import { PatientFormSchema } from "@/lib/schema";
 import { clerkClient, auth } from "@clerk/nextjs/server";
@@ -46,7 +48,7 @@ export async function updatePatient(data: any, pid: string) {
     return {
       success: true,
       error: false,
-      msg: "Les informations sur le patient ont été mis à jour avec succès",
+      msg: await am("patientUpdated"),
     };
   } catch (error: any) {
     console.error(error);
@@ -104,7 +106,7 @@ if (!validateData.success) {
       });
     }
 
-    return { success: true, error: false, msg: "Patient créé avec succès" };
+    return { success: true, error: false, msg: await am("patientCreated") };
   } catch (error: any) {
     console.error(error);
     return { success: false, error: true, msg: error?.message };

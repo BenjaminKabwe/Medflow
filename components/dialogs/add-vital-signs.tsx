@@ -20,6 +20,44 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { Form } from "../ui/form";
+import { useLanguage } from "@/components/providers";
+
+const STR = {
+  fr: {
+    error: "Échec de l'ajout des signes vitaux",
+    trigger: "Ajouter des signes vitaux",
+    description: "Saisir les signes vitaux du patient",
+    temperature: "Température corporelle (°C)",
+    heartRate: "Fréquence cardiaque (bpm)",
+    systolic: "Tension systolique",
+    diastolic: "Tension diastolique",
+    weight: "Poids (kg)",
+    height: "Taille (cm)",
+    respiratory: "Fréquence respiratoire",
+    oxygen: "Saturation en oxygène",
+    optional: "Optionnel",
+    eg: "ex :",
+    submitting: "Envoi en cours...",
+    submit: "Soumettre",
+  },
+  en: {
+    error: "Failed to add vital signs",
+    trigger: "Add vital signs",
+    description: "Enter the patient's vital signs",
+    temperature: "Body temperature (°C)",
+    heartRate: "Heart rate (bpm)",
+    systolic: "Systolic pressure",
+    diastolic: "Diastolic pressure",
+    weight: "Weight (kg)",
+    height: "Height (cm)",
+    respiratory: "Respiratory rate",
+    oxygen: "Oxygen saturation",
+    optional: "Optional",
+    eg: "e.g.",
+    submitting: "Sending...",
+    submit: "Submit",
+  },
+};
 
 interface AddVitalSignsProps {
   patientId: string;
@@ -38,6 +76,8 @@ export const AddVitalSigns = ({
 }: AddVitalSignsProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { lang } = useLanguage();
+  const t = STR[lang];
 
   const form = useForm<VitalSignsFormData>({
     resolver: zodResolver(VitalSignsSchema),
@@ -70,7 +110,7 @@ export const AddVitalSigns = ({
       }
     } catch (error) {
       console.log(error);
-      toast.error("Échec de l'ajout des signes vitaux");
+      toast.error(t.error);
     } finally {
       setIsLoading(false);
     }
@@ -80,15 +120,15 @@ export const AddVitalSigns = ({
     <Dialog>
       <DialogTrigger asChild>
         <Button size="sm" variant="outline" className="text-sm font-normal">
-          <Plus size={22} className="text-gray-500" /> Ajouter des signes vitaux
+          <Plus size={22} className="text-gray-500" /> {t.trigger}
         </Button>
       </DialogTrigger>
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Ajouter des signes vitaux</DialogTitle>
+          <DialogTitle>{t.trigger}</DialogTitle>
           <DialogDescription>
-            Saisir les signes vitaux du patient
+            {t.description}
           </DialogDescription>
         </DialogHeader>
 
@@ -102,15 +142,15 @@ export const AddVitalSigns = ({
                 type="input"
                 control={form.control}
                 name="body_temperature"
-                label="Température corporelle (°C)"
-                placeholder="ex : 37.5"
+                label={t.temperature}
+                placeholder={`${t.eg} 37.5`}
               />
               <CustomInput
                 type="input"
                 control={form.control}
                 name="heartRate"
-                placeholder="ex : 72"
-                label="Fréquence cardiaque (bpm)"
+                placeholder={`${t.eg} 72`}
+                label={t.heartRate}
               />
             </div>
 
@@ -119,15 +159,15 @@ export const AddVitalSigns = ({
                 type="input"
                 control={form.control}
                 name="systolic"
-                placeholder="ex : 120"
-                label="Tension systolique"
+                placeholder={`${t.eg} 120`}
+                label={t.systolic}
               />
               <CustomInput
                 type="input"
                 control={form.control}
                 name="diastolic"
-                placeholder="ex : 80"
-                label="Tension diastolique"
+                placeholder={`${t.eg} 80`}
+                label={t.diastolic}
               />
             </div>
 
@@ -136,15 +176,15 @@ export const AddVitalSigns = ({
                 type="input"
                 control={form.control}
                 name="weight"
-                placeholder="ex : 80"
-                label="Poids (kg)"
+                placeholder={`${t.eg} 80`}
+                label={t.weight}
               />
               <CustomInput
                 type="input"
                 control={form.control}
                 name="height"
-                placeholder="ex : 175"
-                label="Taille (cm)"
+                placeholder={`${t.eg} 175`}
+                label={t.height}
               />
             </div>
 
@@ -153,20 +193,20 @@ export const AddVitalSigns = ({
                 type="input"
                 control={form.control}
                 name="respiratory_rate"
-                placeholder="Optionnel"
-                label="Fréquence respiratoire"
+                placeholder={t.optional}
+                label={t.respiratory}
               />
               <CustomInput
                 type="input"
                 control={form.control}
                 name="oxygen_saturation"
-                placeholder="Optionnel"
-                label="Saturation en oxygène"
+                placeholder={t.optional}
+                label={t.oxygen}
               />
             </div>
 
             <Button type="submit" disabled={isLoading} className="w-full">
-              {isLoading ? "Envoi en cours..." : "Soumettre"}
+              {isLoading ? t.submitting : t.submit}
             </Button>
           </form>
         </Form>

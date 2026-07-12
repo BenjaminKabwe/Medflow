@@ -11,8 +11,8 @@ import { ThemeToggle } from "./theme-toggle";
 import { LanguageSwitcher } from "./language-switcher";
 import { useLanguage } from "./providers";
 
-const BLUE_GRADIENT = "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)";
-const HERO_GRADIENT = "linear-gradient(135deg, #1e40af 0%, #2563eb 55%, #0ea5e9 100%)";
+const BLUE_GRADIENT = "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)";
+const HERO_GRADIENT = "linear-gradient(135deg, #0c4a6e 0%, #0369a1 52%, #0ea5e9 100%)";
 
 const MOCK_PATIENTS = [
   { id: "#1042", name: "Jean Dupont",   age: "45 ans", doctor: "Dr. Martin",   status: "Actif",           dot: "bg-emerald-500", last: "Aujourd'hui" },
@@ -124,7 +124,7 @@ export const LandingContent = () => {
         <div className="absolute inset-0 opacity-30 dark:opacity-[0.06]"
           style={{ backgroundImage: "linear-gradient(#e2e8f0 1px,transparent 1px),linear-gradient(90deg,#e2e8f0 1px,transparent 1px)", backgroundSize: "44px 44px" }} />
         <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-blue-400/6 dark:bg-blue-500/8 blur-[120px] pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-[420px] h-[420px] rounded-full bg-teal-400/5 dark:bg-teal-500/6 blur-[90px] pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-[420px] h-[420px] rounded-full bg-sky-400/5 dark:bg-sky-500/6 blur-[90px] pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-6 md:px-10 pt-20 pb-12 grid grid-cols-1 lg:grid-cols-2 gap-14 xl:gap-20 items-center">
 
@@ -184,7 +184,7 @@ export const LandingContent = () => {
               {[
                 { icon: ShieldCheck, label: "RGPD conforme", cls: "text-emerald-600 dark:text-emerald-400" },
                 { icon: Shield,      label: "HDS certifié",  cls: "text-blue-600 dark:text-blue-400"       },
-                { icon: CheckCircle, label: "ISO 27001",     cls: "text-teal-600 dark:text-teal-400"       },
+                { icon: CheckCircle, label: "ISO 27001",     cls: "text-sky-600 dark:text-sky-400"       },
               ].map(({ icon: Icon, label, cls }) => (
                 <div key={label} className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
                   <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${cls}`} />
@@ -196,7 +196,7 @@ export const LandingContent = () => {
 
           {/* ── Right: EHR mock ── */}
           <div className="relative animate-fade-in-up" style={{ animationDelay: "200ms" }}>
-            <div className="absolute -inset-6 rounded-3xl bg-gradient-to-br from-blue-400/10 via-indigo-400/5 to-teal-400/8 dark:from-blue-500/10 dark:via-indigo-500/5 dark:to-teal-500/8 blur-2xl pointer-events-none" />
+            <div className="absolute -inset-6 rounded-3xl bg-gradient-to-br from-blue-400/10 via-sky-400/5 to-sky-400/8 dark:from-blue-500/10 dark:via-sky-500/5 dark:to-sky-500/8 blur-2xl pointer-events-none" />
 
             {/* Browser frame */}
             <div className="relative rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xl shadow-slate-200/60 dark:shadow-slate-950/80 overflow-hidden bg-white dark:bg-slate-900">
@@ -396,7 +396,7 @@ export const LandingContent = () => {
         <div className="max-w-5xl mx-auto">
 
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-50 dark:bg-teal-950/50 border border-teal-100 dark:border-teal-900/60 text-teal-700 dark:text-teal-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-5">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-50 dark:bg-sky-950/50 border border-sky-100 dark:border-sky-900/60 text-sky-700 dark:text-sky-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-5">
               <Zap className="w-3 h-3" />
               Démarrage rapide
             </div>
@@ -410,7 +410,7 @@ export const LandingContent = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 relative">
-            <div className="absolute top-[3.25rem] left-[24%] right-[24%] h-px hidden md:block pointer-events-none" style={{ background: "linear-gradient(90deg,#bfdbfe,#99f6e4)" }} />
+            <div className="absolute top-[3.25rem] left-[24%] right-[24%] h-px hidden md:block pointer-events-none" style={{ background: "linear-gradient(90deg,#bfdbfe,#7dd3fc)" }} />
 
             {steps.map((step) => {
               const Icon = step.icon;
@@ -493,10 +493,10 @@ export const LandingContent = () => {
           CTA
       ════════════════════════════════ */}
       <section id="security" className="py-24 px-6 md:px-10 relative overflow-hidden">
-        <div className="absolute inset-0" style={{ background: "linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 50%,#0284c7 100%)" }} />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(135deg,#0c4a6e 0%,#0369a1 50%,#0ea5e9 100%)" }} />
         <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "linear-gradient(white 1px,transparent 1px),linear-gradient(90deg,white 1px,transparent 1px)", backgroundSize: "44px 44px" }} />
         <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-white/5 blur-[60px] pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-64 h-64 rounded-full bg-teal-400/15 blur-[70px] pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-64 h-64 rounded-full bg-sky-400/15 blur-[70px] pointer-events-none" />
 
         <div className="max-w-3xl mx-auto text-center relative">
           <h2 className="text-3xl md:text-[2.5rem] font-heading font-light text-white tracking-tight leading-tight mb-4">
@@ -547,7 +547,7 @@ export const LandingContent = () => {
                 {[
                   { icon: Shield,      label: "RGPD",     cls: "text-emerald-400" },
                   { icon: ShieldCheck, label: "HDS",      cls: "text-blue-400"    },
-                  { icon: CheckCircle, label: "ISO 27001", cls: "text-teal-400"   },
+                  { icon: CheckCircle, label: "ISO 27001", cls: "text-sky-400"   },
                 ].map(({ icon: Icon, label, cls }) => (
                   <div key={label} className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800">
                     <Icon className={`w-3 h-3 ${cls}`} />

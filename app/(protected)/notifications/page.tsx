@@ -12,10 +12,45 @@ import {
   CheckCheck,
   ArrowRight,
   User,
+  PackageMinus,
+  AlertTriangle,
+  Pill,
 } from "lucide-react";
 import { NotificationType } from "@/lib/generated/prisma/enums";
 import { formatDistanceToNow } from "date-fns";
-import { fr } from "date-fns/locale";
+import { fr, enUS } from "date-fns/locale";
+import { getLang } from "@/lib/i18n-server";
+
+const STR = {
+  fr: {
+    center: "Centre de notifications",
+    allNotifs: "Toutes les notifications",
+    noNotif: "Aucune notification",
+    noNotifAdminDesc: "Aucune notification n'a encore été générée dans le système.",
+    read: "Lu",
+    unread: "Non lu",
+    notifs: "Notifications",
+    unreadCount: (n: number) => `${n} non lue${n > 1 ? "s" : ""}`,
+    markAll: "Tout marquer comme lu",
+    noNotifUserDesc:
+      "Vous n'avez aucune notification pour le moment. Les alertes et mises à jour apparaîtront ici.",
+    markRead: "Marquer comme lu",
+  },
+  en: {
+    center: "Notification center",
+    allNotifs: "All notifications",
+    noNotif: "No notification",
+    noNotifAdminDesc: "No notification has been generated in the system yet.",
+    read: "Read",
+    unread: "Unread",
+    notifs: "Notifications",
+    unreadCount: (n: number) => `${n} unread`,
+    markAll: "Mark all as read",
+    noNotifUserDesc:
+      "You have no notifications at the moment. Alerts and updates will appear here.",
+    markRead: "Mark as read",
+  },
+};
 
 const TYPE_STYLES: Record<NotificationType, { bg: string; icon: React.ReactNode }> = {
   NOUVEAU_RENDEZ_VOUS: {
@@ -42,10 +77,25 @@ const TYPE_STYLES: Record<NotificationType, { bg: string; icon: React.ReactNode 
     bg: "bg-slate-100 dark:bg-slate-800",
     icon: <Info className="w-4 h-4 text-slate-500" />,
   },
+  STOCK_BAS: {
+    bg: "bg-orange-500/10",
+    icon: <PackageMinus className="w-4 h-4 text-orange-500" />,
+  },
+  MEDICAMENT_EXPIRE: {
+    bg: "bg-red-500/10",
+    icon: <AlertTriangle className="w-4 h-4 text-red-500" />,
+  },
+  DISPENSATION: {
+    bg: "bg-sky-500/10",
+    icon: <Pill className="w-4 h-4 text-sky-500" />,
+  },
 };
 
 const NotificationsPage = async () => {
   const isAdmin = await checkRole("ADMIN");
+  const lang = await getLang();
+  const t = STR[lang];
+  const dateLocale = lang === "en" ? enUS : fr;
 
   if (isAdmin) {
     const { data: notifications, total } = await getAllNotificationsAdmin();
@@ -60,10 +110,10 @@ const NotificationsPage = async () => {
             </div>
             <div>
               <p className="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">
-                Centre de notifications
+                {t.center}
               </p>
               <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-none">
-                Toutes les notifications
+                {t.allNotifs}
                 {total > 0 && (
                   <span className="ml-2 text-sm font-medium text-slate-400">
                     ({total})
@@ -82,25 +132,25 @@ const NotificationsPage = async () => {
                 <Bell className="w-7 h-7 text-slate-300 dark:text-slate-600" />
               </div>
               <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Aucune notification
+                {t.noNotif}
               </h2>
               <p className="text-sm text-slate-400 dark:text-slate-500 max-w-xs">
-                Aucune notification n&apos;a encore été générée dans le système.
+                {t.noNotifAdminDesc}
               </p>
             </div>
           ) : (
-            <ul className="divide-y divide-slate-100 dark:divide-[hsl(222,47%,16%)]">
+            <ul className="divide-y divide-slate-100 dark:divide-[hsl(196,22%,17%)]">
               {notifications.map((notif) => {
                 const style = TYPE_STYLES[notif.type];
                 const timeAgo = formatDistanceToNow(new Date(notif.created_at), {
                   addSuffix: true,
-                  locale: fr,
+                  locale: dateLocale,
                 });
 
                 return (
                   <li
                     key={notif.id}
-                    className="flex items-start gap-4 px-5 py-4 hover:bg-slate-50 dark:hover:bg-[hsl(222,47%,13%)] transition-colors"
+                    className="flex items-start gap-4 px-5 py-4 hover:bg-slate-50 dark:hover:bg-[hsl(196,24%,13%)] transition-colors"
                   >
                     <div className={`mt-0.5 w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center ${style.bg}`}>
                       {style.icon}
@@ -140,7 +190,7 @@ const NotificationsPage = async () => {
                         ? "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500"
                         : "bg-sky-50 dark:bg-sky-950/30 text-sky-500"
                     }`}>
-                      {notif.read ? "Lu" : "Non lu"}
+                      {notif.read ? t.read : t.unread}
                     </span>
                   </li>
                 );
@@ -167,13 +217,13 @@ const NotificationsPage = async () => {
             </div>
             <div>
               <p className="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">
-                Centre de notifications
+                {t.center}
               </p>
               <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-none">
-                Notifications
+                {t.notifs}
                 {unreadCount > 0 && (
                   <span className="ml-2 text-sm font-medium text-sky-500">
-                    ({unreadCount} non lue{unreadCount > 1 ? "s" : ""})
+                    ({t.unreadCount(unreadCount)})
                   </span>
                 )}
               </h1>
@@ -188,7 +238,7 @@ const NotificationsPage = async () => {
                            hover:text-sky-500 dark:hover:text-sky-400 transition-colors"
               >
                 <CheckCheck className="w-4 h-4" />
-                Tout marquer comme lu
+                {t.markAll}
               </button>
             </form>
           )}
@@ -203,26 +253,26 @@ const NotificationsPage = async () => {
               <Bell className="w-7 h-7 text-slate-300 dark:text-slate-600" />
             </div>
             <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Aucune notification
+              {t.noNotif}
             </h2>
             <p className="text-sm text-slate-400 dark:text-slate-500 max-w-xs">
-              Vous n&apos;avez aucune notification pour le moment. Les alertes et mises à jour apparaîtront ici.
+              {t.noNotifUserDesc}
             </p>
           </div>
         ) : (
-          <ul className="divide-y divide-slate-100 dark:divide-[hsl(222,47%,16%)]">
+          <ul className="divide-y divide-slate-100 dark:divide-[hsl(196,22%,17%)]">
             {notifications.map((notif) => {
               const style = TYPE_STYLES[notif.type];
               const timeAgo = formatDistanceToNow(new Date(notif.created_at), {
                 addSuffix: true,
-                locale: fr,
+                locale: dateLocale,
               });
 
               return (
                 <li
                   key={notif.id}
                   className={`flex items-start gap-4 px-5 py-4 transition-colors
-                    ${!notif.read ? "bg-sky-50/50 dark:bg-sky-950/20" : "hover:bg-slate-50 dark:hover:bg-[hsl(222,47%,13%)]"}`}
+                    ${!notif.read ? "bg-sky-50/50 dark:bg-sky-950/20" : "hover:bg-slate-50 dark:hover:bg-[hsl(196,24%,13%)]"}`}
                 >
                   <div className={`mt-0.5 w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center ${style.bg}`}>
                     {style.icon}
@@ -250,7 +300,7 @@ const NotificationsPage = async () => {
                       <button
                         type="submit"
                         className="flex-shrink-0 text-xs text-slate-400 hover:text-sky-500 transition-colors mt-1"
-                        title="Marquer comme lu"
+                        title={t.markRead}
                       >
                         <CheckCheck className="w-4 h-4" />
                       </button>

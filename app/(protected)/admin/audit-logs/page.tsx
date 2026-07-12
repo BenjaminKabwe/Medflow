@@ -2,7 +2,6 @@ import { checkRole } from "@/utils/roles";
 import { redirect } from "next/navigation";
 import db from "@/lib/db";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 import {
   Logs,
   ShieldCheck,
@@ -16,10 +15,61 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { AuditAction } from "@/lib/generated/prisma/enums";
+import { fr, enUS } from "date-fns/locale";
+import { getLang } from "@/lib/i18n-server";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const PAGE_SIZE = 50;
+
+const STR = {
+  fr: {
+    system: "Système",
+    title: "Journaux d'audit",
+    entries: (n: string, plural: boolean) => `${n} entrée${plural ? "s" : ""}`,
+    fullTraceability: "Traçabilité complète",
+    all: "Toutes",
+    noLog: "Aucun journal trouvé",
+    noLogDesc: "Les actions du système apparaîtront ici au fur et à mesure.",
+    headers: ["Horodatage", "Action", "Entité", "Utilisateur", "Détails"],
+    paginationInfo: (p: number, tp: number, n: string) =>
+      `Page ${p} sur ${tp} (${n} entrées)`,
+    prev: "← Précédent",
+    next: "Suivant →",
+    numberLocale: "fr-FR",
+    actions: {
+      CREATE: "Création",
+      UPDATE: "Modification",
+      DELETE: "Suppression",
+      VIEW: "Consultation",
+      LOGIN: "Connexion",
+      LOGOUT: "Déconnexion",
+    } as Record<AuditAction, string>,
+  },
+  en: {
+    system: "System",
+    title: "Audit logs",
+    entries: (n: string, plural: boolean) => `${n} entr${plural ? "ies" : "y"}`,
+    fullTraceability: "Full traceability",
+    all: "All",
+    noLog: "No log found",
+    noLogDesc: "System actions will appear here over time.",
+    headers: ["Timestamp", "Action", "Entity", "User", "Details"],
+    paginationInfo: (p: number, tp: number, n: string) =>
+      `Page ${p} of ${tp} (${n} entries)`,
+    prev: "← Previous",
+    next: "Next →",
+    numberLocale: "en-US",
+    actions: {
+      CREATE: "Create",
+      UPDATE: "Update",
+      DELETE: "Delete",
+      VIEW: "View",
+      LOGIN: "Login",
+      LOGOUT: "Logout",
+    } as Record<AuditAction, string>,
+  },
+};
 
 const ACTION_CONFIG: Record<
   AuditAction,
@@ -64,14 +114,14 @@ const ACTION_CONFIG: Record<
 };
 
 const MODEL_COLORS: Record<string, string> = {
-  Patient:     "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
+  Patient:     "bg-sky-500/10 text-sky-400 border-sky-500/20",
   Doctor:      "bg-rose-500/10 text-rose-400 border-rose-500/20",
   Staff:       "bg-violet-500/10 text-violet-400 border-violet-500/20",
   Appointment: "bg-blue-500/10 text-blue-400 border-blue-500/20",
   Diagnosis:   "bg-amber-500/10 text-amber-400 border-amber-500/20",
   Payment:     "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  PatientBill: "bg-teal-500/10 text-teal-400 border-teal-500/20",
-  Service:     "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+  PatientBill: "bg-sky-500/10 text-sky-400 border-sky-500/20",
+  Service:     "bg-sky-500/10 text-sky-400 border-sky-500/20",
 };
 
 // ── Page ──────────────────────────────────────────────────────────────────────
@@ -83,6 +133,10 @@ interface Props {
 const AuditLogsPage = async ({ searchParams }: Props) => {
   const isAdmin = await checkRole("ADMIN");
   if (!isAdmin) redirect("/admin");
+
+  const lang = await getLang();
+  const t = STR[lang];
+  const dateLocale = lang === "en" ? enUS : fr;
 
   const params = await searchParams;
   const actionFilter = params?.action as AuditAction | undefined;
@@ -154,19 +208,19 @@ const AuditLogsPage = async ({ searchParams }: Props) => {
             </div>
             <div>
               <p className="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">
-                Système
+                {t.system}
               </p>
               <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-none">
-                Journaux d&apos;audit
+                {t.title}
                 <span className="ml-2 text-sm font-normal text-slate-400 dark:text-slate-500">
-                  {total.toLocaleString("fr-FR")} entrée{total !== 1 ? "s" : ""}
+                  {t.entries(total.toLocaleString(t.numberLocale), total !== 1)}
                 </span>
               </h1>
             </div>
           </div>
           <div className="flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-3 py-1.5 self-start sm:self-auto">
             <ShieldCheck className="w-3.5 h-3.5" />
-            Traçabilité complète
+            {t.fullTraceability}
           </div>
         </div>
       </div>
@@ -174,7 +228,7 @@ const AuditLogsPage = async ({ searchParams }: Props) => {
       {/* ── Filters ───────────────────────────────────────────────────────── */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-card p-4">
         <div className="flex items-center gap-2 flex-wrap">
-          <Filter className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+          <Filter className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 flex-shrink-0" />
 
           {/* Action filter */}
           <div className="flex items-center gap-1.5 flex-wrap">
@@ -183,10 +237,10 @@ const AuditLogsPage = async ({ searchParams }: Props) => {
               className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${
                 !actionFilter
                   ? "bg-slate-800 text-white border-slate-700"
-                  : "text-slate-400 border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500"
+                  : "text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500"
               }`}
             >
-              Toutes
+              {t.all}
             </Link>
             {(Object.keys(ACTION_CONFIG) as AuditAction[]).map((a) => (
               <Link
@@ -195,11 +249,11 @@ const AuditLogsPage = async ({ searchParams }: Props) => {
                 className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors flex items-center gap-1 ${
                   actionFilter === a
                     ? `${ACTION_CONFIG[a].color} ${ACTION_CONFIG[a].bg} border-transparent`
-                    : "text-slate-400 border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500"
+                    : "text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500"
                 }`}
               >
                 {ACTION_CONFIG[a].icon}
-                {ACTION_CONFIG[a].label}
+                {t.actions[a]}
               </Link>
             ))}
           </div>
@@ -215,7 +269,7 @@ const AuditLogsPage = async ({ searchParams }: Props) => {
                     className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${
                       modelFilter === m
                         ? MODEL_COLORS[m] ?? "bg-slate-500/10 text-slate-400 border-slate-500/20"
-                        : "text-slate-400 border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500"
+                        : "text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500"
                     }`}
                   >
                     {m}
@@ -235,17 +289,17 @@ const AuditLogsPage = async ({ searchParams }: Props) => {
               <Logs className="w-7 h-7 text-slate-300 dark:text-slate-600" />
             </div>
             <p className="font-semibold text-slate-600 dark:text-slate-300 mb-1">
-              Aucun journal trouvé
+              {t.noLog}
             </p>
             <p className="text-sm text-slate-400 dark:text-slate-500 max-w-xs">
-              Les actions du système apparaîtront ici au fur et à mesure.
+              {t.noLogDesc}
             </p>
           </div>
         ) : (
           <>
             {/* Table header */}
             <div className="hidden md:grid grid-cols-[1fr_120px_110px_120px_2fr] gap-4 px-5 py-2.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
-              {["Horodatage", "Action", "Entité", "Utilisateur", "Détails"].map((h) => (
+              {t.headers.map((h) => (
                 <p key={h} className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   {h}
                 </p>
@@ -267,7 +321,7 @@ const AuditLogsPage = async ({ searchParams }: Props) => {
                     {/* Timestamp */}
                     <div className="flex flex-col justify-center">
                       <p className="text-xs font-mono text-slate-700 dark:text-slate-300">
-                        {format(log.created_at, "dd/MM/yyyy HH:mm:ss", { locale: fr })}
+                        {format(log.created_at, "dd/MM/yyyy HH:mm:ss", { locale: dateLocale })}
                       </p>
                       <p className="text-[11px] text-slate-400 dark:text-slate-500 font-mono">
                         #{String(log.id).padStart(6, "0")}
@@ -278,7 +332,7 @@ const AuditLogsPage = async ({ searchParams }: Props) => {
                     <div className="flex items-center">
                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border ${action.color} ${action.bg}`}>
                         {action.icon}
-                        {action.label}
+                        {t.actions[log.action]}
                       </span>
                     </div>
 
@@ -303,7 +357,7 @@ const AuditLogsPage = async ({ searchParams }: Props) => {
                           )}
                         </>
                       ) : (
-                        <p className="text-xs font-mono text-slate-400 truncate" title={log.user_id}>
+                        <p className="text-xs font-mono text-slate-500 dark:text-slate-400 truncate" title={log.user_id}>
                           {log.user_id.slice(0, 12)}…
                         </p>
                       )}
@@ -331,7 +385,7 @@ const AuditLogsPage = async ({ searchParams }: Props) => {
       {totalPages > 1 && (
         <div className="flex items-center justify-between text-sm">
           <p className="text-slate-400 dark:text-slate-500">
-            Page {page} sur {totalPages} ({total.toLocaleString("fr-FR")} entrées)
+            {t.paginationInfo(page, totalPages, total.toLocaleString(t.numberLocale))}
           </p>
           <div className="flex items-center gap-2">
             {page > 1 && (
@@ -340,7 +394,7 @@ const AuditLogsPage = async ({ searchParams }: Props) => {
                 className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700
                            text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-xs font-medium"
               >
-                ← Précédent
+                {t.prev}
               </Link>
             )}
             {page < totalPages && (
@@ -349,7 +403,7 @@ const AuditLogsPage = async ({ searchParams }: Props) => {
                 className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700
                            text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-xs font-medium"
               >
-                Suivant →
+                {t.next}
               </Link>
             )}
           </div>

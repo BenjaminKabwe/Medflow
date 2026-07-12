@@ -18,8 +18,78 @@ import { Role } from "@prisma/client";
 import { AdminCloseSessionButton } from "@/components/cashier/admin-close-session-button";
 import { getSessionById } from "@/lib/sessions-caisse";
 import { PdfDownloadButton } from "@/components/pdf-download-button";
+import { getLang } from "@/lib/i18n-server";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+const STR = {
+  fr: {
+    active: "Active",
+    closed: "Clôturée",
+    backToSessions: "Sessions de caisse",
+    openedOn: "Ouverte le",
+    closedOn: "Clôturée le",
+    totalCollected: "Total encaissé",
+    payments: "Paiements",
+    sessionPayments: "Paiements de la session",
+    noPayment: "Aucun paiement enregistré pour cette session.",
+    colNumber: "N°",
+    colPatient: "Patient",
+    colAppointment: "Rendez-vous",
+    colPaymentDate: "Date paiement",
+    colMode: "Mode",
+    colAmount: "Montant",
+    colInvoice: "Facture",
+    notes: "Notes",
+    methods: {
+      total_cash: "Espèces",
+      total_card: "Carte",
+      total_mobile: "Mobile",
+      total_insurance: "Assurance",
+      total_transfer: "Virement",
+    } as Record<string, string>,
+    paymentMethods: {
+      CASH: "Espèces",
+      CARD: "Carte",
+      MOBILE_MONEY: "Mobile",
+      INSURANCE: "Assurance",
+      BANK_TRANSFER: "Virement",
+    } as Record<string, string>,
+  },
+  en: {
+    active: "Active",
+    closed: "Closed",
+    backToSessions: "Cashier sessions",
+    openedOn: "Opened on",
+    closedOn: "Closed on",
+    totalCollected: "Total collected",
+    payments: "Payments",
+    sessionPayments: "Session payments",
+    noPayment: "No payment recorded for this session.",
+    colNumber: "No.",
+    colPatient: "Patient",
+    colAppointment: "Appointment",
+    colPaymentDate: "Payment date",
+    colMode: "Method",
+    colAmount: "Amount",
+    colInvoice: "Invoice",
+    notes: "Notes",
+    methods: {
+      total_cash: "Cash",
+      total_card: "Card",
+      total_mobile: "Mobile",
+      total_insurance: "Insurance",
+      total_transfer: "Transfer",
+    } as Record<string, string>,
+    paymentMethods: {
+      CASH: "Cash",
+      CARD: "Card",
+      MOBILE_MONEY: "Mobile",
+      INSURANCE: "Insurance",
+      BANK_TRANSFER: "Transfer",
+    } as Record<string, string>,
+  },
+} as const;
 
 const STATUS_STYLE: Record<string, string> = {
   OPEN:   "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
@@ -27,20 +97,12 @@ const STATUS_STYLE: Record<string, string> = {
 };
 
 const METHOD_TOTALS = [
-  { key: "total_cash",      label: "Espèces",   Icon: Banknote,   color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/40" },
-  { key: "total_card",      label: "Carte",     Icon: CreditCard, color: "text-sky-600 dark:text-sky-400",         bg: "bg-sky-50 dark:bg-sky-950/40" },
-  { key: "total_mobile",    label: "Mobile",    Icon: Smartphone, color: "text-orange-600 dark:text-orange-400",   bg: "bg-orange-50 dark:bg-orange-950/40" },
-  { key: "total_insurance", label: "Assurance", Icon: Shield,     color: "text-violet-600 dark:text-violet-400",   bg: "bg-violet-50 dark:bg-violet-950/40" },
-  { key: "total_transfer",  label: "Virement",  Icon: Building2,  color: "text-slate-600 dark:text-slate-400",     bg: "bg-slate-100 dark:bg-slate-800/50" },
+  { key: "total_cash",      Icon: Banknote,   color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/40" },
+  { key: "total_card",      Icon: CreditCard, color: "text-sky-600 dark:text-sky-400",         bg: "bg-sky-50 dark:bg-sky-950/40" },
+  { key: "total_mobile",    Icon: Smartphone, color: "text-orange-600 dark:text-orange-400",   bg: "bg-orange-50 dark:bg-orange-950/40" },
+  { key: "total_insurance", Icon: Shield,     color: "text-violet-600 dark:text-violet-400",   bg: "bg-violet-50 dark:bg-violet-950/40" },
+  { key: "total_transfer",  Icon: Building2,  color: "text-slate-600 dark:text-slate-400",     bg: "bg-slate-100 dark:bg-slate-800/50" },
 ];
-
-const METHOD_LABEL: Record<string, string> = {
-  CASH:          "Espèces",
-  CARD:          "Carte",
-  MOBILE_MONEY:  "Mobile",
-  INSURANCE:     "Assurance",
-  BANK_TRANSFER: "Virement",
-};
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
@@ -49,6 +111,7 @@ export default async function SessionDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const t = STR[await getLang()];
   const user = await getCurrentUser();
   if (!user || user.role !== Role.ADMIN) redirect("/admin");
 
@@ -79,7 +142,7 @@ export default async function SessionDetailPage({
           className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 mb-4 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Sessions de caisse
+          {t.backToSessions}
         </Link>
 
         <div className="flex flex-wrap items-start justify-between gap-4">
@@ -93,7 +156,7 @@ export default async function SessionDetailPage({
                   STATUS_STYLE[session.status] ?? STATUS_STYLE.CLOSED
                 }`}
               >
-                {session.status === "OPEN" ? "Active" : "Clôturée"}
+                {session.status === "OPEN" ? t.active : t.closed}
               </span>
             </div>
             <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 dark:text-slate-500">
@@ -103,7 +166,7 @@ export default async function SessionDetailPage({
               </span>
               <span className="flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
-                Ouverte le{" "}
+                {t.openedOn}{" "}
                 {format(new Date(session.opened_at), "d MMM yyyy · HH:mm", {
                   locale: fr,
                 })}
@@ -111,7 +174,7 @@ export default async function SessionDetailPage({
               {session.closed_at && (
                 <span className="flex items-center gap-1">
                   <Calendar className="w-3 h-3" />
-                  Clôturée le{" "}
+                  {t.closedOn}{" "}
                   {format(new Date(session.closed_at), "d MMM yyyy · HH:mm", {
                     locale: fr,
                   })}
@@ -138,7 +201,7 @@ export default async function SessionDetailPage({
               <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${m.bg}`}>
                 <m.Icon className={`w-4 h-4 ${m.color}`} />
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">{m.label}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{t.methods[m.key]}</p>
               <p className="text-sm font-bold text-slate-800 dark:text-slate-100">
                 {(val ?? 0).toLocaleString("fr-CD")} USD
               </p>
@@ -151,14 +214,14 @@ export default async function SessionDetailPage({
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 px-5 py-4 flex items-center justify-between">
         <div>
           <p className="text-xs text-slate-400 uppercase tracking-widest mb-0.5">
-            Total encaissé
+            {t.totalCollected}
           </p>
           <p className="text-2xl font-bold text-slate-800 dark:text-slate-100">
             {grandTotal.toLocaleString("fr-CD")} USD
           </p>
         </div>
         <div className="text-right">
-          <p className="text-xs text-slate-400 mb-0.5">Paiements</p>
+          <p className="text-xs text-slate-400 mb-0.5">{t.payments}</p>
           <p className="text-lg font-semibold text-slate-700 dark:text-slate-200">
             {session._count.payments}
           </p>
@@ -170,7 +233,7 @@ export default async function SessionDetailPage({
         <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
           <Receipt className="w-4 h-4 text-slate-400" />
           <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-            Paiements de la session
+            {t.sessionPayments}
           </h2>
         </div>
 
@@ -178,7 +241,7 @@ export default async function SessionDetailPage({
           <div className="flex flex-col items-center justify-center py-12 gap-2">
             <Receipt className="w-8 h-8 text-slate-300 dark:text-slate-600" />
             <p className="text-sm text-slate-400 italic">
-              Aucun paiement enregistré pour cette session.
+              {t.noPayment}
             </p>
           </div>
         ) : (
@@ -187,25 +250,25 @@ export default async function SessionDetailPage({
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-800/50">
                   <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-                    N°
+                    {t.colNumber}
                   </th>
                   <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-                    Patient
+                    {t.colPatient}
                   </th>
                   <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide hidden md:table-cell">
-                    Rendez-vous
+                    {t.colAppointment}
                   </th>
                   <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide hidden md:table-cell">
-                    Date paiement
+                    {t.colPaymentDate}
                   </th>
                   <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide hidden sm:table-cell">
-                    Mode
+                    {t.colMode}
                   </th>
                   <th className="px-5 py-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-                    Montant
+                    {t.colAmount}
                   </th>
                   <th className="px-5 py-3 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-                    Facture
+                    {t.colInvoice}
                   </th>
                 </tr>
               </thead>
@@ -248,7 +311,7 @@ export default async function SessionDetailPage({
                       </td>
                       <td className="px-5 py-3 hidden sm:table-cell">
                         <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                          {METHOD_LABEL[p.payment_method] ?? p.payment_method}
+                          {t.paymentMethods[p.payment_method] ?? p.payment_method}
                         </span>
                       </td>
                       <td className="px-5 py-3 text-right font-semibold text-slate-800 dark:text-slate-100 text-xs">
@@ -270,7 +333,7 @@ export default async function SessionDetailPage({
                     colSpan={5}
                     className="px-5 py-3 text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wide"
                   >
-                    Total encaissé
+                    {t.totalCollected}
                   </td>
                   <td className="px-5 py-3 text-right font-bold text-slate-800 dark:text-slate-100">
                     {grandTotal.toLocaleString("fr-CD")} USD
@@ -286,7 +349,7 @@ export default async function SessionDetailPage({
       {/* ── Notes ── */}
       {session.notes && (
         <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 px-5 py-4">
-          <p className="text-xs text-slate-400 uppercase tracking-widest mb-2">Notes</p>
+          <p className="text-xs text-slate-400 uppercase tracking-widest mb-2">{t.notes}</p>
           <p className="text-sm text-slate-600 dark:text-slate-300 italic">
             {session.notes}
           </p>

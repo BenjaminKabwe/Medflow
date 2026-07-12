@@ -12,17 +12,41 @@ import { getAllDoctors } from "@/utils/services/doctor";
 import { Doctor } from "@prisma/client";
 import { format } from "date-fns";
 import { Stethoscope } from "lucide-react";
+import { getLang } from "@/lib/i18n-server";
 
-const columns = [
-  { header: "Médecin",         key: "name" },
-  { header: "N° de licence",   key: "license",     className: "hidden md:table-cell" },
-  { header: "Téléphone",       key: "contact",     className: "hidden md:table-cell" },
-  { header: "Email",           key: "email",       className: "hidden lg:table-cell" },
-  { header: "Date d'arrivée",  key: "created_at",  className: "hidden xl:table-cell" },
-  { header: "Actions",         key: "action" },
-];
+const STR = {
+  fr: {
+    colDoctor: "Médecin",
+    colLicense: "N° de licence",
+    colPhone: "Téléphone",
+    colEmail: "Email",
+    colCreatedAt: "Date d'arrivée",
+    colActions: "Actions",
+    headerLabel: "Médecins",
+    registered: "enregistrés",
+  },
+  en: {
+    colDoctor: "Doctor",
+    colLicense: "License No.",
+    colPhone: "Phone",
+    colEmail: "Email",
+    colCreatedAt: "Join date",
+    colActions: "Actions",
+    headerLabel: "Doctors",
+    registered: "recorded",
+  },
+} as const;
 
 const DoctorsList = async (props: SearchParamsProps) => {
+  const t = STR[await getLang()];
+  const columns = [
+    { header: t.colDoctor, key: "name" },
+    { header: t.colLicense, key: "license", className: "hidden md:table-cell" },
+    { header: t.colPhone, key: "contact", className: "hidden md:table-cell" },
+    { header: t.colEmail, key: "email", className: "hidden lg:table-cell" },
+    { header: t.colCreatedAt, key: "created_at", className: "hidden xl:table-cell" },
+    { header: t.colActions, key: "action" },
+  ];
   const searchParams = await props.searchParams;
   const page = (searchParams?.p || "1") as string;
   const searchQuery = (searchParams?.q || "") as string;
@@ -66,10 +90,10 @@ const DoctorsList = async (props: SearchParamsProps) => {
             <Stethoscope className="w-4 h-4 text-violet-500" />
           </div>
           <div>
-            <p className="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">Médecins</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">{t.headerLabel}</p>
             <p className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-none">
               {totalRecords}{" "}
-              <span className="text-sm font-normal text-slate-400 dark:text-slate-500">enregistrés</span>
+              <span className="text-sm font-normal text-slate-400 dark:text-slate-500">{t.registered}</span>
             </p>
           </div>
         </div>

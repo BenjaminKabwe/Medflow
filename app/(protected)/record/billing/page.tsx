@@ -14,63 +14,63 @@ import { Patient, Payment } from "@prisma/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { ReceiptText } from "lucide-react";
+import { getLang } from "@/lib/i18n-server";
 
-const columns = [
-  {
-    header: "N°",
-    key: "id",
+const STR = {
+  fr: {
+    colId: "N°",
+    colPatient: "Patient",
+    colContact: "Contact",
+    colBillDate: "Date de facturation",
+    colTotal: "Total",
+    colDiscount: "Remise",
+    colPayable: "Montant payable",
+    colPaid: "Montant payé",
+    colStatus: "Statut",
+    colActions: "Actions",
+    unpaid: "Impayé",
+    paid: "Payé",
+    male: "Homme",
+    female: "Femme",
+    paymentsTotal: (n: number) => `paiement${n !== 1 ? "s" : ""} au total`,
   },
-  {
-    header: "Patient",
-    key: "info",
-    className: "",
+  en: {
+    colId: "No.",
+    colPatient: "Patient",
+    colContact: "Contact",
+    colBillDate: "Billing date",
+    colTotal: "Total",
+    colDiscount: "Discount",
+    colPayable: "Amount payable",
+    colPaid: "Amount paid",
+    colStatus: "Status",
+    colActions: "Actions",
+    unpaid: "Unpaid",
+    paid: "Paid",
+    male: "Male",
+    female: "Female",
+    paymentsTotal: (n: number) => `payment${n !== 1 ? "s" : ""} in total`,
   },
-  {
-    header: "Contact",
-    key: "phone",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Date de facturation",
-    key: "bill_date",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Total",
-    key: "total",
-    className: "hidden xl:table-cell",
-  },
-  {
-    header: "Remise",
-    key: "discount",
-    className: "hidden xl:table-cell",
-  },
-  {
-    header: "Montant payable",
-    key: "payable",
-    className: "hidden xl:table-cell",
-  },
-  {
-    header: "Montant payé",
-    key: "paid",
-    className: "hidden xl:table-cell",
-  },
-  {
-    header: "Statut",
-    key: "status",
-    className: "hidden xl:table-cell",
-  },
-  {
-    header: "Actions",
-    key: "action",
-  },
-];
+} as const;
 
 interface ExtendedProps extends Payment {
   patient: Patient;
 }
 
 const BillingPage = async (props: SearchParamsProps) => {
+  const t = STR[await getLang()];
+  const columns = [
+    { header: t.colId, key: "id" },
+    { header: t.colPatient, key: "info", className: "" },
+    { header: t.colContact, key: "phone", className: "hidden md:table-cell" },
+    { header: t.colBillDate, key: "bill_date", className: "hidden md:table-cell" },
+    { header: t.colTotal, key: "total", className: "hidden xl:table-cell" },
+    { header: t.colDiscount, key: "discount", className: "hidden xl:table-cell" },
+    { header: t.colPayable, key: "payable", className: "hidden xl:table-cell" },
+    { header: t.colPaid, key: "paid", className: "hidden xl:table-cell" },
+    { header: t.colStatus, key: "status", className: "hidden xl:table-cell" },
+    { header: t.colActions, key: "action" },
+  ];
   const searchParams = await props.searchParams;
   const page = (searchParams?.p || "1") as string;
   const searchQuery = (searchParams?.q || "") as string;
@@ -90,9 +90,9 @@ const BillingPage = async (props: SearchParamsProps) => {
 
     const statusLabel =
       item?.status === "UNPAID"
-        ? "Impayé"
+        ? t.unpaid
         : item?.status === "PAID"
-        ? "Payé"
+        ? t.paid
         : item?.status;
 
     return (
@@ -111,7 +111,7 @@ const BillingPage = async (props: SearchParamsProps) => {
           <div>
             <h3 className="uppercase">{name}</h3>
             <span className="text-sm capitalize">
-              {patient?.gender === "MALE" ? "Homme" : "Femme"}
+              {patient?.gender === "MALE" ? t.male : t.female}
             </span>
           </div>
         </td>
@@ -171,7 +171,7 @@ const BillingPage = async (props: SearchParamsProps) => {
           <ReceiptText size={20} className="text-gray-500" />
           <p className="text-2xl font-semibold">{totalRecords}</p>
           <span className="text-gray-600 text-sm xl:text-base">
-            paiement{totalRecords !== 1 ? "s" : ""} au total
+            {t.paymentsTotal(totalRecords)}
           </span>
         </div>
         <div className="w-full lg:w-fit flex items-center justify-between lg:justify-start gap-2">

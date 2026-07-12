@@ -10,6 +10,26 @@ import {
   YAxis,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { useLanguage } from "@/components/providers";
+
+const STR = {
+  fr: {
+    title: "Fréquence cardiaque",
+    lastMeasure: "Dernière mesure",
+    average: "Fréquence moyenne",
+    noData: "Aucune donnée disponible",
+    value1: "Valeur 1",
+    value2: "Valeur 2",
+  },
+  en: {
+    title: "Heart rate",
+    lastMeasure: "Last measurement",
+    average: "Average rate",
+    noData: "No data available",
+    value1: "Value 1",
+    value2: "Value 2",
+  },
+};
 
 interface DataProps {
   average: string;
@@ -21,12 +41,14 @@ interface DataProps {
 }
 
 export function HeartRateChart({ average, data }: DataProps) {
+  const { lang } = useLanguage();
+  const t = STR[lang];
   const lastData = data[data.length - 1];
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Fréquence cardiaque</CardTitle>
+        <CardTitle>{t.title}</CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -35,17 +57,17 @@ export function HeartRateChart({ average, data }: DataProps) {
             <p className="text-lg xl:text-xl font-semibold">
               {lastData?.value1 ?? 0}-{lastData?.value2 ?? 0} bpm
             </p>
-            <p className="text-sm text-gray-500">Dernière mesure</p>
+            <p className="text-sm text-gray-500">{t.lastMeasure}</p>
           </div>
           <div>
             <p className="text-lg xl:text-xl font-semibold">{average}</p>
-            <p className="text-sm text-gray-500">Fréquence moyenne</p>
+            <p className="text-sm text-gray-500">{t.average}</p>
           </div>
         </div>
 
         {data.length === 0 ? (
           <p className="text-center text-sm text-muted-foreground py-16">
-            Aucune donnée disponible
+            {t.noData}
           </p>
         ) : (
           <ResponsiveContainer width="100%" height={400}>
@@ -72,14 +94,14 @@ export function HeartRateChart({ average, data }: DataProps) {
               <Line
                 type="monotone"
                 dataKey="value1"
-                name="Valeur 1"
+                name={t.value1}
                 stroke="#8884d8"
                 activeDot={{ r: 8 }}
               />
               <Line
                 type="monotone"
                 dataKey="value2"
-                name="Valeur 2"
+                name={t.value2}
                 stroke="#82ca9d"
               />
             </LineChart>

@@ -3,28 +3,71 @@ import { fr } from "date-fns/locale";
 import { History, Banknote, CreditCard, Smartphone, Shield, Building2 } from "lucide-react";
 import { ProfileImage } from "@/components/profile-image";
 import { getSessionPayments } from "@/app/actions/cashier";
+import { getLang } from "@/lib/i18n-server";
 
 interface SessionHistoryProps {
   sessionId: number;
 }
 
-const METHOD_LABELS: Record<string, { label: string; color: string }> = {
-  CASH:          { label: "Espèces",          color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" },
-  CARD:          { label: "Carte",            color: "bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400" },
-  MOBILE_MONEY:  { label: "Mobile Money",     color: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400" },
-  INSURANCE:     { label: "Assurance",        color: "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400" },
-  BANK_TRANSFER: { label: "Virement",         color: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300" },
+const STR = {
+  fr: {
+    methodLabels: {
+      CASH: "Espèces",
+      CARD: "Carte",
+      MOBILE_MONEY: "Mobile Money",
+      INSURANCE: "Assurance",
+      BANK_TRANSFER: "Virement",
+    } as Record<string, string>,
+    subtotalLabels: {
+      CASH: "Espèces",
+      CARD: "Carte",
+      MOBILE_MONEY: "Mobile",
+      INSURANCE: "Assurance",
+      BANK_TRANSFER: "Virement",
+    } as Record<string, string>,
+    noPayments: "Aucun encaissement pour cette session.",
+    sessionHistory: "Historique de la session",
+    collections: (n: number) => `${n} encaissement${n !== 1 ? "s" : ""}`,
+  },
+  en: {
+    methodLabels: {
+      CASH: "Cash",
+      CARD: "Card",
+      MOBILE_MONEY: "Mobile Money",
+      INSURANCE: "Insurance",
+      BANK_TRANSFER: "Transfer",
+    } as Record<string, string>,
+    subtotalLabels: {
+      CASH: "Cash",
+      CARD: "Card",
+      MOBILE_MONEY: "Mobile",
+      INSURANCE: "Insurance",
+      BANK_TRANSFER: "Transfer",
+    } as Record<string, string>,
+    noPayments: "No collections for this session.",
+    sessionHistory: "Session history",
+    collections: (n: number) => `${n} collection${n !== 1 ? "s" : ""}`,
+  },
+} as const;
+
+const METHOD_COLORS: Record<string, string> = {
+  CASH:          "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  CARD:          "bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400",
+  MOBILE_MONEY:  "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+  INSURANCE:     "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
+  BANK_TRANSFER: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
 };
 
 const SUBTOTAL_ICONS = [
-  { key: "CASH",          label: "Espèces",     Icon: Banknote,  color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/40" },
-  { key: "CARD",          label: "Carte",       Icon: CreditCard, color: "text-sky-600 dark:text-sky-400",       bg: "bg-sky-50 dark:bg-sky-950/40" },
-  { key: "MOBILE_MONEY",  label: "Mobile",      Icon: Smartphone, color: "text-orange-600 dark:text-orange-400", bg: "bg-orange-50 dark:bg-orange-950/40" },
-  { key: "INSURANCE",     label: "Assurance",   Icon: Shield,     color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-50 dark:bg-violet-950/40" },
-  { key: "BANK_TRANSFER", label: "Virement",    Icon: Building2,  color: "text-slate-600 dark:text-slate-400",   bg: "bg-slate-100 dark:bg-slate-800/50" },
+  { key: "CASH",          Icon: Banknote,  color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/40" },
+  { key: "CARD",          Icon: CreditCard, color: "text-sky-600 dark:text-sky-400",       bg: "bg-sky-50 dark:bg-sky-950/40" },
+  { key: "MOBILE_MONEY",  Icon: Smartphone, color: "text-orange-600 dark:text-orange-400", bg: "bg-orange-50 dark:bg-orange-950/40" },
+  { key: "INSURANCE",     Icon: Shield,     color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-50 dark:bg-violet-950/40" },
+  { key: "BANK_TRANSFER", Icon: Building2,  color: "text-slate-600 dark:text-slate-400",   bg: "bg-slate-100 dark:bg-slate-800/50" },
 ];
 
 export async function SessionHistory({ sessionId }: SessionHistoryProps) {
+  const t = STR[await getLang()];
   const payments = await getSessionPayments(sessionId, "PAID");
 
   const subtotals = payments.reduce<Record<string, number>>((acc, p) => {
@@ -38,7 +81,7 @@ export async function SessionHistory({ sessionId }: SessionHistoryProps) {
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-8 flex flex-col items-center gap-2 text-center">
         <History className="w-8 h-8 text-slate-300 dark:text-slate-600" />
         <p className="text-sm text-slate-400 dark:text-slate-500">
-          Aucun encaissement pour cette session.
+          {t.noPayments}
         </p>
       </div>
     );
@@ -57,7 +100,7 @@ export async function SessionHistory({ sessionId }: SessionHistoryProps) {
               <s.Icon className={`w-4 h-4 ${s.color}`} />
             </div>
             <div className="min-w-0">
-              <p className="text-[10px] text-slate-400 dark:text-slate-500">{s.label}</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500">{t.subtotalLabels[s.key]}</p>
               <p className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">
                 {(subtotals[s.key] ?? 0).toLocaleString("fr-CD")} USD
               </p>
@@ -71,16 +114,17 @@ export async function SessionHistory({ sessionId }: SessionHistoryProps) {
         <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
           <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
             <History className="w-4 h-4 text-slate-400" />
-            Historique de la session
+            {t.sessionHistory}
           </h3>
-          <span className="text-xs text-slate-400">{payments.length} encaissement{payments.length !== 1 ? "s" : ""}</span>
+          <span className="text-xs text-slate-400">{t.collections(payments.length)}</span>
         </div>
 
         <div className="divide-y divide-slate-50 dark:divide-slate-800/60">
           {payments.map((p) => {
             const name = `${p.patient.first_name} ${p.patient.last_name}`;
             const method = p.payment_method ?? "CASH";
-            const style = METHOD_LABELS[method] ?? METHOD_LABELS.CASH;
+            const methodColor = METHOD_COLORS[method] ?? METHOD_COLORS.CASH;
+            const methodLabel = t.methodLabels[method] ?? t.methodLabels.CASH;
             return (
               <div
                 key={p.id}
@@ -105,8 +149,8 @@ export async function SessionHistory({ sessionId }: SessionHistoryProps) {
                     )}
                   </p>
                 </div>
-                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${style.color}`}>
-                  {style.label}
+                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${methodColor}`}>
+                  {methodLabel}
                 </span>
                 <p className="text-sm font-bold text-slate-800 dark:text-slate-100 flex-shrink-0 min-w-[6rem] text-right">
                   {p.amount_paid.toLocaleString("fr-CD")} USD

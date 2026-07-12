@@ -1,14 +1,19 @@
 "use server";
 
+import { am } from "@/lib/action-messages";
+
 import { DiagnosisFormData } from "@/components/dialogs/add-diagnosis";
 import db from "@/lib/db";
 import {
   DiagnosisSchema,
   PatientBillSchema,
   PaymentSchema,
+  PrescriptionItemSchema,
 } from "@/lib/schema";
 import { checkRole } from "@/utils/roles";
 import { currentUser, auth } from "@clerk/nextjs/server";
+import { z } from "zod";
+import { createPrescriptionRecord } from "@/utils/services/prescription";
 import { revalidatePath } from "next/cache";
 import {
   getOrCreateActiveSession,
@@ -18,7 +23,8 @@ import { logAudit } from "@/lib/audit";
 
 export const addDiagnosis = async (
   data: DiagnosisFormData,
-  appointmentId: string
+  appointmentId: string,
+  prescriptionItems?: z.infer<typeof PrescriptionItemSchema>[]
 ) => {
   try {
     const validatedData = DiagnosisSchema.parse(data);
@@ -54,9 +60,47 @@ export const addDiagnosis = async (
       });
     }
 
+    // Ordonnance structurée créée dans la foulée (facultatif). Prescrire est un
+    // acte médical → réservé au médecin. Le champ texte libre a été remplacé
+    // par ce sélecteur de médicaments intégré au dialogue de diagnostic.
+    let prescriptionMessage = "";
+    const items = z
+      .array(PrescriptionItemSchema)
+      .safeParse(prescriptionItems ?? []);
+    if (items.success && items.data.length > 0) {
+      const isDoctor = await checkRole("DOCTOR");
+      const user = await currentUser();
+      if (isDoctor && user) {
+        const doctorName =
+          [user.firstName, user.lastName].filter(Boolean).join(" ").trim() ||
+          user.emailAddresses[0]?.emailAddress ||
+          user.id;
+        const rx = await createPrescriptionRecord({
+          patient_id: validatedData.patient_id,
+          medical_record_id: Number(med_id),
+          appointment_id: Number(appointmentId),
+          doctor_id: user.id,
+          doctor_name: doctorName,
+          items: items.data,
+        });
+        await logAudit({
+          userId: user.id,
+          action: "CREATE",
+          model: "Prescription",
+          recordId: String(rx.id),
+          newValues: {
+            reference: rx.reference,
+            patient_id: validatedData.patient_id,
+          },
+        });
+        revalidatePath("/pharmacy/prescriptions");
+        prescriptionMessage = ` · Ordonnance ${rx.reference} créée`;
+      }
+    }
+
     return {
       success: true,
-      message: "Diagnostic ajouté avec succès",
+      message: `Diagnostic ajouté avec succès${prescriptionMessage}`,
       status: 201,
     };
   } catch (error) {
@@ -75,7 +119,7 @@ export async function addNewBill(data: any) {
     if (!isAdmin && !isDoctor) {
       return {
         success: false,
-        msg: "Vous n'êtes pas autorisé à ajouter une facture",
+        msg: await am("notAllowedBill"),
       };
     }
 
@@ -195,7 +239,7 @@ export async function generateBill(data: any) {
 
     revalidatePath("/admin/cashier-sessions");
     revalidatePath("/administration/sessions-de-caisse");
-    return { success: true, error: false, msg: "Facture générée avec succès" };
+    return { success: true, error: false, msg: await am("billGenerated") };
   } catch (error) {
     console.log(error);
     return { success: false, error: true, msg: "Erreur interne du serveur" };

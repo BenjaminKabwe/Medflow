@@ -3,22 +3,45 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { format } from "date-fns";
 import { Users } from "lucide-react";
 import React from "react";
+import { getLang } from "@/lib/i18n-server";
 
-const columns = [
-  { header: "ID Utilisateur", key: "id",         className: "hidden lg:table-cell" },
-  { header: "Nom",            key: "name" },
-  { header: "Email",          key: "email",        className: "hidden md:table-cell" },
-  { header: "Rôle",           key: "role" },
-  { header: "Statut",         key: "status" },
-  { header: "Dernière connexion", key: "last_login", className: "hidden xl:table-cell" },
-];
-
-const ROLE_LABELS: Record<string, string> = {
-  admin:           "Administrateur",
-  doctor:          "Médecin",
-  nurse:           "Infirmier(ère)",
-  patient:         "Patient",
-  "lab technician": "Technicien de labo",
+const STR = {
+  fr: {
+    colId: "ID Utilisateur",
+    colName: "Nom",
+    colEmail: "Email",
+    colRole: "Rôle",
+    colStatus: "Statut",
+    colLastLogin: "Dernière connexion",
+    active: "Actif",
+    title: "Utilisateurs",
+    registered: "enregistrés",
+    roles: {
+      admin: "Administrateur",
+      doctor: "Médecin",
+      nurse: "Infirmier(ère)",
+      patient: "Patient",
+      "lab technician": "Technicien de labo",
+    } as Record<string, string>,
+  },
+  en: {
+    colId: "User ID",
+    colName: "Name",
+    colEmail: "Email",
+    colRole: "Role",
+    colStatus: "Status",
+    colLastLogin: "Last login",
+    active: "Active",
+    title: "Users",
+    registered: "registered",
+    roles: {
+      admin: "Administrator",
+      doctor: "Doctor",
+      nurse: "Nurse",
+      patient: "Patient",
+      "lab technician": "Lab technician",
+    } as Record<string, string>,
+  },
 };
 
 interface UserProps {
@@ -36,6 +59,16 @@ const UserPage = async () => {
 
   if (!data) return null;
 
+  const t = STR[await getLang()];
+  const columns = [
+    { header: t.colId, key: "id", className: "hidden lg:table-cell" },
+    { header: t.colName, key: "name" },
+    { header: t.colEmail, key: "email", className: "hidden md:table-cell" },
+    { header: t.colRole, key: "role" },
+    { header: t.colStatus, key: "status" },
+    { header: t.colLastLogin, key: "last_login", className: "hidden xl:table-cell" },
+  ];
+
   const renderRow = (item: UserProps) => {
     const role = (item?.publicMetadata?.role as string) || "";
     return (
@@ -51,12 +84,12 @@ const UserPage = async () => {
         </td>
         <td className="py-3 pr-4">
           <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-violet-500/10 text-violet-600 dark:text-violet-400 capitalize">
-            {ROLE_LABELS[role.toLowerCase()] ?? role}
+            {t.roles[role.toLowerCase()] ?? role}
           </span>
         </td>
         <td className="py-3 pr-4">
           <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-            Actif
+            {t.active}
           </span>
         </td>
         <td className="hidden xl:table-cell py-3 pr-4 text-slate-500 dark:text-slate-400 text-xs">
@@ -76,10 +109,10 @@ const UserPage = async () => {
             <Users className="w-4 h-4 text-sky-500" />
           </div>
           <div>
-            <p className="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">Utilisateurs</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">{t.title}</p>
             <p className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-none">
               {totalCount}{" "}
-              <span className="text-sm font-normal text-slate-400 dark:text-slate-500">enregistrés</span>
+              <span className="text-sm font-normal text-slate-400 dark:text-slate-500">{t.registered}</span>
             </p>
           </div>
         </div>

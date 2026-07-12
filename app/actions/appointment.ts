@@ -1,5 +1,7 @@
 "use server";
 
+import { am } from "@/lib/action-messages";
+
 import { VitalSignsFormData } from "@/components/dialogs/add-vital-signs";
 import db from "@/lib/db";
 import { creerNotification } from "@/lib/notifications";
@@ -13,7 +15,7 @@ export async function createNewAppointment(data: any) {
     const validatedData = AppointmentSchema.safeParse(data);
 
     if (!validatedData.success) {
-      return { success: false, msg: "Données invalides" };
+      return { success: false, msg: await am("invalidData") };
     }
     const validated = validatedData.data;
     const { userId } = await auth();
@@ -56,11 +58,11 @@ export async function createNewAppointment(data: any) {
 
     return {
       success: true,
-      msg: "Rendez-vous créé avec succès",
+      msg: await am("appointmentCreated"),
     };
   } catch (error) {
     console.log(error);
-    return { success: false, msg: "Une erreur est survenue. Veuillez réessayer." };
+    return { success: false, msg: await am("genericError") };
   }
 }
 export async function appointmentAction(
@@ -129,7 +131,7 @@ export async function appointmentAction(
     };
   } catch (error) {
     console.log(error);
-    return { success: false, msg: "Une erreur est survenue. Veuillez réessayer." };
+    return { success: false, msg: await am("genericError") };
   }
 }
 
@@ -142,7 +144,7 @@ export async function addVitalSigns(
     const { userId } = await auth();
 
     if (!userId) {
-      return { success: false, msg: "Non autorisé" };
+      return { success: false, msg: await am("unauthorized") };
     }
 
     const validatedData = VitalSignsSchema.parse(data);
@@ -170,7 +172,7 @@ export async function addVitalSigns(
 
     return {
       success: true,
-      msg: "Signes vitaux ajoutés avec succès",
+      msg: await am("vitalsAdded"),
     };
   } catch (error) {
     console.log(error);

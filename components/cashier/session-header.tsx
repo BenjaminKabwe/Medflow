@@ -5,6 +5,36 @@ import { fr } from "date-fns/locale";
 import { Clock, DollarSign } from "lucide-react";
 import { OpenSessionDialog } from "./open-session-dialog";
 import { CloseSessionDialog } from "./close-session-dialog";
+import { useLanguage } from "@/components/providers";
+
+const STR = {
+  fr: {
+    cashSession: "Session de caisse",
+    noActiveSession: "Aucune session active",
+    noActiveHint: "Ouvrez une session pour commencer à encaisser des paiements.",
+    opening: "Ouverture",
+    initialFund: "Fond initial",
+    atOpening: "à l'ouverture",
+    collections: "Encaissements",
+    payments: (n: number) => `${n} paiement${n !== 1 ? "s" : ""}`,
+    sessionNo: (n: number) => `Session #${n}`,
+    active: "Active",
+    currentSession: "Session en cours",
+  },
+  en: {
+    cashSession: "Cash session",
+    noActiveSession: "No active session",
+    noActiveHint: "Open a session to start collecting payments.",
+    opening: "Opening",
+    initialFund: "Initial float",
+    atOpening: "at opening",
+    collections: "Collections",
+    payments: (n: number) => `${n} payment${n !== 1 ? "s" : ""}`,
+    sessionNo: (n: number) => `Session #${n}`,
+    active: "Active",
+    currentSession: "Current session",
+  },
+} as const;
 
 interface SessionHeaderProps {
   session: {
@@ -16,19 +46,21 @@ interface SessionHeaderProps {
 }
 
 export function SessionHeader({ session }: SessionHeaderProps) {
+  const { lang } = useLanguage();
+  const t = STR[lang];
   if (!session) {
     return (
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-card p-5">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <p className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">
-              Session de caisse
+              {t.cashSession}
             </p>
             <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-              Aucune session active
+              {t.noActiveSession}
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Ouvrez une session pour commencer à encaisser des paiements.
+              {t.noActiveHint}
             </p>
           </div>
           <OpenSessionDialog />
@@ -44,7 +76,7 @@ export function SessionHeader({ session }: SessionHeaderProps) {
 
   const stats = [
     {
-      label: "Ouverture",
+      label: t.opening,
       value: format(new Date(session.opened_at), "HH:mm", { locale: fr }),
       sub: format(new Date(session.opened_at), "d MMM", { locale: fr }),
       icon: Clock,
@@ -52,17 +84,17 @@ export function SessionHeader({ session }: SessionHeaderProps) {
       bg: "bg-sky-50 dark:bg-sky-950/40",
     },
     {
-      label: "Fond initial",
+      label: t.initialFund,
       value: `${session.opening_amount.toLocaleString("fr-CD")} USD`,
-      sub: "à l'ouverture",
+      sub: t.atOpening,
       icon: DollarSign,
       color: "text-slate-600 dark:text-slate-300",
       bg: "bg-slate-100 dark:bg-slate-800/50",
     },
     {
-      label: "Encaissements",
+      label: t.collections,
       value: `${totalCollected.toLocaleString("fr-CD")} USD`,
-      sub: `${session.payments.length} paiement${session.payments.length !== 1 ? "s" : ""}`,
+      sub: t.payments(session.payments.length),
       icon: DollarSign,
       color: "text-emerald-600 dark:text-emerald-400",
       bg: "bg-emerald-50 dark:bg-emerald-950/40",
@@ -75,15 +107,15 @@ export function SessionHeader({ session }: SessionHeaderProps) {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <p className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-              Session #{session.id}
+              {t.sessionNo(session.id)}
             </p>
             <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Active
+              {t.active}
             </span>
           </div>
           <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-            Session en cours
+            {t.currentSession}
           </h2>
         </div>
         <CloseSessionDialog sessionId={session.id} totalCollected={totalCollected} />

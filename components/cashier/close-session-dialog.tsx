@@ -26,15 +26,42 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { closeSession } from "@/app/actions/cashier";
+import { useLanguage } from "@/components/providers";
 
-const Schema = z.object({
-  closing_amount: z.coerce
-    .number()
-    .min(0, "Le montant de clôture ne peut pas être négatif"),
-  notes: z.string().max(500).optional(),
-});
+const STR = {
+  fr: {
+    negativeAmount: "Le montant de clôture ne peut pas être négatif",
+    genericError: "Une erreur est survenue. Veuillez réessayer.",
+    closeSession: "Clôturer la session",
+    totalCollected: "Total encaissé :",
+    closingFund: "Fond de caisse à la clôture",
+    notes: "Notes (optionnel)",
+    notesPlaceholder: "Observations à la clôture…",
+    cancel: "Annuler",
+    closing: "Clôture en cours…",
+    confirmClose: "Confirmer la clôture",
+  },
+  en: {
+    negativeAmount: "The closing amount cannot be negative",
+    genericError: "An error occurred. Please try again.",
+    closeSession: "Close session",
+    totalCollected: "Total collected:",
+    closingFund: "Cash on hand at closing",
+    notes: "Notes (optional)",
+    notesPlaceholder: "Observations at closing…",
+    cancel: "Cancel",
+    closing: "Closing…",
+    confirmClose: "Confirm closing",
+  },
+} as const;
 
-type Values = z.infer<typeof Schema>;
+const Schema = (t: (typeof STR)[keyof typeof STR]) =>
+  z.object({
+    closing_amount: z.coerce.number().min(0, t.negativeAmount),
+    notes: z.string().max(500).optional(),
+  });
+
+type Values = z.infer<ReturnType<typeof Schema>>;
 
 interface CloseSessionDialogProps {
   sessionId: number;
@@ -44,11 +71,13 @@ interface CloseSessionDialogProps {
 export function CloseSessionDialog({
   totalCollected,
 }: CloseSessionDialogProps) {
+  const { lang } = useLanguage();
+  const t = STR[lang];
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<Values>({
-    resolver: zodResolver(Schema),
+    resolver: zodResolver(Schema(t)),
     defaultValues: { closing_amount: 0, notes: "" },
   });
 
@@ -68,7 +97,7 @@ export function CloseSessionDialog({
         toast.error(result.message);
       }
     } catch {
-      toast.error("Une erreur est survenue. Veuillez réessayer.");
+      toast.error(t.genericError);
     } finally {
       setIsLoading(false);
     }
@@ -82,7 +111,7 @@ export function CloseSessionDialog({
           className="gap-2 border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30"
         >
           <XCircle className="w-4 h-4" />
-          Clôturer la session
+          {t.closeSession}
         </Button>
       </DialogTrigger>
 
@@ -92,10 +121,10 @@ export function CloseSessionDialog({
             <div className="w-8 h-8 rounded-lg bg-rose-100 dark:bg-rose-950/50 flex items-center justify-center">
               <XCircle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
             </div>
-            Clôturer la session
+            {t.closeSession}
           </DialogTitle>
           <DialogDescription>
-            Total encaissé :{" "}
+            {t.totalCollected}{" "}
             <span className="font-semibold text-slate-700 dark:text-slate-200">
               {totalCollected.toLocaleString("fr-CD")} USD
             </span>
@@ -112,7 +141,7 @@ export function CloseSessionDialog({
               name="closing_amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Fond de caisse à la clôture</FormLabel>
+                  <FormLabel>{t.closingFund}</FormLabel>
                   <FormControl>
                     <div className="flex items-center border border-input rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
                       <Input
@@ -137,11 +166,11 @@ export function CloseSessionDialog({
               name="notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Notes (optionnel)</FormLabel>
+                  <FormLabel>{t.notes}</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
-                      placeholder="Observations à la clôture…"
+                      placeholder={t.notesPlaceholder}
                       rows={2}
                       className="resize-none"
                     />
@@ -159,14 +188,14 @@ export function CloseSessionDialog({
                 onClick={() => setOpen(false)}
                 disabled={isLoading}
               >
-                Annuler
+                {t.cancel}
               </Button>
               <Button
                 type="submit"
                 disabled={isLoading}
                 className="flex-1 bg-rose-600 hover:bg-rose-700 text-white"
               >
-                {isLoading ? "Clôture en cours…" : "Confirmer la clôture"}
+                {isLoading ? t.closing : t.confirmClose}
               </Button>
             </div>
           </form>

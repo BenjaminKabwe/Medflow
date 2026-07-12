@@ -1,5 +1,7 @@
 "use server";
 
+import { am } from "@/lib/action-messages";
+
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import db from "@/lib/db";
@@ -140,7 +142,7 @@ export async function updatePaymentMethodConfig(
     });
 
     revalidatePath("/admin/system-settings");
-    return { success: true, message: "Configuration mise à jour avec succès" };
+    return { success: true, message: await am("configUpdated") };
   } catch (e) {
     return handlePermissionError(e);
   }

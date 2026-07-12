@@ -13,21 +13,38 @@ import { getAllPatients } from "@/utils/services/patient";
 import { Patient } from "@prisma/client";
 import { format } from "date-fns";
 import { UserPen, UsersRound } from "lucide-react";
+import { getLang } from "@/lib/i18n-server";
 
-const columns = [
-  { header: "Patient",          key: "name" },
-  { header: "Sexe",             key: "gender",     className: "hidden md:table-cell" },
-  { header: "Téléphone",        key: "contact",    className: "hidden md:table-cell" },
-  { header: "Email",            key: "email",      className: "hidden lg:table-cell" },
-  { header: "Adresse",          key: "address",    className: "hidden xl:table-cell" },
-  { header: "Dernière visite",  key: "created_at", className: "hidden lg:table-cell" },
-  { header: "Dernier traitement", key: "treatment", className: "hidden 2xl:table-cell" },
-  { header: "Actions",          key: "action" },
-];
-
-const GENDER_FR: Record<string, string> = {
-  male: "Homme", female: "Femme", other: "Autre",
-};
+const STR = {
+  fr: {
+    colPatient: "Patient",
+    colGender: "Sexe",
+    colPhone: "Téléphone",
+    colEmail: "Email",
+    colAddress: "Adresse",
+    colLastVisit: "Dernière visite",
+    colLastTreatment: "Dernier traitement",
+    colActions: "Actions",
+    gender: { male: "Homme", female: "Femme", other: "Autre" } as Record<string, string>,
+    edit: "Modifier",
+    headerLabel: "Patients",
+    registered: "enregistrés",
+  },
+  en: {
+    colPatient: "Patient",
+    colGender: "Gender",
+    colPhone: "Phone",
+    colEmail: "Email",
+    colAddress: "Address",
+    colLastVisit: "Last visit",
+    colLastTreatment: "Last treatment",
+    colActions: "Actions",
+    gender: { male: "Male", female: "Female", other: "Other" } as Record<string, string>,
+    edit: "Edit",
+    headerLabel: "Patients",
+    registered: "recorded",
+  },
+} as const;
 
 interface PatientProps extends Patient {
   appointments: {
@@ -36,6 +53,17 @@ interface PatientProps extends Patient {
 }
 
 const PatientList = async (props: SearchParamsProps) => {
+  const t = STR[await getLang()];
+  const columns = [
+    { header: t.colPatient, key: "name" },
+    { header: t.colGender, key: "gender", className: "hidden md:table-cell" },
+    { header: t.colPhone, key: "contact", className: "hidden md:table-cell" },
+    { header: t.colEmail, key: "email", className: "hidden lg:table-cell" },
+    { header: t.colAddress, key: "address", className: "hidden xl:table-cell" },
+    { header: t.colLastVisit, key: "created_at", className: "hidden lg:table-cell" },
+    { header: t.colLastTreatment, key: "treatment", className: "hidden 2xl:table-cell" },
+    { header: t.colActions, key: "action" },
+  ];
   const searchParams = await props.searchParams;
   const page = (searchParams?.p || "1") as string;
   const searchQuery = (searchParams?.q || "") as string;
@@ -48,7 +76,7 @@ const PatientList = async (props: SearchParamsProps) => {
   const renderRow = (item: PatientProps) => {
     const lastVisit = item?.appointments[0]?.medical[0] || null;
     const name = item?.first_name + " " + item?.last_name;
-    const gender = GENDER_FR[item?.gender?.toLowerCase()] ?? item?.gender;
+    const gender = t.gender[item?.gender?.toLowerCase()] ?? item?.gender;
 
     return (
       <tr key={item?.id} className="text-sm hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors">
@@ -80,7 +108,7 @@ const PatientList = async (props: SearchParamsProps) => {
               <div className="space-y-2">
                 <Button variant="ghost" className="text-xs font-light w-full justify-start">
                   <UserPen size={15} className="mr-2" />
-                  Modifier
+                  {t.edit}
                 </Button>
                 {isAdmin && <ActionDialog type="delete" id={item.id} deleteType="patient" />}
               </div>
@@ -99,10 +127,10 @@ const PatientList = async (props: SearchParamsProps) => {
             <UsersRound className="w-4 h-4 text-sky-500" />
           </div>
           <div>
-            <p className="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">Patients</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">{t.headerLabel}</p>
             <p className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-none">
               {totalRecords}{" "}
-              <span className="text-sm font-normal text-slate-400 dark:text-slate-500">enregistrés</span>
+              <span className="text-sm font-normal text-slate-400 dark:text-slate-500">{t.registered}</span>
             </p>
           </div>
         </div>

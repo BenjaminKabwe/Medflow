@@ -170,8 +170,8 @@ export const s = StyleSheet.create({
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-export const fmtDate = (d: Date | string) =>
-  new Date(d).toLocaleDateString("fr-FR", {
+export const fmtDate = (d: Date | string, locale: string = "fr-FR") =>
+  new Date(d).toLocaleDateString(locale, {
     day: "2-digit",
     month: "long",
     year: "numeric",

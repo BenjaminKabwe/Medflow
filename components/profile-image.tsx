@@ -38,7 +38,7 @@ export const ProfileImage = ({
         "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ring-2 ring-white shadow-sm",
         className
       )}
-      style={{ backgroundColor: bgColor ?? "#0ea5e9" }}
+      style={{ backgroundColor: bgColor ?? "#0284c7" }}
     >
       <span
         className={cn(

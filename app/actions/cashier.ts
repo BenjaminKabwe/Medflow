@@ -1,5 +1,7 @@
 "use server";
 
+import { am } from "@/lib/action-messages";
+
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { currentUser } from "@clerk/nextjs/server";
@@ -129,7 +131,7 @@ export async function openSession(
     revalidatePath("/admin/cashier-sessions");
     return {
       success: true,
-      message: "Session de caisse ouverte avec succès",
+      message: await am("cashSessionOpened"),
       data: { sessionId: session.id },
     };
   } catch (e) {
@@ -203,7 +205,7 @@ export async function closeSession(
     revalidatePath("/cashier/dashboard");
     revalidatePath("/admin/cashier-sessions");
     revalidatePath("/administration/sessions-de-caisse");
-    return { success: true, message: "Session de caisse clôturée avec succès" };
+    return { success: true, message: await am("cashSessionClosed") };
   } catch (e) {
     return handleError(e);
   }
@@ -240,7 +242,7 @@ export async function collectPayment(
       return {
         success: false,
         error: true,
-        message: "Ce paiement a déjà été encaissé",
+        message: await am("alreadyCollected"),
       };
     }
 
@@ -295,7 +297,7 @@ export async function collectPayment(
     revalidatePath("/admin/cashier-sessions");
     return {
       success: true,
-      message: "Paiement encaissé avec succès",
+      message: await am("paymentCollected"),
       data: { receipt_number },
     };
   } catch (e) {
@@ -311,7 +313,7 @@ export async function adminCloseSession(sessionId: number): Promise<ActionResult
     await closeSessionById(sessionId);
     revalidatePath("/admin/cashier-sessions");
     revalidatePath("/administration/sessions-de-caisse");
-    return { success: true, message: "Session clôturée avec succès" };
+    return { success: true, message: await am("sessionClosed") };
   } catch (e) {
     return handleError(e);
   }

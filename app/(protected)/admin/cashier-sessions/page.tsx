@@ -16,6 +16,58 @@ import { getAllCashierSessions } from "@/app/actions/cashier";
 import { SearchParamsProps } from "@/types";
 import { Role } from "@prisma/client";
 import { AdminCloseSessionButton } from "@/components/cashier/admin-close-session-button";
+import { getLang } from "@/lib/i18n-server";
+
+const STR = {
+  fr: {
+    active: "Active",
+    closed: "Clôturée",
+    payments: (n: number) => `${n} paiement${n !== 1 ? "s" : ""}`,
+    noCollection: "Aucun encaissement enregistré.",
+    viewDetails: "Voir détails",
+    title: "Sessions de caisse",
+    summary: (total: number, open: number, closed: number) =>
+      `${total} session${total !== 1 ? "s" : ""} · ${open} active${open !== 1 ? "s" : ""} · ${closed} clôturée${closed !== 1 ? "s" : ""}`,
+    totalCollected: "Total encaissé",
+    allSessions: "Toutes les sessions",
+    activeSessions: "Sessions actives",
+    closedSessions: "Sessions clôturées",
+    filter: "Filtrer",
+    reset: "Réinitialiser",
+    noSessions: "Aucune session trouvée.",
+    methods: {
+      total_cash: "Espèces",
+      total_card: "Carte",
+      total_mobile: "Mobile",
+      total_insurance: "Assurance",
+      total_transfer: "Virement",
+    } as Record<string, string>,
+  },
+  en: {
+    active: "Active",
+    closed: "Closed",
+    payments: (n: number) => `${n} payment${n !== 1 ? "s" : ""}`,
+    noCollection: "No payment recorded.",
+    viewDetails: "View details",
+    title: "Cashier sessions",
+    summary: (total: number, open: number, closed: number) =>
+      `${total} session${total !== 1 ? "s" : ""} · ${open} active · ${closed} closed`,
+    totalCollected: "Total collected",
+    allSessions: "All sessions",
+    activeSessions: "Active sessions",
+    closedSessions: "Closed sessions",
+    filter: "Filter",
+    reset: "Reset",
+    noSessions: "No session found.",
+    methods: {
+      total_cash: "Cash",
+      total_card: "Card",
+      total_mobile: "Mobile",
+      total_insurance: "Insurance",
+      total_transfer: "Transfer",
+    } as Record<string, string>,
+  },
+} as const;
 
 const STATUS_STYLE: Record<string, string> = {
   OPEN:   "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
@@ -23,16 +75,17 @@ const STATUS_STYLE: Record<string, string> = {
 };
 
 const METHOD_TOTALS = [
-  { key: "total_cash",      label: "Espèces",     Icon: Banknote,   color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/40" },
-  { key: "total_card",      label: "Carte",       Icon: CreditCard, color: "text-sky-600 dark:text-sky-400",         bg: "bg-sky-50 dark:bg-sky-950/40" },
-  { key: "total_mobile",    label: "Mobile",      Icon: Smartphone, color: "text-orange-600 dark:text-orange-400",   bg: "bg-orange-50 dark:bg-orange-950/40" },
-  { key: "total_insurance", label: "Assurance",   Icon: Shield,     color: "text-violet-600 dark:text-violet-400",   bg: "bg-violet-50 dark:bg-violet-950/40" },
-  { key: "total_transfer",  label: "Virement",    Icon: Building2,  color: "text-slate-600 dark:text-slate-400",     bg: "bg-slate-100 dark:bg-slate-800/50" },
+  { key: "total_cash",      Icon: Banknote,   color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/40" },
+  { key: "total_card",      Icon: CreditCard, color: "text-sky-600 dark:text-sky-400",         bg: "bg-sky-50 dark:bg-sky-950/40" },
+  { key: "total_mobile",    Icon: Smartphone, color: "text-orange-600 dark:text-orange-400",   bg: "bg-orange-50 dark:bg-orange-950/40" },
+  { key: "total_insurance", Icon: Shield,     color: "text-violet-600 dark:text-violet-400",   bg: "bg-violet-50 dark:bg-violet-950/40" },
+  { key: "total_transfer",  Icon: Building2,  color: "text-slate-600 dark:text-slate-400",     bg: "bg-slate-100 dark:bg-slate-800/50" },
 ];
 
 type Session = Awaited<ReturnType<typeof getAllCashierSessions>>[number];
 
-function SessionRow({ session }: { session: Session }) {
+async function SessionRow({ session }: { session: Session }) {
+  const t = STR[await getLang()];
   const total = session.payments.reduce((s, p) => s + p.amount_paid, 0);
   const duration =
     session.closed_at && session.opened_at
@@ -57,7 +110,7 @@ function SessionRow({ session }: { session: Session }) {
                 {session.cashier_name}
               </p>
               <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLE[session.status] ?? STATUS_STYLE.CLOSED}`}>
-                {session.status === "OPEN" ? "Active" : "Clôturée"}
+                {session.status === "OPEN" ? t.active : t.closed}
               </span>
             </div>
             <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
@@ -71,7 +124,7 @@ function SessionRow({ session }: { session: Session }) {
             {total.toLocaleString("fr-CD")} USD
           </p>
           <p className="text-xs text-slate-400 dark:text-slate-500">
-            {session._count.payments} paiement{session._count.payments !== 1 ? "s" : ""}
+            {t.payments(session._count.payments)}
           </p>
         </div>
       </div>
@@ -89,7 +142,7 @@ function SessionRow({ session }: { session: Session }) {
               <div className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 ${m.bg}`}>
                 <m.Icon className={`w-3 h-3 ${m.color}`} />
               </div>
-              <span className="text-xs text-slate-500 dark:text-slate-400">{m.label}</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400">{t.methods[m.key]}</span>
               <span className="text-xs font-semibold text-slate-800 dark:text-slate-100">
                 {val.toLocaleString("fr-CD")} USD
               </span>
@@ -99,7 +152,7 @@ function SessionRow({ session }: { session: Session }) {
         {Object.values(METHOD_TOTALS).every(
           (m) => !((session as Record<string, unknown>)[m.key] as number)
         ) && (
-          <p className="text-xs text-slate-400 italic">Aucun encaissement enregistré.</p>
+          <p className="text-xs text-slate-400 italic">{t.noCollection}</p>
         )}
       </div>
 
@@ -117,7 +170,7 @@ function SessionRow({ session }: { session: Session }) {
           className="flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-medium bg-slate-50 hover:bg-slate-100 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-colors"
         >
           <Eye className="w-3 h-3" />
-          Voir détails
+          {t.viewDetails}
         </Link>
         {session.status === "OPEN" && (
           <AdminCloseSessionButton sessionId={session.id} />
@@ -128,6 +181,7 @@ function SessionRow({ session }: { session: Session }) {
 }
 
 export default async function AdminCashierSessionsPage(props: SearchParamsProps) {
+  const t = STR[await getLang()];
   const user = await getCurrentUser();
 
   if (!user || user.role !== Role.ADMIN) {
@@ -162,16 +216,16 @@ export default async function AdminCashierSessionsPage(props: SearchParamsProps)
           </div>
           <div>
             <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">
-              Sessions de caisse
+              {t.title}
             </h1>
             <p className="text-xs text-slate-400 dark:text-slate-500">
-              {sessions.length} session{sessions.length !== 1 ? "s" : ""} · {openCount} active{openCount !== 1 ? "s" : ""} · {closedCount} clôturée{closedCount !== 1 ? "s" : ""}
+              {t.summary(sessions.length, openCount, closedCount)}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <div className="rounded-xl border border-slate-100 dark:border-slate-800 px-4 py-2 text-right">
-            <p className="text-[10px] text-slate-400 uppercase tracking-widest">Total encaissé</p>
+            <p className="text-[10px] text-slate-400 uppercase tracking-widest">{t.totalCollected}</p>
             <p className="text-base font-bold text-slate-800 dark:text-slate-100">
               {grandTotal.toLocaleString("fr-CD")} USD
             </p>
@@ -186,9 +240,9 @@ export default async function AdminCashierSessionsPage(props: SearchParamsProps)
           defaultValue={statusParam ?? ""}
           className="h-9 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-700 dark:text-slate-200 px-3 focus:outline-none focus:ring-2 focus:ring-ring"
         >
-          <option value="">Toutes les sessions</option>
-          <option value="OPEN">Sessions actives</option>
-          <option value="CLOSED">Sessions clôturées</option>
+          <option value="">{t.allSessions}</option>
+          <option value="OPEN">{t.activeSessions}</option>
+          <option value="CLOSED">{t.closedSessions}</option>
         </select>
         <input
           type="date"
@@ -206,14 +260,14 @@ export default async function AdminCashierSessionsPage(props: SearchParamsProps)
           type="submit"
           className="h-9 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors"
         >
-          Filtrer
+          {t.filter}
         </button>
         {(statusParam || fromParam || toParam) && (
           <a
             href="/admin/cashier-sessions"
             className="h-9 px-4 rounded-lg border border-slate-200 dark:border-slate-700 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center transition-colors"
           >
-            Réinitialiser
+            {t.reset}
           </a>
         )}
       </form>
@@ -225,7 +279,7 @@ export default async function AdminCashierSessionsPage(props: SearchParamsProps)
             <LayoutList className="w-5 h-5 text-slate-400" />
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Aucune session trouvée.
+            {t.noSessions}
           </p>
         </div>
       ) : (

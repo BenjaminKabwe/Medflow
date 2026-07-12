@@ -14,6 +14,8 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
+import { useLanguage } from "@/components/providers"
+import { translateValidationMessage } from "@/lib/validation-messages"
 
 const Form = FormProvider
 
@@ -147,7 +149,10 @@ const FormMessage = React.forwardRef<
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, children, ...props }, ref) => {
   const { error, formMessageId } = useFormField()
-  const body = error ? String(error?.message) : children
+  const { lang } = useLanguage()
+  const body = error
+    ? translateValidationMessage(String(error?.message), lang)
+    : children
 
   if (!body) {
     return null

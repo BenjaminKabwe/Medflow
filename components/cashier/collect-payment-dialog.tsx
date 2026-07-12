@@ -33,24 +33,65 @@ import {
 import { Input } from "@/components/ui/input";
 import { collectPayment } from "@/app/actions/cashier";
 import type { PaymentMethodConfigRow } from "@/types";
+import { useLanguage } from "@/components/providers";
 
-const COLLECT_METHODS: Record<string, { label: string; color: string }> = {
-  CASH:          { label: "Espèces",           color: "text-emerald-600" },
-  CARD:          { label: "Carte bancaire",     color: "text-sky-600" },
-  MOBILE_MONEY:  { label: "Mobile Money",       color: "text-orange-600" },
-  INSURANCE:     { label: "Assurance",          color: "text-violet-600" },
-  BANK_TRANSFER: { label: "Virement bancaire",  color: "text-slate-600" },
+const STR = {
+  fr: {
+    selectMethod: "Sélectionnez un mode de paiement",
+    amountPositive: "Le montant encaissé doit être supérieur à 0",
+    genericError: "Une erreur est survenue. Veuillez réessayer.",
+    openSessionHint: "Ouvrez une session pour encaisser",
+    collect: "Encaisser",
+    collectPayment: "Encaisser le paiement",
+    patient: "Patient :",
+    paymentSaved: "Paiement enregistré avec succès",
+    receiptNo: "N° de reçu",
+    close: "Fermer",
+    paymentMethod: "Mode de paiement",
+    selectPlaceholder: "Sélectionner…",
+    amountCollected: "Montant encaissé",
+    discount: "Remise",
+    cancel: "Annuler",
+    saving: "Enregistrement…",
+    confirmCollect: "Confirmer l'encaissement",
+  },
+  en: {
+    selectMethod: "Select a payment method",
+    amountPositive: "The collected amount must be greater than 0",
+    genericError: "An error occurred. Please try again.",
+    openSessionHint: "Open a session to collect payments",
+    collect: "Collect",
+    collectPayment: "Collect payment",
+    patient: "Patient:",
+    paymentSaved: "Payment recorded successfully",
+    receiptNo: "Receipt no.",
+    close: "Close",
+    paymentMethod: "Payment method",
+    selectPlaceholder: "Select…",
+    amountCollected: "Amount collected",
+    discount: "Discount",
+    cancel: "Cancel",
+    saving: "Saving…",
+    confirmCollect: "Confirm collection",
+  },
+} as const;
+
+const COLLECT_METHODS: Record<string, { color: string }> = {
+  CASH:          { color: "text-emerald-600" },
+  CARD:          { color: "text-sky-600" },
+  MOBILE_MONEY:  { color: "text-orange-600" },
+  INSURANCE:     { color: "text-violet-600" },
+  BANK_TRANSFER: { color: "text-slate-600" },
 };
 
-const Schema = z.object({
-  payment_method: z.string().min(1, "Sélectionnez un mode de paiement"),
-  amount_paid: z.coerce
-    .number()
-    .positive("Le montant encaissé doit être supérieur à 0"),
-  discount: z.coerce.number().min(0).optional().default(0),
-});
+const Schema = (t: (typeof STR)[keyof typeof STR]) =>
+  z.object({
+    payment_method: z.string().min(1, t.selectMethod),
+    amount_paid: z.coerce.number().positive(t.amountPositive),
+    discount: z.coerce.number().min(0).optional().default(0),
+  });
 
-type Values = z.infer<typeof Schema>;
+type Values = z.infer<ReturnType<typeof Schema>>;
 
 interface CollectPaymentDialogProps {
   paymentId: number;
@@ -67,12 +108,14 @@ export function CollectPaymentDialog({
   activeMethods,
   hasActiveSession,
 }: CollectPaymentDialogProps) {
+  const { lang } = useLanguage();
+  const t = STR[lang];
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [receiptNumber, setReceiptNumber] = useState<string | null>(null);
 
   const form = useForm<Values>({
-    resolver: zodResolver(Schema),
+    resolver: zodResolver(Schema(t)),
     defaultValues: {
       payment_method: activeMethods[0]?.method ?? "",
       amount_paid: totalAmount,
@@ -107,7 +150,7 @@ export function CollectPaymentDialog({
         toast.error(result.message);
       }
     } catch {
-      toast.error("Une erreur est survenue. Veuillez réessayer.");
+      toast.error(t.genericError);
     } finally {
       setIsLoading(false);
     }
@@ -119,11 +162,11 @@ export function CollectPaymentDialog({
         <Button
           size="sm"
           disabled={!hasActiveSession}
-          title={!hasActiveSession ? "Ouvrez une session pour encaisser" : undefined}
+          title={!hasActiveSession ? t.openSessionHint : undefined}
           className="h-8 px-3 text-xs gap-1.5 bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-40"
         >
           <Receipt className="w-3.5 h-3.5" />
-          Encaisser
+          {t.collect}
         </Button>
       </DialogTrigger>
 
@@ -133,10 +176,10 @@ export function CollectPaymentDialog({
             <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950/50 flex items-center justify-center">
               <Receipt className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </div>
-            Encaisser le paiement
+            {t.collectPayment}
           </DialogTitle>
           <DialogDescription>
-            Patient :{" "}
+            {t.patient}{" "}
             <span className="font-medium text-slate-700 dark:text-slate-200">
               {patientName}
             </span>
@@ -150,11 +193,11 @@ export function CollectPaymentDialog({
                 <CheckCircle2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
               </div>
               <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                Paiement enregistré avec succès
+                {t.paymentSaved}
               </p>
               <div className="w-full rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 px-4 py-3 text-center">
                 <p className="text-[10px] text-slate-400 uppercase tracking-widest mb-1">
-                  N° de reçu
+                  {t.receiptNo}
                 </p>
                 <p className="font-mono text-base font-bold text-slate-800 dark:text-slate-100 tracking-wide">
                   {receiptNumber}
@@ -166,7 +209,7 @@ export function CollectPaymentDialog({
               variant="outline"
               onClick={() => setOpen(false)}
             >
-              Fermer
+              {t.close}
             </Button>
           </div>
         ) : (
@@ -180,14 +223,14 @@ export function CollectPaymentDialog({
                 name="payment_method"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Mode de paiement</FormLabel>
+                    <FormLabel>{t.paymentMethod}</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Sélectionner…" />
+                          <SelectValue placeholder={t.selectPlaceholder} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -210,7 +253,7 @@ export function CollectPaymentDialog({
                 name="amount_paid"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Montant encaissé</FormLabel>
+                    <FormLabel>{t.amountCollected}</FormLabel>
                     <FormControl>
                       <div className="flex items-center border border-input rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
                         <Input
@@ -235,7 +278,7 @@ export function CollectPaymentDialog({
                 name="discount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Remise</FormLabel>
+                    <FormLabel>{t.discount}</FormLabel>
                     <FormControl>
                       <div className="flex items-center border border-input rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
                         <Input
@@ -263,14 +306,14 @@ export function CollectPaymentDialog({
                   onClick={() => setOpen(false)}
                   disabled={isLoading}
                 >
-                  Annuler
+                  {t.cancel}
                 </Button>
                 <Button
                   type="submit"
                   disabled={isLoading}
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                  {isLoading ? "Enregistrement…" : "Confirmer l'encaissement"}
+                  {isLoading ? t.saving : t.confirmCollect}
                 </Button>
               </div>
             </form>

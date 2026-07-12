@@ -24,10 +24,40 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "../ui/input";
 import { ServicesSchema } from "@/lib/schema";
 import { CustomInput } from "../custom-input";
+import { useLanguage } from "@/components/providers";
+
+const STR = {
+  fr: {
+    successAdd: "Service ajouté avec succès !",
+    errorGeneric: "Une erreur est survenue. Veuillez réessayer.",
+    trigger: "Ajouter un service",
+    title: "Ajouter un nouveau service",
+    description:
+      "Veuillez renseigner les informations du service. Ces données seront utilisées dans la facturation et les dossiers médicaux.",
+    nameLabel: "Nom du service",
+    priceLabel: "Prix du service",
+    descLabel: "Description du service",
+    save: "Enregistrer",
+  },
+  en: {
+    successAdd: "Service added successfully!",
+    errorGeneric: "An error occurred. Please try again.",
+    trigger: "Add a service",
+    title: "Add a new service",
+    description:
+      "Please provide the service details. This data will be used in billing and medical records.",
+    nameLabel: "Service name",
+    priceLabel: "Service price",
+    descLabel: "Service description",
+    save: "Save",
+  },
+};
 
 export const AddService = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { lang } = useLanguage();
+  const t = STR[lang];
 
   const form = useForm<z.infer<typeof ServicesSchema>>({
     resolver: zodResolver(ServicesSchema),
@@ -44,7 +74,7 @@ export const AddService = () => {
       const resp = await addNewService(values);
 
       if (resp.success) {
-        toast.success("Service ajouté avec succès !");
+        toast.success(t.successAdd);
 
         router.refresh();
 
@@ -54,7 +84,7 @@ export const AddService = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error("Une erreur est survenue. Veuillez réessayer.");
+      toast.error(t.errorGeneric);
     } finally {
       setIsLoading(false);
     }
@@ -65,14 +95,14 @@ export const AddService = () => {
       <Dialog>
         <DialogTrigger asChild>
           <Button size="sm" className="text-sm font-normal">
-            <Plus size={22} className="text-gray-500" /> Ajouter un service
+            <Plus size={22} className="text-gray-500" /> {t.trigger}
           </Button>
         </DialogTrigger>
         <DialogContent>
           <CardHeader className="px-0">
-            <DialogTitle>Ajouter un nouveau service</DialogTitle>
+            <DialogTitle>{t.title}</DialogTitle>
             <DialogDescription>
-              Veuillez renseigner les informations du service. Ces données seront utilisées dans la facturation et les dossiers médicaux.
+              {t.description}
             </DialogDescription>
           </CardHeader>
 
@@ -85,7 +115,7 @@ export const AddService = () => {
                 type="input"
                 control={form.control}
                 name="service_name"
-                label="Nom du service"
+                label={t.nameLabel}
                 placeholder=""
               />
 
@@ -94,7 +124,7 @@ export const AddService = () => {
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Prix du service</FormLabel>
+                    <FormLabel>{t.priceLabel}</FormLabel>
                     <FormControl>
                       <div className="flex items-center border rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
                         <span className="px-3 py-2 bg-muted text-muted-foreground text-sm font-medium border-r select-none">
@@ -121,7 +151,7 @@ export const AddService = () => {
                   control={form.control}
                   name="description"
                   placeholder=""
-                  label="Description du service"
+                  label={t.descLabel}
                 />
               </div>
 
@@ -130,7 +160,7 @@ export const AddService = () => {
                 disabled={isLoading}
                 className="bg-blue-600 w-full"
               >
-                Enregistrer
+                {t.save}
               </Button>
             </form>
           </Form>

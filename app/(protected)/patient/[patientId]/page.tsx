@@ -1,5 +1,6 @@
 import { MedicalHistoryContainer } from "@/components/medical-history-container";
 import { PaymentsContainer } from "@/components/appointment/payment-container";
+import { PatientTimeline } from "@/components/patient/patient-timeline";
 import { PatientRatingContainer } from "@/components/patient-rating-container";
 import { ProfileImage } from "@/components/profile-image";
 import { getPatientFullDataById } from "@/utils/services/patient";
@@ -8,22 +9,68 @@ import { format } from "date-fns";
 import { CalendarDays, Phone, MapPin, Users, Clock, Droplets, Heart } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { getLang } from "@/lib/i18n-server";
 
 interface ParamsProps {
   params: Promise<{ patientId: string }>;
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-const GENDER_FR: Record<string, string> = {
-  MALE: "Homme", FEMALE: "Femme", OTHER: "Autre",
-};
-const MARITAL_FR: Record<string, string> = {
-  SINGLE: "Célibataire", MARRIED: "Marié(e)", DIVORCED: "Divorcé(e)", WIDOWED: "Veuf/Veuve",
+const STR = {
+  fr: {
+    gender: { MALE: "Homme", FEMALE: "Femme", OTHER: "Autre" } as Record<string, string>,
+    marital: { SINGLE: "Célibataire", MARRIED: "Marié(e)", DIVORCED: "Divorcé(e)", WIDOWED: "Veuf/Veuve" } as Record<string, string>,
+    appointmentsLabel: "rendez-vous",
+    personalInfo: "Informations personnelles",
+    sex: "Sexe",
+    dob: "Date de naissance",
+    phone: "Téléphone",
+    marital_status: "Situation matrimoniale",
+    bloodGroup: "Groupe sanguin",
+    address: "Adresse",
+    emergencyContact: "Contact d'urgence",
+    emergencyNumber: "Numéro d'urgence",
+    lastVisit: "Dernière visite",
+    noVisit: "Aucune visite",
+    quickAccess: "Accès rapide",
+    myAppointments: "Mes rendez-vous",
+    history: "Historique",
+    medicalRecords: "Dossiers médicaux",
+    bills: "Factures",
+    prescriptions: "Ordonnances",
+    editProfile: "Modifier mon profil",
+  },
+  en: {
+    gender: { MALE: "Male", FEMALE: "Female", OTHER: "Other" } as Record<string, string>,
+    marital: { SINGLE: "Single", MARRIED: "Married", DIVORCED: "Divorced", WIDOWED: "Widowed" } as Record<string, string>,
+    appointmentsLabel: "appointments",
+    personalInfo: "Personal information",
+    sex: "Gender",
+    dob: "Date of birth",
+    phone: "Phone",
+    marital_status: "Marital status",
+    bloodGroup: "Blood group",
+    address: "Address",
+    emergencyContact: "Emergency contact",
+    emergencyNumber: "Emergency number",
+    lastVisit: "Last visit",
+    noVisit: "No visit",
+    quickAccess: "Quick access",
+    myAppointments: "My appointments",
+    history: "History",
+    medicalRecords: "Medical records",
+    bills: "Bills",
+    prescriptions: "Prescriptions",
+    editProfile: "Edit my profile",
+  },
 };
 
 const PatientProfile = async (props: ParamsProps) => {
   const searchParams = await props.searchParams;
   const params = await props.params;
+  const t = STR[await getLang()];
+  const GENDER_FR = t.gender;
+  const MARITAL_FR = t.marital;
 
   const patientId = params.patientId;
   const cat = searchParams?.cat || "medical-history";
@@ -88,64 +135,67 @@ const PatientProfile = async (props: ParamsProps) => {
               <p className="text-xl font-bold text-slate-800 dark:text-slate-100">
                 {data?.totalAppointments ?? 0}
               </p>
-              <span className="text-xs text-slate-400">rendez-vous</span>
+              <span className="text-xs text-slate-400">{t.appointmentsLabel}</span>
             </div>
           </div>
 
           {/* Info card */}
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-card p-6 w-full lg:w-[72%]">
             <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4">
-              Informations personnelles
+              {t.personalInfo}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
               <InfoItem
                 icon={Users}
-                label="Sexe"
+                label={t.sex}
                 value={GENDER_FR[data?.gender!] ?? data?.gender}
               />
               <InfoItem
                 icon={CalendarDays}
-                label="Date de naissance"
+                label={t.dob}
                 value={data?.date_of_birth ? format(data.date_of_birth, "dd/MM/yyyy") : null}
               />
               <InfoItem
                 icon={Phone}
-                label="Téléphone"
+                label={t.phone}
                 value={data?.phone}
               />
               <InfoItem
                 icon={Heart}
-                label="Situation matrimoniale"
+                label={t.marital_status}
                 value={MARITAL_FR[data?.marital_status!] ?? data?.marital_status}
               />
               <InfoItem
                 icon={Droplets}
-                label="Groupe sanguin"
+                label={t.bloodGroup}
                 value={data?.blood_group}
               />
               <InfoItem
                 icon={MapPin}
-                label="Adresse"
+                label={t.address}
                 value={data?.address}
               />
               <InfoItem
                 icon={Users}
-                label="Contact d'urgence"
+                label={t.emergencyContact}
                 value={data?.emergency_contact_name}
               />
               <InfoItem
                 icon={Phone}
-                label="Numéro d'urgence"
+                label={t.emergencyNumber}
                 value={data?.emergency_contact_number}
               />
               <InfoItem
                 icon={Clock}
-                label="Dernière visite"
-                value={data?.lastVisit ? format(data.lastVisit, "dd/MM/yyyy") : "Aucune visite"}
+                label={t.lastVisit}
+                value={data?.lastVisit ? format(data.lastVisit, "dd/MM/yyyy") : t.noVisit}
               />
             </div>
           </div>
         </div>
+
+        {/* Timeline */}
+        {cat === "timeline" && <PatientTimeline patientId={id} />}
 
         {/* Medical history */}
         {cat === "medical-history" && (
@@ -164,39 +214,45 @@ const PatientProfile = async (props: ParamsProps) => {
         {/* Quick links */}
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-card p-5">
           <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">
-            Accès rapide
+            {t.quickAccess}
           </h2>
           <div className="flex flex-wrap gap-2">
             <Link
               href={`/record/appointments?id=${id}`}
               className="px-3 py-2 rounded-xl text-xs font-medium bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400 hover:bg-sky-100 dark:hover:bg-sky-500/20 transition-colors"
             >
-              Mes rendez-vous
+              {t.myAppointments}
+            </Link>
+            <Link
+              href="?cat=timeline"
+              className="px-3 py-2 rounded-xl text-xs font-medium bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400 hover:bg-sky-100 dark:hover:bg-sky-500/20 transition-colors"
+            >
+              {t.history}
             </Link>
             <Link
               href="?cat=medical-history"
               className="px-3 py-2 rounded-xl text-xs font-medium bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 hover:bg-violet-100 dark:hover:bg-violet-500/20 transition-colors"
             >
-              Dossiers médicaux
+              {t.medicalRecords}
             </Link>
             <Link
               href="?cat=payments"
               className="px-3 py-2 rounded-xl text-xs font-medium bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors"
             >
-              Factures
+              {t.bills}
             </Link>
             <Link
               href="/patient/prescription"
               className="px-3 py-2 rounded-xl text-xs font-medium bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-500/20 transition-colors"
             >
-              Ordonnances
+              {t.prescriptions}
             </Link>
             {patientId === "self" && (
               <Link
                 href="/patient/registration"
                 className="px-3 py-2 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
               >
-                Modifier mon profil
+                {t.editProfile}
               </Link>
             )}
           </div>

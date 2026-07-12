@@ -4,31 +4,40 @@ import { Activity } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { useLanguage } from "@/components/providers";
 
-const slides = [
-  {
-    src: "https://res.cloudinary.com/duudvnkg8/image/upload/v1776841005/Doctor_zmeij1.jpg",
-    caption: "Des soins d'excellence, toujours accessibles",
-    sub: "Suivi patient en temps réel",
-  },
-  {
-    src: "https://res.cloudinary.com/duudvnkg8/image/upload/v1776836751/Medical_Team_Photography_j6kn52.jpg",
-    caption: "Une équipe médicale connectée",
-    sub: "Collaboration et coordination simplifiées",
-  },
-  {
-    src: "https://res.cloudinary.com/duudvnkg8/image/upload/v1776836752/t%C3%A9l%C3%A9chargement_1_gdxobf.jpg",
-    caption: "La technologie au service de la santé",
-    sub: "Dossiers médicaux numériques sécurisés",
-  },
-  {
-    src: "https://res.cloudinary.com/duudvnkg8/image/upload/v1776836752/Gr%C3%A1fico_do_mercado_de_a%C3%A7%C3%B5es_na_tela_virtual_com_remix_digital_de_m%C3%A3o_de_mulher_tbqjsn.jpg",
-    caption: "Analytique médicale avancée",
-    sub: "Prenez des décisions éclairées",
-  },
+const SRCS = [
+  "https://res.cloudinary.com/duudvnkg8/image/upload/v1776841005/Doctor_zmeij1.jpg",
+  "https://res.cloudinary.com/duudvnkg8/image/upload/v1776836751/Medical_Team_Photography_j6kn52.jpg",
+  "https://res.cloudinary.com/duudvnkg8/image/upload/v1776836752/t%C3%A9l%C3%A9chargement_1_gdxobf.jpg",
+  "https://res.cloudinary.com/duudvnkg8/image/upload/v1776836752/Gr%C3%A1fico_do_mercado_de_a%C3%A7%C3%B5es_na_tela_virtual_com_remix_digital_de_m%C3%A3o_de_mulher_tbqjsn.jpg",
 ];
 
+const STR = {
+  fr: {
+    alt: "Illustration médicale",
+    slides: [
+      { caption: "Des soins d'excellence, toujours accessibles", sub: "Suivi patient en temps réel" },
+      { caption: "Une équipe médicale connectée", sub: "Collaboration et coordination simplifiées" },
+      { caption: "La technologie au service de la santé", sub: "Dossiers médicaux numériques sécurisés" },
+      { caption: "Analytique médicale avancée", sub: "Prenez des décisions éclairées" },
+    ],
+  },
+  en: {
+    alt: "Medical illustration",
+    slides: [
+      { caption: "Excellent care, always accessible", sub: "Real-time patient monitoring" },
+      { caption: "A connected medical team", sub: "Simplified collaboration and coordination" },
+      { caption: "Technology serving healthcare", sub: "Secure digital medical records" },
+      { caption: "Advanced medical analytics", sub: "Make informed decisions" },
+    ],
+  },
+};
+
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
+  const { lang } = useLanguage();
+  const t = STR[lang];
+  const slides = SRCS.map((src, i) => ({ src, ...t.slides[i] }));
   const [index, setIndex] = useState(0);
   const [fading, setFading] = useState(false);
 
@@ -52,7 +61,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
         {/* Logo bar */}
         <div className="flex-shrink-0 px-8 pt-6 pb-4">
           <Link href="/" className="inline-flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center shadow-md">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center shadow-md">
               <Activity className="w-5 h-5 text-white" />
             </div>
             <span className="text-lg font-bold text-slate-800 tracking-tight">
@@ -72,7 +81,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
         <Image
           src={current.src}
           fill
-          alt="Illustration médicale"
+          alt={t.alt}
           priority
           className={`object-cover transition-opacity duration-500 ${
             fading ? "opacity-0" : "opacity-100"

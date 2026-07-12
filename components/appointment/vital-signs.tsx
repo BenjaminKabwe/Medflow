@@ -2,10 +2,40 @@ import db from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { calculateBMI } from "@/utils";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { fr, enUS } from "date-fns/locale";
 import { Separator } from "../ui/separator";
 import { checkRole } from "@/utils/roles";
 import { AddVitalSigns } from "../dialogs/add-vital-signs";
+import { getLang } from "@/lib/i18n-server";
+
+const STR = {
+  fr: {
+    title: "Signes vitaux",
+    empty: "Aucun signe vital enregistré",
+    temperature: "Température corporelle",
+    bloodPressure: "Tension artérielle",
+    heartRate: "Fréquence cardiaque",
+    weight: "Poids",
+    height: "Taille",
+    bmi: "IMC",
+    respiratory: "Fréquence respiratoire",
+    oxygen: "Saturation en oxygène",
+    measureDate: "Date de mesure",
+  },
+  en: {
+    title: "Vital signs",
+    empty: "No vital signs recorded",
+    temperature: "Body temperature",
+    bloodPressure: "Blood pressure",
+    heartRate: "Heart rate",
+    weight: "Weight",
+    height: "Height",
+    bmi: "BMI",
+    respiratory: "Respiratory rate",
+    oxygen: "Oxygen saturation",
+    measureDate: "Measurement date",
+  },
+};
 
 interface VitalSignsProps {
   id: number | string;
@@ -41,12 +71,15 @@ export const VitalSigns = async ({
 
   const vitals = data?.vital_signs || null;
   const isPatient = await checkRole("PATIENT");
+  const lang = await getLang();
+  const t = STR[lang];
+  const dateLocale = lang === "en" ? enUS : fr;
 
   return (
     <section id="vital-signs">
       <Card>
         <CardHeader className="flex flex-row justify-between items-center">
-          <CardTitle>Signes vitaux</CardTitle>
+          <CardTitle>{t.title}</CardTitle>
 
           {!isPatient && (
             <AddVitalSigns
@@ -62,7 +95,7 @@ export const VitalSigns = async ({
         <CardContent className="space-y-4">
           {vitals?.length === 0 || !vitals ? (
             <p className="text-sm text-gray-500 text-center py-6">
-              Aucun signe vital enregistré
+              {t.empty}
             </p>
           ) : (
             vitals.map((el) => {
@@ -75,19 +108,19 @@ export const VitalSigns = async ({
                 <div className="space-y-4" key={el?.id}>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <ItemCard
-                      label="Température corporelle"
+                      label={t.temperature}
                       value={`${el?.body_temperature}°C`}
                     />
                     <ItemCard
-                      label="Tension artérielle"
+                      label={t.bloodPressure}
                       value={`${el?.systolic} / ${el?.diastolic} mmHg`}
                     />
-                    <ItemCard label="Fréquence cardiaque" value={`${el?.heartRate} bpm`} />
+                    <ItemCard label={t.heartRate} value={`${el?.heartRate} bpm`} />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <ItemCard label="Poids" value={`${el?.weight} kg`} />
-                    <ItemCard label="Taille" value={`${el?.height} cm`} />
+                    <ItemCard label={t.weight} value={`${el?.weight} kg`} />
+                    <ItemCard label={t.height} value={`${el?.height} cm`} />
 
                     <div className="w-full">
                       <div className="flex gap-x-2 items-center">
@@ -99,22 +132,22 @@ export const VitalSigns = async ({
                           ({status})
                         </span>
                       </div>
-                      <p className="text-sm xl:text-base text-gray-500">IMC</p>
+                      <p className="text-sm xl:text-base text-gray-500">{t.bmi}</p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <ItemCard
-                      label="Fréquence respiratoire"
+                      label={t.respiratory}
                       value={`${el?.respiratory_rate || "—"}`}
                     />
                     <ItemCard
-                      label="Saturation en oxygène"
+                      label={t.oxygen}
                       value={`${el?.oxygen_saturation || "—"}`}
                     />
                     <ItemCard
-                      label="Date de mesure"
-                      value={format(el?.created_at, "d MMM yyyy HH:mm", { locale: fr })}
+                      label={t.measureDate}
+                      value={format(el?.created_at, "d MMM yyyy HH:mm", { locale: dateLocale })}
                     />
                   </div>
                   <Separator className="mt-4" />

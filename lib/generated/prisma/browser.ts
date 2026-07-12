@@ -112,3 +112,53 @@ export type PaymentMethodConfig = Prisma.PaymentMethodConfigModel
  * 
  */
 export type CashierSession = Prisma.CashierSessionModel
+/**
+ * Model Medication
+ * 
+ */
+export type Medication = Prisma.MedicationModel
+/**
+ * Model MedicationStock
+ * 
+ */
+export type MedicationStock = Prisma.MedicationStockModel
+/**
+ * Model StockMovement
+ * 
+ */
+export type StockMovement = Prisma.StockMovementModel
+/**
+ * Model Supplier
+ * 
+ */
+export type Supplier = Prisma.SupplierModel
+/**
+ * Model PurchaseOrder
+ * 
+ */
+export type PurchaseOrder = Prisma.PurchaseOrderModel
+/**
+ * Model PurchaseOrderItem
+ * 
+ */
+export type PurchaseOrderItem = Prisma.PurchaseOrderItemModel
+/**
+ * Model Dispensation
+ * 
+ */
+export type Dispensation = Prisma.DispensationModel
+/**
+ * Model DispensationItem
+ * 
+ */
+export type DispensationItem = Prisma.DispensationItemModel
+/**
+ * Model Prescription
+ * 
+ */
+export type Prescription = Prisma.PrescriptionModel
+/**
+ * Model PrescriptionItem
+ * 
+ */
+export type PrescriptionItem = Prisma.PrescriptionItemModel

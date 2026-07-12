@@ -11,10 +11,43 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
+import { getLang } from "@/lib/i18n-server";
+
+const STR = {
+  fr: {
+    title: "Tableau de bord",
+    hello: "Bonjour,",
+    adminDefault: "Administrateur",
+    see: "Voir →",
+    patients: "Patients",
+    patientsNote: "Patients enregistrés",
+    doctors: "Médecins",
+    doctorsNote: "Médecins actifs",
+    appointments: "Rendez-vous",
+    appointmentsNote: "Total rendez-vous",
+    consultations: "Consultations",
+    consultationsNote: "Consultations terminées",
+  },
+  en: {
+    title: "Dashboard",
+    hello: "Hello,",
+    adminDefault: "Administrator",
+    see: "View →",
+    patients: "Patients",
+    patientsNote: "Registered patients",
+    doctors: "Doctors",
+    doctorsNote: "Active doctors",
+    appointments: "Appointments",
+    appointmentsNote: "Total appointments",
+    consultations: "Consultations",
+    consultationsNote: "Completed consultations",
+  },
+};
 
 const AdminDashboard = async () => {
   const { sessionClaims } = await auth();
   const firstName = (sessionClaims as Record<string, unknown>)?.first_name as string | undefined;
+  const t = STR[await getLang()];
 
   const {
     availableDoctors,
@@ -28,32 +61,32 @@ const AdminDashboard = async () => {
 
   const cardData = [
     {
-      title: "Patients",
-      note: "Patients enregistrés",
+      title: t.patients,
+      note: t.patientsNote,
       value: totalPatient ?? 0,
       icon: Users,
       color: "sky",
       link: "/record/patients",
     },
     {
-      title: "Médecins",
-      note: "Médecins actifs",
+      title: t.doctors,
+      note: t.doctorsNote,
       value: totalDoctors ?? 0,
       icon: Stethoscope,
       color: "violet",
       link: "/record/doctors",
     },
     {
-      title: "Rendez-vous",
-      note: "Total rendez-vous",
+      title: t.appointments,
+      note: t.appointmentsNote,
       value: totalAppointments ?? 0,
       icon: CalendarDays,
       color: "amber",
       link: "/record/appointments",
     },
     {
-      title: "Consultations",
-      note: "Consultations terminées",
+      title: t.consultations,
+      note: t.consultationsNote,
       value: appointmentCounts?.COMPLETED ?? 0,
       icon: CheckCircle2,
       color: "emerald",
@@ -79,10 +112,10 @@ const AdminDashboard = async () => {
           <div className="flex items-center justify-between mb-5">
             <div>
               <p className="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-widest font-medium mb-0.5">
-                Tableau de bord
+                {t.title}
               </p>
               <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">
-                Bonjour, {firstName ?? "Administrateur"} 👋
+                {t.hello} {firstName ?? t.adminDefault} 👋
               </h1>
             </div>
             <span className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
@@ -107,7 +140,7 @@ const AdminDashboard = async () => {
                       href={card.link}
                       className={`text-[11px] font-medium transition-colors opacity-70 hover:opacity-100 ${c.text}`}
                     >
-                      Voir →
+                      {t.see}
                     </Link>
                   </div>
                   <p className="text-3xl font-bold text-slate-800 dark:text-slate-100 leading-none">

@@ -6,6 +6,42 @@ import { ProfileImage } from "./profile-image";
 import { formatDateTime } from "@/utils";
 import { ViewAction } from "./action-options";
 import { MedicalHistoryDialog } from "./medical-history-dialog";
+import { getLang } from "@/lib/i18n-server";
+
+const STR = {
+  fr: {
+    colNo: "N°",
+    colPatient: "Patient",
+    colDate: "Date & heure",
+    colDoctor: "Médecin",
+    colDiagnosis: "Diagnostic",
+    colExams: "Examens",
+    male: "Homme",
+    female: "Femme",
+    noDiagnosis: "Aucun diagnostic",
+    found: (n: number) => `${n} trouvé${n > 1 ? "s" : ""}`,
+    noExam: "Aucun examen",
+    exams: (n: number) => `${n} examen${n > 1 ? "s" : ""}`,
+    title: "Historique médical",
+    records: (n: number) => `dossier${n !== 1 ? "s" : ""}`,
+  },
+  en: {
+    colNo: "No.",
+    colPatient: "Patient",
+    colDate: "Date & time",
+    colDoctor: "Doctor",
+    colDiagnosis: "Diagnosis",
+    colExams: "Tests",
+    male: "Male",
+    female: "Female",
+    noDiagnosis: "No diagnosis",
+    found: (n: number) => `${n} found`,
+    noExam: "No test",
+    exams: (n: number) => `${n} test${n > 1 ? "s" : ""}`,
+    title: "Medical history",
+    records: (n: number) => `record${n !== 1 ? "s" : ""}`,
+  },
+};
 
 export interface ExtendedMedicalHistory extends MedicalRecords {
   patient?: Patient;
@@ -19,14 +55,15 @@ interface DataProps {
   isShowProfile?: boolean;
 }
 
-export const MedicalHistory = ({ data, isShowProfile }: DataProps) => {
+export const MedicalHistory = async ({ data, isShowProfile }: DataProps) => {
+  const t = STR[await getLang()];
   const columns = [
-    { header: "N°",          key: "no" },
-    { header: "Patient",     key: "name",        className: isShowProfile ? "table-cell" : "hidden" },
-    { header: "Date & heure",key: "medical_date" },
-    { header: "Médecin",     key: "doctor",      className: "hidden xl:table-cell" },
-    { header: "Diagnostic",  key: "diagnosis",   className: "hidden md:table-cell" },
-    { header: "Examens",     key: "lab_test",    className: "hidden 2xl:table-cell" },
+    { header: t.colNo,       key: "no" },
+    { header: t.colPatient,  key: "name",        className: isShowProfile ? "table-cell" : "hidden" },
+    { header: t.colDate,     key: "medical_date" },
+    { header: t.colDoctor,   key: "doctor",      className: "hidden xl:table-cell" },
+    { header: t.colDiagnosis,key: "diagnosis",   className: "hidden md:table-cell" },
+    { header: t.colExams,    key: "lab_test",    className: "hidden 2xl:table-cell" },
     { header: "",            key: "action" },
   ];
 
@@ -51,7 +88,7 @@ export const MedicalHistory = ({ data, isShowProfile }: DataProps) => {
                 {`${item?.patient?.first_name} ${item?.patient?.last_name}`.toLowerCase()}
               </p>
               <span className="text-xs text-slate-400 capitalize">
-                {item?.patient?.gender === "MALE" ? "Homme" : "Femme"}
+                {item?.patient?.gender === "MALE" ? t.male : t.female}
               </span>
             </div>
           </div>
@@ -68,7 +105,7 @@ export const MedicalHistory = ({ data, isShowProfile }: DataProps) => {
 
       <td className="hidden md:table-cell py-3 pr-4">
         {item?.diagnosis?.length === 0 ? (
-          <span className="text-xs italic text-slate-400">Aucun diagnostic</span>
+          <span className="text-xs italic text-slate-400">{t.noDiagnosis}</span>
         ) : (
           <MedicalHistoryDialog
             id={item?.appointment_id}
@@ -76,7 +113,7 @@ export const MedicalHistory = ({ data, isShowProfile }: DataProps) => {
             doctor_id={item?.doctor_id}
             label={
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400 text-xs font-medium">
-                {item?.diagnosis?.length} trouvé{item?.diagnosis?.length > 1 ? "s" : ""}
+                {t.found(item?.diagnosis?.length)}
               </span>
             }
           />
@@ -85,10 +122,10 @@ export const MedicalHistory = ({ data, isShowProfile }: DataProps) => {
 
       <td className="hidden 2xl:table-cell py-3 pr-4">
         {item?.lab_test?.length === 0 ? (
-          <span className="text-xs italic text-slate-400">Aucun examen</span>
+          <span className="text-xs italic text-slate-400">{t.noExam}</span>
         ) : (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-medium">
-            {item?.lab_test?.length} examen{item?.lab_test?.length > 1 ? "s" : ""}
+            {t.exams(item?.lab_test?.length)}
           </span>
         )}
       </td>
@@ -107,12 +144,12 @@ export const MedicalHistory = ({ data, isShowProfile }: DataProps) => {
         </div>
         <div>
           <p className="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">
-            Historique médical
+            {t.title}
           </p>
           <p className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-none">
             {data?.length}{" "}
             <span className="text-sm font-normal text-slate-400 dark:text-slate-500">
-              dossier{data?.length !== 1 ? "s" : ""}
+              {t.records(data?.length)}
             </span>
           </p>
         </div>

@@ -13,15 +13,54 @@ import { calculateAge, formatDateTime } from "@/utils";
 import { ProfileImage } from "./profile-image";
 import { Calendar, Phone } from "lucide-react";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { fr, enUS } from "date-fns/locale";
 import { AppointmentStatusIndicator } from "./appointment-status-indicator";
 import { checkRole } from "@/utils/roles";
 import { auth } from "@clerk/nextjs/server";
 import { AppointmentAction } from "./appointment-action";
+import { getLang } from "@/lib/i18n-server";
+
+const STR = {
+  fr: {
+    view: "Voir",
+    title: "Rendez-vous patient",
+    bookedOn: "Ce rendez-vous a été réservé le",
+    cancelled: "Ce rendez-vous a été annulé",
+    reason: "Motif",
+    personalInfo: "Informations personnelles",
+    address: "Adresse",
+    apptInfo: "Informations du rendez-vous",
+    date: "Date",
+    time: "Heure",
+    status: "Statut",
+    patientNote: "Note du patient",
+    doctorInfo: "Informations du médecin",
+    action: "Action",
+  },
+  en: {
+    view: "View",
+    title: "Patient appointment",
+    bookedOn: "This appointment was booked on",
+    cancelled: "This appointment was cancelled",
+    reason: "Reason",
+    personalInfo: "Personal information",
+    address: "Address",
+    apptInfo: "Appointment information",
+    date: "Date",
+    time: "Time",
+    status: "Status",
+    patientNote: "Patient note",
+    doctorInfo: "Doctor information",
+    action: "Action",
+  },
+};
 
 export const ViewAppointment = async ({ id }: { id: string | undefined }) => {
   const { data } = await getAppointmentById(Number(id!));
   const { userId } = await auth();
+  const lang = await getLang();
+  const t = STR[lang];
+  const dateLocale = lang === "en" ? enUS : fr;
 
   if (!data) return null;
 
@@ -32,7 +71,7 @@ export const ViewAppointment = async ({ id }: { id: string | undefined }) => {
           variant="outline"
           className="flex items-center justify-center rounded-full bg-blue-500/10 hover:underline text-blue-600 px-1.5 py-1 text-xs md:text-sm"
         >
-          Voir
+          {t.view}
         </Button>
       </DialogTrigger>
 
@@ -44,10 +83,10 @@ export const ViewAppointment = async ({ id }: { id: string | undefined }) => {
         <>
           <DialogHeader>
             <DialogTitle className="text-slate-800 dark:text-slate-100">
-              Rendez-vous patient
+              {t.title}
             </DialogTitle>
             <DialogDescription className="text-slate-500 dark:text-slate-400">
-              Ce rendez-vous a été réservé le{" "}
+              {t.bookedOn}{" "}
               {formatDateTime(data?.created_at.toString())}
             </DialogDescription>
           </DialogHeader>
@@ -55,17 +94,17 @@ export const ViewAppointment = async ({ id }: { id: string | undefined }) => {
           {data?.status === "CANCELLED" && (
             <div className="bg-yellow-100 dark:bg-yellow-900/30 p-4 mt-4 rounded-md border border-yellow-200 dark:border-yellow-700">
               <span className="font-semibold text-sm text-yellow-800 dark:text-yellow-300">
-                Ce rendez-vous a été annulé
+                {t.cancelled}
               </span>
               <p className="text-sm text-yellow-700 dark:text-yellow-400">
-                <strong>Motif</strong> : {data?.reason}
+                <strong>{t.reason}</strong> : {data?.reason}
               </p>
             </div>
           )}
 
           <div className="grid gap-4 py-4">
             <p className="w-fit bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 px-2 py-1 rounded text-xs md:text-sm">
-              Informations personnelles
+              {t.personalInfo}
             </p>
 
             <div className="flex flex-col md:flex-row gap-6 mb-16">
@@ -97,7 +136,7 @@ export const ViewAppointment = async ({ id }: { id: string | undefined }) => {
               </div>
 
               <div>
-                <span className="text-sm text-slate-500 dark:text-slate-400">Adresse</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">{t.address}</span>
                 <p className="text-slate-600 dark:text-slate-300 capitalize">
                   {data?.patient?.address}
                 </p>
@@ -105,35 +144,35 @@ export const ViewAppointment = async ({ id }: { id: string | undefined }) => {
             </div>
 
             <p className="w-fit bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 px-2 py-1 rounded text-xs md:text-sm">
-              Informations du rendez-vous
+              {t.apptInfo}
             </p>
 
             <div className="grid grid-cols-3 gap-10">
               <div>
-                <span className="text-sm text-slate-500 dark:text-slate-400">Date</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">{t.date}</span>
                 <p className="text-sm text-slate-600 dark:text-slate-300">
-                  {format(data?.appointment_date, "dd MMM yyyy", { locale: fr })}
+                  {format(data?.appointment_date, "dd MMM yyyy", { locale: dateLocale })}
                 </p>
               </div>
               <div>
-                <span className="text-sm text-slate-500 dark:text-slate-400">Heure</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">{t.time}</span>
                 <p className="text-slate-600 dark:text-slate-300">{data?.time}</p>
               </div>
               <div>
-                <span className="text-sm text-slate-500 dark:text-slate-400">Statut</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">{t.status}</span>
                 <AppointmentStatusIndicator status={data?.status} />
               </div>
             </div>
 
             {data?.note && (
               <div>
-                <span className="text-sm text-slate-500 dark:text-slate-400">Note du patient</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">{t.patientNote}</span>
                 <p className="text-slate-600 dark:text-slate-300">{data?.note}</p>
               </div>
             )}
 
             <p className="w-fit bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 py-1 px-2 rounded text-xs md:text-sm mt-16">
-              Informations du médecin
+              {t.doctorInfo}
             </p>
             <div className="w-full flex flex-col md:flex-row gap-8 mb-8">
               <div className="flex gap-3">
@@ -157,7 +196,7 @@ export const ViewAppointment = async ({ id }: { id: string | undefined }) => {
             {((await checkRole("ADMIN")) || data?.doctor_id === userId) && (
               <>
                 <p className="w-fit bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 py-1 px-2 rounded text-xs md:text-sm mt-4">
-                  Action
+                  {t.action}
                 </p>
                 <AppointmentAction id={data.id} status={data?.status} />
               </>

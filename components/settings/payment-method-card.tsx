@@ -14,6 +14,12 @@ import { Switch } from "@/components/ui/switch";
 import { togglePaymentMethod } from "@/app/actions/payment-methods";
 import { PaymentMethodDialog } from "./payment-method-dialog";
 import type { PaymentMethodConfigRow } from "@/types";
+import { useLanguage } from "@/components/providers";
+
+const STR = {
+  fr: { fees: (n: number) => `${n}% frais`, deactivate: "Désactiver", activate: "Activer" },
+  en: { fees: (n: number) => `${n}% fees`, deactivate: "Deactivate", activate: "Activate" },
+};
 
 // ─── Icon resolution ──────────────────────────────────────────────────────────
 
@@ -72,6 +78,8 @@ interface PaymentMethodCardProps {
 }
 
 export function PaymentMethodCard({ config }: PaymentMethodCardProps) {
+  const { lang } = useLanguage();
+  const t = STR[lang];
   const Icon = resolveIcon(config.icon);
   const style = getStyle(config.method);
 
@@ -119,7 +127,7 @@ export function PaymentMethodCard({ config }: PaymentMethodCardProps) {
           </span>
           {config.fees > 0 && (
             <span className="inline-block text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
-              {config.fees}% frais
+              {t.fees(config.fees)}
             </span>
           )}
         </div>
@@ -136,7 +144,7 @@ export function PaymentMethodCard({ config }: PaymentMethodCardProps) {
           checked={optimisticIsActive}
           onCheckedChange={handleToggle}
           className={style.switchClass}
-          aria-label={`${optimisticIsActive ? "Désactiver" : "Activer"} ${config.label}`}
+          aria-label={`${optimisticIsActive ? t.deactivate : t.activate} ${config.label}`}
         />
         <PaymentMethodDialog config={config} />
       </div>
