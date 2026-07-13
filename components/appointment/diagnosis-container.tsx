@@ -76,8 +76,14 @@ export const DiagnosisContainer = async ({
               medications={medications}
               canPrescribe={isDoctor}
             />
-            {isDoctor && data?.id && (
-              <RequestLabTests recordId={data.id} services={labServices} />
+            {isDoctor && (
+              <RequestLabTests
+                recordId={data?.id ?? null}
+                appointmentId={id}
+                patientId={patientId}
+                doctorId={doctorId}
+                services={labServices}
+              />
             )}
           </div>
         </div>

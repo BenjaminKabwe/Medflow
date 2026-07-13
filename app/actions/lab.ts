@@ -74,9 +74,33 @@ export async function requestLabTests(
       };
     }
 
+    // Résout le dossier médical : on prend l'existant, sinon on le crée à la
+    // volée pour la consultation — le médecin doit pouvoir demander un bilan
+    // sans être obligé de saisir un diagnostic au préalable.
+    let recordId = v.record_id ?? null;
+    if (!recordId) {
+      const existing = await db.medicalRecords.findFirst({
+        where: { appointment_id: Number(v.appointment_id) },
+        orderBy: { created_at: "desc" },
+        select: { id: true },
+      });
+      recordId =
+        existing?.id ??
+        (
+          await db.medicalRecords.create({
+            data: {
+              patient_id: v.patient_id!,
+              doctor_id: v.doctor_id!,
+              appointment_id: Number(v.appointment_id),
+            },
+            select: { id: true },
+          })
+        ).id;
+    }
+
     await db.labTest.createMany({
       data: services.map((s) => ({
-        record_id: v.record_id,
+        record_id: recordId!,
         service_id: s.id,
         notes: v.notes ?? undefined,
         requested_by: userId,
@@ -88,12 +112,15 @@ export async function requestLabTests(
       userId,
       action: "CREATE",
       model: "LabTest",
-      recordId: String(v.record_id),
-      details: `${services.length} analyse(s) demandée(s) (dossier #${v.record_id})`,
+      recordId: String(recordId),
+      details: `${services.length} analyse(s) demandée(s) (dossier #${recordId})`,
     });
 
     revalidatePath("/lab/tests");
     revalidatePath("/lab_technician");
+    if (v.appointment_id) {
+      revalidatePath(`/record/appointments/${v.appointment_id}`);
+    }
     return {
       success: true,
       message: `${services.length} analyse(s) envoyée(s) au laboratoire`,

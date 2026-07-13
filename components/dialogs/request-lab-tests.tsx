@@ -56,11 +56,22 @@ type LabService = {
 };
 
 interface Props {
-  recordId: number;
+  /** Dossier médical existant (si la consultation en a déjà un). */
+  recordId?: number | null;
+  /** Contexte de consultation : permet de créer le dossier à la volée. */
+  appointmentId?: string;
+  patientId?: string;
+  doctorId?: string;
   services: LabService[];
 }
 
-export function RequestLabTests({ recordId, services }: Props) {
+export function RequestLabTests({
+  recordId,
+  appointmentId,
+  patientId,
+  doctorId,
+  services,
+}: Props) {
   const router = useRouter();
   const { lang } = useLanguage();
   const t = STR[lang];
@@ -86,7 +97,10 @@ export function RequestLabTests({ recordId, services }: Props) {
     setSubmitting(true);
     try {
       const res = await requestLabTests({
-        record_id: recordId,
+        record_id: recordId ?? undefined,
+        appointment_id: appointmentId,
+        patient_id: patientId,
+        doctor_id: doctorId,
         service_ids: Array.from(selected),
         notes: notes.trim() || undefined,
       });

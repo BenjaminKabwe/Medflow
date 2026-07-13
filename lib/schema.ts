@@ -384,13 +384,25 @@ export const SupplierIdSchema = z.coerce.number().int().positive();
 export const MedicationIdSchema = z.coerce.number().int().positive();
 
 // ── Laboratoire ────────────────────────────────────────────────
-export const LabRequestSchema = z.object({
-  record_id: z.coerce.number().int().positive(),
-  service_ids: z
-    .array(z.coerce.number().int().positive())
-    .min(1, "Sélectionne au moins une analyse"),
-  notes: z.string().max(500).optional().nullable(),
-});
+export const LabRequestSchema = z
+  .object({
+    // Soit un dossier médical existant, soit le contexte de consultation
+    // (le dossier sera alors créé à la volée par l'action).
+    record_id: z.coerce.number().int().positive().optional().nullable(),
+    appointment_id: z.coerce.number().int().positive().optional().nullable(),
+    patient_id: z.string().optional().nullable(),
+    doctor_id: z.string().optional().nullable(),
+    service_ids: z
+      .array(z.coerce.number().int().positive())
+      .min(1, "Sélectionne au moins une analyse"),
+    notes: z.string().max(500).optional().nullable(),
+  })
+  .refine(
+    (v) =>
+      !!v.record_id ||
+      (!!v.appointment_id && !!v.patient_id && !!v.doctor_id),
+    { message: "Contexte de consultation manquant" }
+  );
 export type LabRequestValues = z.infer<typeof LabRequestSchema>;
 
 export const LabResultSchema = z.object({
