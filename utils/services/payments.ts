@@ -49,7 +49,8 @@ export async function getPaymentRecords({
         },
         skip: SKIP,
         take: LIMIT,
-        orderBy: { created_at: "desc" },
+        // Ordre de création croissant : la 1ʳᵉ fiche créée = N°1, etc.
+        orderBy: { id: "asc" },
       }),
       db.payment.count({
         where,

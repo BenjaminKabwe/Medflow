@@ -55,6 +55,7 @@ const STR = {
 
 interface ExtendedProps extends Payment {
   patient: Patient;
+  index?: number;
 }
 
 const BillingPage = async (props: SearchParamsProps) => {
@@ -88,6 +89,11 @@ const BillingPage = async (props: SearchParamsProps) => {
     const name = item?.patient?.first_name + " " + item?.patient?.last_name;
     const patient = item?.patient;
 
+    // Numéro séquentiel calculé selon l'ordre de création (indépendant de l'ID
+    // de la base) : redémarre à 1 si tous les paiements sont supprimés.
+    const rowNumber =
+      (Number(currentPage) - 1) * DATA_LIMIT + (item.index ?? 0) + 1;
+
     const statusLabel =
       item?.status === "UNPAID"
         ? t.unpaid
@@ -100,7 +106,7 @@ const BillingPage = async (props: SearchParamsProps) => {
         key={item?.id + patient?.id}
         className="border-b border-gray-200 dark:border-slate-700 even:bg-slate-50 dark:even:bg-slate-800/50 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
       >
-        <td># {item?.id}</td>
+        <td># {rowNumber}</td>
         <td className="flex items-center gap-4 p-4">
           <ProfileImage
             url={item?.patient?.img!}
