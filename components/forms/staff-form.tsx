@@ -31,7 +31,12 @@ const STR = {
     error: "Une erreur est survenue",
     trigger: "Nouveau personnel",
     title: "Ajouter un nouveau personnel",
-    typeLabel: "Type",
+    subtitle: "Renseignez les informations du membre du personnel.",
+    sectionRole: "Rôle",
+    sectionIdentity: "Identité & contact",
+    sectionAccess: "Accès & affectation",
+    typeLabel: "Type de personnel",
+    typePh: "Sélectionner un rôle",
     namePh: "Nom du personnel",
     nameLabel: "Nom complet",
     emailPh: "jean@exemple.com",
@@ -54,7 +59,12 @@ const STR = {
     error: "An error occurred",
     trigger: "New staff",
     title: "Add a new staff member",
-    typeLabel: "Type",
+    subtitle: "Fill in the staff member's details.",
+    sectionRole: "Role",
+    sectionIdentity: "Identity & contact",
+    sectionAccess: "Access & assignment",
+    typeLabel: "Staff type",
+    typePh: "Select a role",
     namePh: "Staff name",
     nameLabel: "Full name",
     emailPh: "john@example.com",
@@ -127,91 +137,111 @@ export const StaffForm = () => {
         </Button>
       </SheetTrigger>
 
-      <SheetContent className="rounded-xl rounded-r-xl md:h-[90%] md:top-[5%] md:right-[1%] w-full overflow-y-scroll">
-        <SheetHeader>
-          <SheetTitle>{t.title}</SheetTitle>
+      <SheetContent className="flex flex-col gap-0 rounded-l-2xl w-full sm:max-w-lg md:max-w-xl md:h-[92%] md:top-[4%] md:right-[1%] p-0 overflow-hidden">
+        <SheetHeader className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 space-y-1 text-left">
+          <SheetTitle className="text-lg font-bold">{t.title}</SheetTitle>
+          <p className="text-sm text-slate-400 dark:text-slate-500">
+            {t.subtitle}
+          </p>
         </SheetHeader>
 
-        <div>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(handleSubmit)}
-              className="space-y-8 mt-5 2xl:mt-10"
-            >
-              <CustomInput
-                type="radio"
-                selectList={TYPES}
-                control={form.control}
-                name="role"
-                label={t.typeLabel}
-                placeholder=""
-                defaultValue="NURSE"
-              />
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="flex flex-col flex-1 min-h-0"
+          >
+            <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5 space-y-6">
+              {/* Rôle */}
+              <section className="space-y-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  {t.sectionRole}
+                </p>
+                <CustomInput
+                  type="select"
+                  control={form.control}
+                  name="role"
+                  label={t.typeLabel}
+                  placeholder={t.typePh}
+                  selectList={TYPES}
+                />
+              </section>
 
-              <CustomInput
-                type="input"
-                control={form.control}
-                name="name"
-                placeholder={t.namePh}
-                label={t.nameLabel}
-              />
-
-              <div className="flex items-center gap-2">
+              {/* Identité & contact */}
+              <section className="space-y-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  {t.sectionIdentity}
+                </p>
                 <CustomInput
                   type="input"
                   control={form.control}
-                  name="email"
-                  placeholder={t.emailPh}
-                  label={t.emailLabel}
+                  name="name"
+                  placeholder={t.namePh}
+                  label={t.nameLabel}
                 />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+                  <CustomInput
+                    type="input"
+                    control={form.control}
+                    name="email"
+                    placeholder={t.emailPh}
+                    label={t.emailLabel}
+                  />
+                  <CustomInput
+                    type="input"
+                    control={form.control}
+                    name="phone"
+                    placeholder="0991234567"
+                    label={t.phoneLabel}
+                  />
+                </div>
                 <CustomInput
                   type="input"
                   control={form.control}
-                  name="phone"
-                  placeholder="0991234567"
-                  label={t.phoneLabel}
+                  name="address"
+                  placeholder="17 Av. Jasmin, Q/Kauka, C/Kalamu"
+                  label={t.addressLabel}
                 />
-              </div>
+              </section>
 
-              <CustomInput
-                type="input"
-                control={form.control}
-                name="license_number"
-                placeholder={t.licensePh}
-                label={t.licenseLabel}
-              />
+              {/* Accès & affectation */}
+              <section className="space-y-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  {t.sectionAccess}
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+                  <CustomInput
+                    type="input"
+                    control={form.control}
+                    name="license_number"
+                    placeholder={t.licensePh}
+                    label={t.licenseLabel}
+                  />
+                  <CustomInput
+                    type="input"
+                    control={form.control}
+                    name="department"
+                    placeholder={t.deptPh}
+                    label={t.deptLabel}
+                  />
+                </div>
+                <CustomInput
+                  type="input"
+                  control={form.control}
+                  name="password"
+                  placeholder=""
+                  label={t.passwordLabel}
+                  inputType="password"
+                />
+              </section>
+            </div>
 
-              <CustomInput
-                type="input"
-                control={form.control}
-                name="department"
-                placeholder={t.deptPh}
-                label={t.deptLabel}
-              />
-
-              <CustomInput
-                type="input"
-                control={form.control}
-                name="address"
-                placeholder="17 Av. Jasmin, Q/Kauka, C/Kalamu"
-                label={t.addressLabel}
-              />
-
-              <CustomInput
-                type="input"
-                control={form.control}
-                name="password"
-                placeholder=""
-                label={t.passwordLabel}
-                inputType="password"
-              />
-
+            <div className="border-t border-slate-100 dark:border-slate-800 px-6 py-4">
               <Button type="submit" disabled={isLoading} className="w-full">
-                {t.submit}
+                {isLoading ? "…" : t.submit}
               </Button>
-            </form>
-          </Form>
-        </div>
+            </div>
+          </form>
+        </Form>
       </SheetContent>
     </Sheet>
   );
