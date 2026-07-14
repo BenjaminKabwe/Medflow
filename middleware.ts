@@ -25,9 +25,13 @@ export default clerkMiddleware(async (auth, req) => {
   }
 
   // 2. Fail-closed : toute page protégée exige une authentification.
-  //    Un visiteur non connecté est renvoyé vers la page de connexion.
+  //    Un visiteur non connecté (ex. onglet privé) est renvoyé vers la page de
+  //    connexion. On conserve l'URL demandée dans `redirect_url` afin que Clerk
+  //    y ramène l'utilisateur une fois connecté.
   if (!userId) {
-    return NextResponse.redirect(new URL("/sign-in", url.origin));
+    const signInUrl = new URL("/sign-in", url.origin);
+    signInUrl.searchParams.set("redirect_url", url.pathname + url.search);
+    return NextResponse.redirect(signInUrl);
   }
 
   // 3. Contrôle d'accès par rôle (défense en profondeur).

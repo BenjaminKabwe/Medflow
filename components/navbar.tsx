@@ -1,6 +1,6 @@
 "use client";
 
-import { UserButton, useAuth } from "@clerk/nextjs";
+import { UserButton, SignedIn } from "@clerk/nextjs";
 import { ChevronRight, Menu, Search } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -14,7 +14,6 @@ interface NavbarProps {
 }
 
 export const Navbar = ({ notificationBell }: NavbarProps) => {
-  const { userId } = useAuth();
   const pathname = usePathname();
   const { t } = useLanguage();
   const { toggleMobile } = useSidebarContext();
@@ -108,8 +107,13 @@ export const Navbar = ({ notificationBell }: NavbarProps) => {
         {/* Notification bell */}
         {notificationBell}
 
-        {/* User avatar */}
-        {userId && <UserButton />}
+        {/* User avatar — Clerk gère lui-même l'état de connexion */}
+        <SignedIn>
+          <UserButton
+            afterSignOutUrl="/"
+            appearance={{ elements: { avatarBox: "w-8 h-8" } }}
+          />
+        </SignedIn>
       </div>
     </header>
   );
