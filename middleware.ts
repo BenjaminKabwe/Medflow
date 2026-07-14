@@ -7,25 +7,39 @@ const matchers = Object.keys(routeAccess).map((route) => ({
   allowedRoles: routeAccess[route],
 }));
 
+// Routes accessibles sans authentification. TOUT le reste exige une connexion
+// (modèle « fail-closed » : une page non listée n'est jamais publique par défaut).
+const isPublicRoute = createRouteMatcher(["/", "/sign-in(.*)", "/sign-up(.*)"]);
+
+// Les routes API gèrent elles-mêmes leur autorisation (et doivent renvoyer un
+// statut 401, pas une redirection HTML vers la page de connexion).
+const isApiRoute = createRouteMatcher(["/api(.*)", "/trpc(.*)"]);
+
 export default clerkMiddleware(async (auth, req) => {
   const { userId, sessionClaims } = await auth();
   const url = new URL(req.url);
 
-  const role =
-    userId && sessionClaims?.metadata?.role
-      ? sessionClaims.metadata.role
-      : userId
-      ? "patient"
-      : "sign-in";
+  // 1. Routes publiques et API : laisser passer.
+  if (isPublicRoute(req) || isApiRoute(req)) {
+    return NextResponse.next();
+  }
 
+  // 2. Fail-closed : toute page protégée exige une authentification.
+  //    Un visiteur non connecté est renvoyé vers la page de connexion.
+  if (!userId) {
+    return NextResponse.redirect(new URL("/sign-in", url.origin));
+  }
+
+  // 3. Contrôle d'accès par rôle (défense en profondeur).
+  const role = (sessionClaims?.metadata?.role as string | undefined) ?? "patient";
   const matchingRoute = matchers.find(({ matcher }) => matcher(req));
 
   if (matchingRoute && !matchingRoute.allowedRoles.includes(role)) {
-    // Redirect unauthorized roles to their respective default pages
+    // Rôle authentifié mais non autorisé → redirection vers son tableau de bord.
     return NextResponse.redirect(new URL(`/${role}`, url.origin));
   }
 
-  // Continue if the user is authorized
+  // Utilisateur authentifié et autorisé.
   return NextResponse.next();
 });
 
